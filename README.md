@@ -1,5 +1,5 @@
 # CS 104 Student Repository
 
-- **Name**: Tommy Trojan
-- **USC ID**: 1234567890
-- **Email**: ttrojan@usc.edu
+- **Name**: Chengyi (Jeff) Chen
+- **USC ID**: 2862374830
+- **Email**: chen364@usc.edu
