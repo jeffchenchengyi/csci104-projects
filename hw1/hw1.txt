@@ -104,7 +104,7 @@ ANSWER: git will prompt you for a commit message using the editor like such:
 #	new file:   newfile3
 #
 
-and after typing the message, saving, and closing the editor, the command prompt will send a messgae stating how many files are added, any changes, insertions, and deletions. 
+and after typing the message, saving, and closing the editor, the command prompt will send a message stating how many files are added, any changes, insertions, and deletions. 
 
 Part (e)
 What is the full command to re-clone your private CSCI104 repo to your VM? Assume you are in an appropriate folder.
