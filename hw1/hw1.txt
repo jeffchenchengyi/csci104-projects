@@ -138,6 +138,8 @@ ANSWER:
 
 2.For what input values would funcB fail to terminate? Why will funcB always terminate for other input values?
 
+ANSWER: funcB will fail to terminate if the min value given is larger than the max value (max > min), e.g. funcB(a, 6, 1)... as the int mid assigned will never be larger than the min and never be smaller than the max. This will lead to a perpetual gap between the min and max value such that the if statement will never get executed and base case is never called, hence, program will go on forever and not terminate. Another case is when 
+
 3.What gets output when you call funcB(a, min, max) and why?
 
 void funcA (int *a, int size) {
