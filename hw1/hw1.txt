@@ -1,0 +1,114 @@
+Problem 1 (Course Policies, 10%)
+Carefully study the information on the course web site, then answer the following questions about course policies (anywhere from no to all answers may be correct):
+
+Place your answers to this question in a file named hw1.txt
+
+Part (a):
+Which of the following are acceptable behaviors in solving homeworks/projects?
+
+1.Looking up information relevant to the course online.
+2.Looking up or asking for sample solutions online.
+3.Copying code from my classmates, and then editing it significantly.
+4.Asking the course staff for help.
+5.Sitting next to my classmate and coding together as a team or with significant conversation about our approach.
+6.Sharing my code with a classmate, if he/she promises not to copy it, but to just read over it and learn from it.
+
+Part (b):
+To dispute a grade on an assignment you should:
+
+1.Email your professor immediately.
+2.Assign the issue to your grader on GitHub.
+3.Go see a course TA if assigning the issue to your grader did not resolve your concern.
+4.Raise an issue within 1 week of receiving the grade.
+
+Part (c):
+Which of the following are recommended ways of writing code?
+
+1.gedit
+2.emacs
+3.Eclipse
+4.sublime
+5.Microsoft Visual Studio
+6.notepad
+
+Part(d):
+What is the late submission policy?
+
+1.Each assignment can be submitted late for 50% credit.
+2.Each student has 3 late days of which only one can be used per HW.
+3.Students need to get approval before submitting an assignment late.
+4.One hour late submission is acceptable for each assignment.
+5.There is no late policy.
+
+Part(e):
+What should you do to ensure you are submitting your code correctly?
+
+1.Nothing: submit your code, then sit back and enjoy.
+2.Clone your github directory, checkout the SHA you plan to submit, and rerun your tests.
+3.Use the long SHA in your submission (20+ digits/letters).
+4.Check the output from the submission system when you submit your code: this may alert you to missing files or compilation errors.
+5.Resubmit your code if you find additional problems before the deadline.
+
+
+
+Problem 2 (Git, 10%)
+Carefully review and implement the steps discussed in Lab1. Then answer the following questions:
+
+Continue your answers to this question in the file named hw1.txt
+
+Part (a):
+Which of the following git user interfaces are accepted and supported in this course?
+
+1.Git Bash (Windows)
+2.GitHub Desktop Client
+3.Terminal (Mac or Linux)
+4.Eclipse eGit
+5.Tower Git Client
+
+Part (b):
+When cloning a Git repo, which of the following should you avoid?
+
+1.Cloning into a folder that itself is a git repo.
+2.Cloning into a sync'ed folder like Dropbox or Google Drive.
+3.Cloning into the Desktop folder of your VM.
+
+Part (c):
+Provide the appropriate git command to perform the following operations:
+
+1.Stage an untracked file to be committed. The (hypothetical) file is called 'hw1q2b.cpp'.
+2.Display the details of the last three commits in the repository.
+
+Part (d)
+Let's say you staged three files to be committed. Then, you ran the following command:
+
+git commit
+
+What will git do?
+
+Part (e)
+What is the full command to re-clone your private CSCI104 repo to your VM? Assume you are in an appropriate folder.
+
+
+
+Problem 4 (Recursion, 10%)
+Continue your answers to this question in the file name hw1.txt
+
+Consider the following C++ code, and answer the following questions.
+
+1.What gets output when you call funcA([1,2,3,4,5], 5)? More importantly, why does this get output? All of the points for this problem will be assigned based on your explanation (since we have no doubt that you can run this program for a fixed input and copy down the output). We strongly recommend solving this by hand/calculator, and only using a compiler to verify your answer.
+2.For what input values would funcB fail to terminate? Why will funcB always terminate for other input values?
+3.What gets output when you call funcB(a, min, max) and why?
+
+void funcA (int *a, int size) {
+    funcB(a, 0, size-1);
+}
+
+void funcB(int *a, int min, int max) {
+    if (min == max)
+        cout << a[min] << endl;
+    else {
+        int mid = (min+max)/2;
+        funcB(a, min, mid);
+        funcB(a, mid+1, max);
+    }
+}
