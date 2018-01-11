@@ -90,10 +90,26 @@ git commit
 
 What will git do?
 
+ANSWER: git will prompt you for a commit message using the editor like such:
 
+//
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	new file:   newfile1
+#	new file:   newfile2
+#	new file:   newfile3
+#
+
+and after typing the message, saving, and closing the editor, the command prompt will send a messgae stating how many files are added, any changes, insertions, and deletions. 
 
 Part (e)
 What is the full command to re-clone your private CSCI104 repo to your VM? Assume you are in an appropriate folder.
+
+ANSWER: git clone git@github.com:usc-csci104-spring2018/hw-chen364.git
 
 
 
