@@ -25,17 +25,17 @@ Part (c):
 Which of the following are recommended ways of writing code?
 
 1.gedit
-2.emacs
-3.Eclipse
-4.sublime
-5.Microsoft Visual Studio
+2.emacs-[CORRECT]
+3.Eclipse-[CORRECT]
+4.sublime-[CORRECT]
+5.Microsoft Visual Studio-[CORRECT]
 6.notepad
 
 Part(d):
 What is the late submission policy?
 
 1.Each assignment can be submitted late for 50% credit.
-2.Each student has 3 late days of which only one can be used per HW.
+2.Each student has 3 late days of which only one can be used per HW.-[CORRECT]
 3.Students need to get approval before submitting an assignment late.
 4.One hour late submission is acceptable for each assignment.
 5.There is no late policy.
@@ -44,10 +44,10 @@ Part(e):
 What should you do to ensure you are submitting your code correctly?
 
 1.Nothing: submit your code, then sit back and enjoy.
-2.Clone your github directory, checkout the SHA you plan to submit, and rerun your tests.
-3.Use the long SHA in your submission (20+ digits/letters).
-4.Check the output from the submission system when you submit your code: this may alert you to missing files or compilation errors.
-5.Resubmit your code if you find additional problems before the deadline.
+2.Clone your github directory, checkout the SHA you plan to submit, and rerun your tests.-[CORRECT]
+3.Use the long SHA in your submission (20+ digits/letters).-[CORRECT]
+4.Check the output from the submission system when you submit your code: this may alert you to missing files or compilation errors.-[CORRECT]
+5.Resubmit your code if you find additional problems before the deadline.-[CORRECT]
 
 
 
@@ -68,15 +68,20 @@ Which of the following git user interfaces are accepted and supported in this co
 Part (b):
 When cloning a Git repo, which of the following should you avoid?
 
-1.Cloning into a folder that itself is a git repo.
-2.Cloning into a sync'ed folder like Dropbox or Google Drive.
+1.Cloning into a folder that itself is a git repo.-[CORRECT]
+2.Cloning into a sync'ed folder like Dropbox or Google Drive.-[CORRECT]
 3.Cloning into the Desktop folder of your VM.
 
 Part (c):
 Provide the appropriate git command to perform the following operations:
 
 1.Stage an untracked file to be committed. The (hypothetical) file is called 'hw1q2b.cpp'.
+
+ANSWER: git add hw1q2b.cpp
+
 2.Display the details of the last three commits in the repository.
+
+ANSWER: git log -p -3
 
 Part (d)
 Let's say you staged three files to be committed. Then, you ran the following command:
@@ -84,6 +89,8 @@ Let's say you staged three files to be committed. Then, you ran the following co
 git commit
 
 What will git do?
+
+
 
 Part (e)
 What is the full command to re-clone your private CSCI104 repo to your VM? Assume you are in an appropriate folder.
