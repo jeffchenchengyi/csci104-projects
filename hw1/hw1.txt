@@ -6,20 +6,20 @@ Place your answers to this question in a file named hw1.txt
 Part (a):
 Which of the following are acceptable behaviors in solving homeworks/projects?
 
-1.Looking up information relevant to the course online.
+1.Looking up information relevant to the course online.-[CORRECT]
 2.Looking up or asking for sample solutions online.
 3.Copying code from my classmates, and then editing it significantly.
-4.Asking the course staff for help.
+4.Asking the course staff for help.-[CORRECT]
 5.Sitting next to my classmate and coding together as a team or with significant conversation about our approach.
 6.Sharing my code with a classmate, if he/she promises not to copy it, but to just read over it and learn from it.
 
 Part (b):
 To dispute a grade on an assignment you should:
 
-1.Email your professor immediately.
-2.Assign the issue to your grader on GitHub.
-3.Go see a course TA if assigning the issue to your grader did not resolve your concern.
-4.Raise an issue within 1 week of receiving the grade.
+1.Email your professor immediately.-[CORRECT]
+2.Assign the issue to your grader on GitHub.-[CORRECT]
+3.Go see a course TA if assigning the issue to your grader did not resolve your concern.-[CORRECT]
+4.Raise an issue within 1 week of receiving the grade.-[CORRECT]
 
 Part (c):
 Which of the following are recommended ways of writing code?
