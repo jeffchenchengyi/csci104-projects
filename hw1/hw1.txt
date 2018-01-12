@@ -138,9 +138,20 @@ ANSWER:
 
 2.For what input values would funcB fail to terminate? Why will funcB always terminate for other input values?
 
-ANSWER: funcB will fail to terminate if the min value given is larger than the max value (max > min), e.g. funcB(a, 6, 1)... as the int mid assigned will never be larger than the min and never be smaller than the max. This will lead to a perpetual gap between the min and max value such that the if statement will never get executed and base case is never called, hence, program will go on forever and not terminate. Another case is when 
+ANSWER: 
+
+-> funcB will fail to terminate if the min value given is larger than the max value (max > min), e.g. funcB(a, 6, 1)... as the int mid assigned will never be larger than the min and never be smaller than the max. 
+-> This will lead to a perpetual gap between the min and max value such that the if statement will never get executed and base case is never called, hence, program will go on forever and not terminate, causing a stack overflow due to the infinite new stack frames that cannot be resolved and eventually result in a segmentation fault. 
+-> funcB should terminate for all other input values assuming that the max given is indeed larger than min and both of their sizes are smaller than the size of the array allocated when address a is entered as a parameter, or else, this will cause funcB to randomly access memory out of what was previously allocated, resulting in random values to be outputted.
 
 3.What gets output when you call funcB(a, min, max) and why?
+
+ANSWER:
+
+-> a[min] ... a[max] is outputted, each separated by a new line character.
+-> The recursive funcB function has a base case of when the min == max.
+-> The recursive case splits the job via finding the int mid, getting the first funcB to receive parameters in the lower half of the indexes required while the seconf funcB receives parameters in the upper half of the indexes required.
+-> This way, all the values inside the array from index min to index max are outputted.
 
 void funcA (int *a, int size) {
     funcB(a, 0, size-1);
