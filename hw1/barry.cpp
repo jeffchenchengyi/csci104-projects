@@ -19,12 +19,28 @@ bool increasing(int a)
 
 		//make your changes only below this line.  You may not use any loops.
 
-		if (prev <= last) return true;
-
-		return false;
+		//Base Case: When we reached the most significant digit
+        if((a / 10) < 10) {
+		    if (prev <= last) {
+		        return true;
+		    } else {
+		        return false;
+		    }
+        } 
+        //Recursive Case: When we are not yet at the most siginificant digit
+        else {
+		    if (prev <= last) {
+		        return increasing(a / 10);
+		    } else {
+		        return false;
+		    }
+        }
+	} 
+	else if(a == 0) {
+	    return true;
+	} else {
+	    return false;
 	}
-
-	return false;
 }
 
 //do not change the main function.
