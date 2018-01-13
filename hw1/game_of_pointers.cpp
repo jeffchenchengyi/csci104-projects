@@ -129,9 +129,9 @@ int main(int argc, char* argv[])
             protectors[i][j] = stark;
             protectors[i][j]->power = ((i * 10) + ((j + 1) * 10));
             if(i % 2) {
-                protectors[i][j]->weapon = "axe";
-            } else {
                 protectors[i][j]->weapon = "sword";
+            } else {
+                protectors[i][j]->weapon = "axe";
             }
         }
     }
@@ -150,9 +150,9 @@ int main(int argc, char* argv[])
             invaders[j][i] = lannister;
             invaders[j][i]->power = ((j * 10) + ((i + 1) * 10));
             if(i % 2) {
-                invaders[j][i]->weapon = "sword";
-            } else {
                 invaders[j][i]->weapon = "axe";
+            } else {
+                invaders[j][i]->weapon = "sword";
             }
         }
     }
