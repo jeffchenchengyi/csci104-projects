@@ -9,7 +9,7 @@ struct Warrior {
     string weapon;
     int power;
 };
-/*
+
 //Feel free to modify the parameters if you need other values
 bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int rows, int columns, int &reserves, ofstream &output){
     //returns true if the invaders breach the walls.
@@ -17,13 +17,61 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int 
     //If i is out of bounds (there is no row i of invaders nor column i of protectors), then nothing happens, and you move on to the next skirmish.
     if(skirmish_row <= columns) {
         for(int invaderColIndex = 0; invaderColIndex < rows; invaderColIndex++) {
-            cout << protectors[invaderColIndex][skirmish_row] << endl;
+            //In any given duel, if there is no invader at that location, then nothing happens.
+            if(invaders[skirmish_row][invaderColIndex]) {
+                //In any given duel, if exactly one of the two warriors has an axe, that warrior wins.
+                //Scenario 1: Protector wins!
+                if((protectors[invaderColIndex][skirmish_row]->weapon == "axe") && (invaders[skirmish_row][invaderColIndex]->weapon == "sword")) {
+                    cout << "S1: Invader killed" << endl;
+                    cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
+                    cout << protectors[invaderColIndex][skirmish_row]->power << endl;
+                    cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
+                    cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                }  
+                //Scenario 2: Invader wins!
+                else if((protectors[invaderColIndex][skirmish_row]->weapon == "sword") && (invaders[skirmish_row][invaderColIndex]->weapon == "axe")) {
+                    cout << "S2: Protector killed" << endl;
+                    cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
+                    cout << protectors[invaderColIndex][skirmish_row]->power << endl;
+                    cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
+                    cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                } 
+                //Scenario 3: Protector weapon == Invader weapon
+                else {
+                    //Scenario 3a: Protector power > Invader power
+                    if(protectors[invaderColIndex][skirmish_row]->power > invaders[skirmish_row][invaderColIndex]->power) {
+                        cout << "S3a: Invader killed" << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                    } 
+                    //Scenario 3b: Protector power < Invader power
+                    else if(protectors[invaderColIndex][skirmish_row]->power < invaders[skirmish_row][invaderColIndex]->power) {
+                        cout << "S3b: Protector killed" << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                    } 
+                    //Scenario 3c: Protector power == Invader power
+                    else {
+                        cout << "S3c: Duel ends in draw" << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
+                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
+                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                    }
+                } 
+            } else {
+                cout << "No assault" << endl;
+            }
         }
     } else {
         return false;
     }
     return false;
-}*/
+}
 
 int main(int argc, char* argv[])
 {
@@ -77,12 +125,14 @@ int main(int argc, char* argv[])
     //Giving the stark protectors their power
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            protectors[i][j]->power = (i * 10 + (j + 1) * 10);/*
-            if(i % 2 == 0) {
+            Warrior *stark = new Warrior;
+            protectors[i][j] = stark;
+            protectors[i][j]->power = ((i * 10) + ((j + 1) * 10));
+            if(i % 2) {
                 protectors[i][j]->weapon = "axe";
             } else {
                 protectors[i][j]->weapon = "sword";
-            }*/
+            }
         }
     }
 
@@ -95,16 +145,18 @@ int main(int argc, char* argv[])
 
     //Giving the lannister invaders their power
     for(int j = 0; j < cols; j++) {
-        for(int i = 0; i < rows; i++) {/*
-            invaders[j][i]->power = (i * 10 + (j + 1) * 10);
-            if(i % 2 != 0) {
-                invaders[j][i]->weapon = "axe";
-            } else {
+        for(int i = 0; i < rows; i++) {
+            Warrior *lannister = new Warrior;
+            invaders[j][i] = lannister;
+            invaders[j][i]->power = ((j * 10) + ((i + 1) * 10));
+            if(i % 2) {
                 invaders[j][i]->weapon = "sword";
-            }*/
+            } else {
+                invaders[j][i]->weapon = "axe";
+            }
         }
     }
-    /*
+    
     for (int i=1; i <= skirmishes; i++){
         //row of invaders and column of protectors that fights in skirmish
         int skirmish_row;
@@ -114,12 +166,17 @@ int main(int argc, char* argv[])
         
         //In general, it is bad style to throw everything into your main function
         bool end = skirmish(protectors, invaders, skirmish_row, rows, cols, reserve, output);
-        if(end) cout << "yas" << endl;
+        if(end){}
     }
-*/
+
     //output the winner and deallocate your memory.
     //Deallocating memory for each row of an array of protector's Warrior*
     for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            //Deleting each of the of the stark protectors (Warrior*) at row i, col j
+            delete protectors[i][j];
+        }
+        //Deleting the array of stark protector pointers (Warrior**) that point to each protector
         delete [] protectors[i];
     }
 
@@ -128,6 +185,11 @@ int main(int argc, char* argv[])
 
     //Deallocating memory for each row of an array of invader's Warrior*
     for(int j = 0; j < cols; j++) {
+        for(int i = 0; i < cols; i++) {
+            //Deleting each of the of the lannister invaders (Warrior*) at row j, col i
+            delete invaders[j][i];
+        }
+        //Deleting the array of lannister invader pointers (Warrior**) that point to each invader
         delete [] invaders[j];
     }
 
