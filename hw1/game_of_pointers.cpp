@@ -10,6 +10,8 @@ struct Warrior {
     int power;
 };
 
+/*----------------------------SKIRMISH BATTLE BEGINS----------------------------*/
+
 //Feel free to modify the parameters if you need other values
 bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int rows, int columns, int &reserves, ofstream &output){
     //returns true if the invaders breach the walls.
@@ -18,53 +20,108 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int 
     if(skirmish_row <= columns) {
         for(int invaderColIndex = 0; invaderColIndex < rows; invaderColIndex++) {
             //In any given duel, if there is no invader at that location, then nothing happens.
-            if(invaders[skirmish_row][invaderColIndex]) {
+            //Invaders not present
+            if((protectors[invaderColIndex][skirmish_row]->power >= 10) && (invaders[skirmish_row][invaderColIndex]->power < 10)) {
+                output << "No assault" << endl;
+                return false;
+            } 
+            //Invaders breached wall
+            else if((protectors[invaderColIndex][skirmish_row]->power < 10) && (invaders[skirmish_row][invaderColIndex]->power >= 10)) {
+                return true;
+            }else {
                 //In any given duel, if exactly one of the two warriors has an axe, that warrior wins.
-                //Scenario 1: Protector wins!
+                //Scenario 1: Protector wins! Invader position becomes empty
                 if((protectors[invaderColIndex][skirmish_row]->weapon == "axe") && (invaders[skirmish_row][invaderColIndex]->weapon == "sword")) {
-                    cout << "S1: Invader killed" << endl;
-                    cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
-                    cout << protectors[invaderColIndex][skirmish_row]->power << endl;
-                    cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
-                    cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                    //Set their power and weapon to 0 and nothing respectively to simulate an open position/empty
+                    invaders[skirmish_row][invaderColIndex]->power = 0;
+                    invaders[skirmish_row][invaderColIndex]->weapon = "";
+
+                    output << "Invader killed" << endl;
                 }  
-                //Scenario 2: Invader wins!
+                //Scenario 2: Invader wins! Protector loses duel, will check if protector will defect
                 else if((protectors[invaderColIndex][skirmish_row]->weapon == "sword") && (invaders[skirmish_row][invaderColIndex]->weapon == "axe")) {
-                    cout << "S2: Protector killed" << endl;
-                    cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
-                    cout << protectors[invaderColIndex][skirmish_row]->power << endl;
-                    cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
-                    cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                    //Checking for any open positions in the invader's army
+                    bool defected = false;
+                    for(int x = 0; x < columns; x++) {
+                        for(int y = 0; y < rows; y++) {
+                            if(invaders[x][y]->power < 10) {
+                                //Current protector defects to invader position
+                                invaders[x][y]->power = protectors[invaderColIndex][skirmish_row]->power;
+                                invaders[x][y]->weapon = protectors[invaderColIndex][skirmish_row]->weapon;
+
+                                //Check if there are any reserve protectors to fill the open position
+                                if(reserves > 0) {
+                                    protectors[invaderColIndex][skirmish_row]->power = 100;
+                                    protectors[invaderColIndex][skirmish_row]->weapon = "axe";
+                                    reserves--;
+                                } else {
+                                    //Current protector position is now open, undefended
+                                    protectors[invaderColIndex][skirmish_row]->power = 0;
+                                    protectors[invaderColIndex][skirmish_row]->weapon = "";
+                                }
+
+                                defected = true;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if(defected) {
+                        output << "Protector defected" << endl;
+                    } else {
+                        output << "Protector killed" << endl;
+                    }
                 } 
                 //Scenario 3: Protector weapon == Invader weapon
                 else {
-                    //Scenario 3a: Protector power > Invader power
+                    //Scenario 3a: Protector power > Invader power Invader position becomes empty
                     if(protectors[invaderColIndex][skirmish_row]->power > invaders[skirmish_row][invaderColIndex]->power) {
-                        cout << "S3a: Invader killed" << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                        output << "Invader killed" << endl;
+                        //Set their power and weapon to 0 and nothing respectively to simulate an open position/empty
+                        invaders[skirmish_row][invaderColIndex]->power = 0;
+                        invaders[skirmish_row][invaderColIndex]->weapon = "";
                     } 
-                    //Scenario 3b: Protector power < Invader power
+                    //Scenario 3b: Protector power < Invader power Protector loses duel, will check if protector will defect
                     else if(protectors[invaderColIndex][skirmish_row]->power < invaders[skirmish_row][invaderColIndex]->power) {
-                        cout << "S3b: Protector killed" << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                        //Checking for any open positions in the invader's army
+                        bool defected = false;
+                        for(int x = 0; x < columns; x++) {
+                            for(int y = 0; y < rows; y++) {
+                                if(invaders[x][y]->power < 10) {
+                                    //Current protector defects to invader position
+                                    invaders[x][y]->power = protectors[invaderColIndex][skirmish_row]->power;
+                                    invaders[x][y]->weapon = protectors[invaderColIndex][skirmish_row]->weapon;
+
+                                    //Check if there are any reserve protectors to fill the open position
+                                    if(reserves > 0) {
+                                        protectors[invaderColIndex][skirmish_row]->power = 100;
+                                        protectors[invaderColIndex][skirmish_row]->weapon = "axe";
+                                        reserves--;
+                                    } else {
+                                        //Current protector position is now open, undefended
+                                        protectors[invaderColIndex][skirmish_row]->power = 0;
+                                        protectors[invaderColIndex][skirmish_row]->weapon = "";
+                                    }
+                                    
+                                    defected = true;
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(defected) {
+                            output << "Protector defected" << endl;
+                        } else {
+                            output << "Protector killed" << endl;
+                        }
                     } 
                     //Scenario 3c: Protector power == Invader power
                     else {
-                        cout << "S3c: Duel ends in draw" << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->weapon << endl;
-                        cout << protectors[invaderColIndex][skirmish_row]->power << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->weapon << endl;
-                        cout << invaders[skirmish_row][invaderColIndex]->power << endl;
+                        output << "Duel ends in draw" << endl;
                     }
                 } 
-            } else {
-                cout << "No assault" << endl;
             }
         }
     } else {
@@ -73,8 +130,12 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int 
     return false;
 }
 
+/*----------------------------SKIRMISH BATTLE ENDS----------------------------*/
+
 int main(int argc, char* argv[])
 {
+/*----------------------------START OF SETUP----------------------------*/
+
     if (argc < 3) {
        cerr << "Please provide an input and output file" << endl;
        return -1;
@@ -95,6 +156,13 @@ int main(int argc, char* argv[])
     //number of skirmishes
     int skirmishes;
 
+    //if warriors or invaders won
+    bool end;
+
+/*----------------------------END OF SETUP----------------------------*/
+
+/*----------------------------START OF INITIALISATION----------------------------*/
+
     //read the input file and initialize the values here.
 
     //If the input file given could not be found or could not be open
@@ -110,6 +178,12 @@ int main(int argc, char* argv[])
     if(input.fail()) {
         cout << "rows, cols, reserve, skirmishes values are not present." << endl;
     }
+
+    //If the output file given could not be found or could not be open
+    if(output.fail()) {
+        cout << "Output file could not be open." << endl;
+        return 1;
+    }
     
     Warrior ***protectors = NULL;
     Warrior ***invaders = NULL;
@@ -122,7 +196,7 @@ int main(int argc, char* argv[])
         protectors[n] = new Warrior*[cols];
     }
 
-    //Giving the stark protectors their power
+    //Giving the stark protectors their power, lowest possible is 10
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
             Warrior *stark = new Warrior;
@@ -143,13 +217,13 @@ int main(int argc, char* argv[])
         invaders[m] = new Warrior*[rows];
     }
 
-    //Giving the lannister invaders their power
+    //Giving the lannister invaders their power, lowest possible is 10
     for(int j = 0; j < cols; j++) {
         for(int i = 0; i < rows; i++) {
             Warrior *lannister = new Warrior;
             invaders[j][i] = lannister;
             invaders[j][i]->power = ((j * 10) + ((i + 1) * 10));
-            if(i % 2) {
+            if(j % 2) {
                 invaders[j][i]->weapon = "axe";
             } else {
                 invaders[j][i]->weapon = "sword";
@@ -157,6 +231,10 @@ int main(int argc, char* argv[])
         }
     }
     
+/*----------------------------END OF INITIALISATION----------------------------*/
+
+/*----------------------------START OF SKIRMISH BATTLE----------------------------*/
+
     for (int i=1; i <= skirmishes; i++){
         //row of invaders and column of protectors that fights in skirmish
         int skirmish_row;
@@ -165,11 +243,20 @@ int main(int argc, char* argv[])
         input >> skirmish_row;
         
         //In general, it is bad style to throw everything into your main function
-        bool end = skirmish(protectors, invaders, skirmish_row, rows, cols, reserve, output);
-        if(end){}
+        end = skirmish(protectors, invaders, skirmish_row, rows, cols, reserve, output);
     }
 
+/*----------------------------END OF SKIRMISH BATTLE----------------------------*/
+
+/*----------------------------START OF DEALLOCATION OF HEAP MEMORY----------------------------*/
+
     //output the winner and deallocate your memory.
+    if(end){
+        output << "Winner: invaders";
+    } else {
+        output << "Winner: protectors";
+    }
+
     //Deallocating memory for each row of an array of protector's Warrior*
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
@@ -202,3 +289,5 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+/*----------------------------END OF DEALLOCATION OF HEAP MEMORY----------------------------*/
