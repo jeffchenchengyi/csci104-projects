@@ -20,25 +20,19 @@ bool increasing(int a)
 		//make your changes only below this line.  You may not use any loops.
 
 		//Base Case: When we reached the most significant digit
-        if((a / 10) < 10) {
-		    if (prev <= last) {
-		        return true;
-		    } else {
-		        return false;
-		    }
-        } 
-        //Recursive Case: When we are not yet at the most siginificant digit
-        else {
-		    if (prev <= last) {
-		        return increasing(a / 10);
-		    } else {
-		        return false;
-		    }
-        }
+		if (prev <= last) {
+		    return true;
+		} else {
+		    return false;
+		}
 	} 
+	//If a == 0, it can only mean the original input is 0 or that we have reached the most significant digit, e.g. if a == 6, we received 6 / 10, truncate after decimal point, hence 0, so we will return true so that the function can work for a > 0
 	else if(a == 0) {
+		//Hence, !increasing(a/10) == false, and the function can continue instead of returning false
 	    return true;
-	} else {
+	} 
+	//just return false for negative inputs, Prof Aaron Cote said we do not need to handle them, I just left it in just in case
+	else {
 	    return false;
 	}
 }
