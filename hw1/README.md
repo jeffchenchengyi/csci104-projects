@@ -1,12 +1,12 @@
-##Instructions on how to execute hw1 programs:
+## Instructions on how to execute hw1 programs:
 
-#Problems 1 - 4:
+# Problems 1 - 4:
 
 > Included in hw1.txt, questions are also included.
 
 
 
-#Problem 5:
+# Problem 5:
 
 > Compile: **`g++ -g -Wall -std=c++11 barry.cpp barry`**, which compiles executable in **`barry`**
 
@@ -16,7 +16,7 @@
 
 
 
-#Problem 6:
+# Problem 6:
 
 > Compile: **`g++ -g -Wall -std=c++11 hw1q6.cpp hw1q6`**, which compiles executable in **`hw1q6`**
 
@@ -26,7 +26,7 @@
 
 
 
-#Problem 7:
+# Problem 7:
 
 > Compile: **`g++ -g -Wall -std=c++11 game_of_pointers.cpp game_of_pointers`**, which compiles executable in **`game_of_pointers`**.
 
