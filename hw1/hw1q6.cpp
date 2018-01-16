@@ -45,5 +45,8 @@ int main(int argc, char* argv[])
     //Primary function
     reverseSentence(input, &numWords);
 
+    //Couting one newline character at the end of everything
+    cout << endl;
+
     return 0;
 }
