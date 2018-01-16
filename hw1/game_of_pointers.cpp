@@ -176,6 +176,7 @@ int main(int argc, char* argv[])
     //If the first four values cannot be read, or not present
     if(input.fail()) {
         cout << "rows, cols, reserve, skirmishes values are not present." << endl;
+        return 1;
     }
 
     //If the output file given could not be found or could not be open
