@@ -52,15 +52,20 @@ which compiles executable in **`game_of_pointers`**.
 ### Memory leak check: 
 > **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all 
 ./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
-to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed.
+to check if there are any memory leaks, should be only 
+72,704 bytes in 1 blocks suppressed.
 
 ### Run: 
 > **`./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
 where **`game_of_pointers_input.txt`** is the input file that has at least 4 lines, 
-where each line has exactly one non-negative integer. The first integer indicates n, 
-the number of rows of protectors and also the number of columns of invaders. 
-The second integer indicates m, the number of columns of protectors and also the number of rows of invaders. 
+where each line has exactly one non-negative integer. 
+The first integer indicates n, the number of rows of protectors and 
+also the number of columns of invaders. 
+The second integer indicates m, the number of columns of protectors and 
+also the number of rows of invaders. 
 The third integer indicates how many protectors there are in reserve. 
 The fourth integer indicates x, the number of skirmishes. 
-There will be exactly x more lines (after the first 4) in the input file, indicating who fights in each duel (more details below). 
-**`game_of_pointers_output.txt`** will contain the results of the battle and the winner at the last line after the program is run.
+There will be exactly x more lines (after the first 4) in the input file, 
+indicating who fights in each duel (more details below). 
+**`game_of_pointers_output.txt`** will contain the results of the battle and 
+the winner at the last line after the program is run.

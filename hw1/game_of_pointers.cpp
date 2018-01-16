@@ -268,7 +268,8 @@ int main(int argc, char* argv[])
         input >> skirmish_row;
         
         //In general, it is bad style to throw everything into your main function
-        end = skirmish(protectors, invaders, skirmish_row, rows, cols, reserve, output);
+        end = skirmish(protectors, invaders, skirmish_row, 
+        						rows, cols, reserve, output);
 
         //If end == true, means invaders have breached the wall and 
         //invaders win the whole battle, hence break out of the for loop 
@@ -291,11 +292,12 @@ int main(int argc, char* argv[])
     //Deallocating memory for each row of an array of protector's Warrior*
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            //Deleting each of the of the stark protectors (Warrior*) at row i, col j
+            //Deleting each of the of the stark protectors (Warrior*) 
+            //at row i, col j
             delete protectors[i][j];
         }
-        //Deleting the array of stark protector pointers (Warrior**) that point 
-        //to each protector
+        //Deleting the array of stark protector pointers (Warrior**) 
+        //that point to each protector
         delete [] protectors[i];
     }
 
@@ -305,7 +307,8 @@ int main(int argc, char* argv[])
     //Deallocating memory for each row of an array of invader's Warrior*
     for(int j = 0; j < cols; j++) {
         for(int i = 0; i < rows; i++) {
-            //Deleting each of the of the lannister invaders (Warrior*) at row j, col i
+            //Deleting each of the of the lannister invaders (Warrior*) 
+            //at row j, col i
             delete invaders[j][i];
         }
         //Deleting the array of lannister invader pointers (Warrior**) that 
