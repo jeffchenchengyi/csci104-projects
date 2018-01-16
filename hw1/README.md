@@ -1,9 +1,11 @@
 Problems 1 - 4:
+
 Included in hw1.txt, questions are also included.
 
 
 
 Problem 5:
+
 Compile: "g++ -g -Wall -std=c++11 barry.cpp barry", which compiles executable in "barry".
 
 Memory leak check: "valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./barry", to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed.
@@ -13,6 +15,7 @@ Run: "./barry XXXXXXXXXX", where XXXXXXXXXX is the max. 10 digit number used to 
 
 
 Problem 6:
+
 Compile: "g++ -g -Wall -std=c++11 hw1q6.cpp hw1q6", which compiles executable in "hw1q6".
 
 Memory leak check: "valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./hw1q6 hw1q6_input.txt", to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed.
@@ -22,6 +25,7 @@ Run: "./hw1q6 hw1q6_input.txt", where "hw1q6input.txt" is the input file used. P
 
 
 Problem 7:
+
 Compile: "g++ -g -Wall -std=c++11 game_of_pointers.cpp game_of_pointers", which compiles executable in "game_of_pointers".
 
 Memory leak check: "valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt", to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed.
