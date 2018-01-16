@@ -282,7 +282,7 @@ int main(int argc, char* argv[])
 
 /*----------------------------END OF SKIRMISH BATTLE----------------------------*/
 
-/*----------------------------START OF DEALLOCATION OF HEAP MEMORY----------------------------*/
+/*------------------START OF DEALLOCATION OF HEAP MEMORY------------------*/
 
     //output the winner and deallocate your memory.
     if(!end) {
@@ -326,4 +326,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-/*----------------------------END OF DEALLOCATION OF HEAP MEMORY----------------------------*/
+/*------------------END OF DEALLOCATION OF HEAP MEMORY------------------*/
