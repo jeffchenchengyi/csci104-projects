@@ -12,7 +12,8 @@ Which of the following are acceptable behaviors in solving homeworks/projects?
 2.Looking up or asking for sample solutions online.
 3.Copying code from my classmates, and then editing it significantly.
 4.Asking the course staff for help.-[CORRECT]
-5.Sitting next to my classmate and coding together as a team or with significant conversation about our approach.
+5.Sitting next to my classmate and coding together as a team 
+or with significant conversation about our approach.
 6.Sharing my code with a classmate, if he/she promises not to copy it, 
 but to just read over it and learn from it.
 
@@ -39,7 +40,8 @@ Part(d):
 What is the late submission policy?
 
 1.Each assignment can be submitted late for 50% credit.
-2.Each student has 3 late days of which only one can be used per HW.-[CORRECT]
+2.Each student has 3 late days of which only one can be used 
+per HW.-[CORRECT]
 3.Students need to get approval before submitting an assignment late.
 4.One hour late submission is acceptable for each assignment.
 5.There is no late policy.
@@ -53,7 +55,8 @@ your tests.-[CORRECT]
 3.Use the long SHA in your submission (20+ digits/letters).-[CORRECT]
 4.Check the output from the submission system when you submit your code: 
 this may alert you to missing files or compilation errors.-[CORRECT]
-5.Resubmit your code if you find additional problems before the deadline.-[CORRECT]
+5.Resubmit your code if you find additional problems before 
+the deadline.-[CORRECT]
 
 
 
@@ -64,7 +67,8 @@ Then answer the following questions:
 Continue your answers to this question in the file named hw1.txt
 
 Part (a):
-Which of the following git user interfaces are accepted and supported in this course?
+Which of the following git user interfaces are accepted and 
+supported in this course?
 
 1.Git Bash (Windows)
 2.GitHub Desktop Client
@@ -82,7 +86,8 @@ When cloning a Git repo, which of the following should you avoid?
 Part (c):
 Provide the appropriate git command to perform the following operations:
 
-1.Stage an untracked file to be committed. The (hypothetical) file is called 'hw1q2b.cpp'.
+1.Stage an untracked file to be committed. The (hypothetical) file 
+is called 'hw1q2b.cpp'.
 
 ANSWER: git add hw1q2b.cpp
 
@@ -91,7 +96,8 @@ ANSWER: git add hw1q2b.cpp
 ANSWER: git log -p -3
 
 Part (d)
-Let's say you staged three files to be committed. Then, you ran the following command:
+Let's say you staged three files to be committed. Then, you ran the following 
+command:
 
 git commit
 
@@ -111,7 +117,9 @@ ANSWER: git will prompt you for a commit message using the editor like such:
 #	new file:   newfile3
 #
 
-and after typing the message, saving, and closing the editor, the command prompt will send a message stating how many files are added, any changes, insertions, and deletions. 
+and after typing the message, saving, and closing the editor, the 
+command prompt will send a message stating how many files are 
+added, any changes, insertions, and deletions. 
 
 Part (e)
 What is the full command to re-clone your private CSCI104 repo to your VM? 
@@ -128,8 +136,11 @@ Consider the following C++ code, and answer the following questions.
 
 1.What gets output when you call funcA([1,2,3,4,5], 5)? 
 More importantly, why does this get output? 
-All of the points for this problem will be assigned based on your explanation (since we have no doubt that you can run this program for a fixed input and copy down the output). 
-We strongly recommend solving this by hand/calculator, and only using a compiler to verify your answer.
+All of the points for this problem will be assigned based on your explanation 
+(since we have no doubt that you can run this program for a fixed input 
+and copy down the output). 
+We strongly recommend solving this by hand/calculator, 
+and only using a compiler to verify your answer.
 
 ANSWER: 
 
@@ -139,23 +150,52 @@ ANSWER:
 4
 5
 
--> This is because when funcA([1,2,3,4,5], 5) is called, funcB(a, 0, 4) is then called. 
+-> This is because when funcA([1,2,3,4,5], 5) is called, funcB(a, 0, 4) 
+is then called. 
 -> Inside funcB(a, 0, 4), because 0 != 4, the else statement is executed. 
--> int mid = (0 + 4) / 2 = 2, funcB(a, 0, 2) and subsequently, funcB(a, 3, 4) is called.
--> A new stack frame is pushed onto our call stack and funcB(a, 0, 2) needs to be first executed. By recursion, funcB(a, 0, 2) invokes another else statement as 0 != 2, int mid = 1 is assigned and funcB(a, 0, 1) and subsequently funcB(a, 2, 2) is executed. 
--> funcB(a, 0, 1) is first executed, hence, another new stack frame onto the original call stack and invokes the else statement again because 0 != 1, hence, assigning int mid = 0, funcB(a, 0, 0) and funcB(a, 1, 1). 
--> funcB(a, 0, 0) is executed first, hence, another new stack frame on the call stack and if statement is executed as 0 == 0, outputting a[0], which is the first element of the array, which is 1. 
--> When funcB(a, 0, 0) ends, it is popped of the call stack and funcB(a, 1, 1) is executed, popped off, then funcB(a, 2, 2) is executed, then popped off, then funcB(a, 3, 3) is executed, then popped off, and finally funcB(a, 4, 4) is executed, popped off and the program ends with the outputs as shown above.
+-> int mid = (0 + 4) / 2 = 2, funcB(a, 0, 2) and subsequently, 
+funcB(a, 3, 4) is called.
+-> A new stack frame is pushed onto our call stack and funcB(a, 0, 2) 
+needs to be first executed. 
+By recursion, funcB(a, 0, 2) invokes another else statement as 0 != 2, 
+int mid = 1 is assigned and funcB(a, 0, 1) and subsequently funcB(a, 2, 2) 
+is executed. 
+-> funcB(a, 0, 1) is first executed, hence, another new stack frame 
+onto the original call stack and invokes the else statement again 
+because 0 != 1, hence, assigning int mid = 0, funcB(a, 0, 0) and 
+funcB(a, 1, 1). 
+-> funcB(a, 0, 0) is executed first, hence, another new stack frame 
+on the call stack and if statement is executed as 0 == 0, outputting a[0],
+which is the first element of the 
+array, which is 1. 
+-> When funcB(a, 0, 0) ends, it is popped of the call stack and 
+funcB(a, 1, 1) is executed, popped off, then funcB(a, 2, 2) is 
+executed, then popped off, then funcB(a, 3, 3) is executed, then 
+popped off, and finally funcB(a, 4, 4) is executed, popped off 
+and the program ends with the outputs as shown above.
 
-2.For what input values would funcB fail to terminate? Why will funcB always terminate for other input values?
+2.For what input values would funcB fail to terminate? 
+Why will funcB always terminate for other input values?
 
 ANSWER: 
 
--> funcB will fail to terminate if the min value given is larger than the max value (max > min), e.g. funcB(a, 6, 1)... as the int mid assigned will never be larger than the min and never be smaller than the max. 
--> This will lead to a perpetual gap between the min and max value such that the if statement will never get executed and base case is never called. 
--> Hence, program will go on forever and not terminate, causing a stack overflow due to the infinite new stack frames that cannot be resolved and eventually result in a segmentation fault. 
--> funcB should terminate for all other input values assuming that the max given is indeed larger than min and both of their sizes are smaller than the size of the array allocated when address a is entered as a parameter. 
--> Or else, this will cause funcB to randomly access memory out of what was previously allocated, resulting in random values to be outputted.
+-> funcB will fail to terminate if the min value given is larger 
+than the max value (max > min), e.g. funcB(a, 6, 1)... as the 
+int mid assigned will never be larger than the min and never be 
+smaller than the max. 
+-> This will lead to a perpetual gap between the min and max value 
+such that the if statement will never get executed and base case 
+is never called. 
+-> Hence, program will go on forever and not terminate, causing a 
+stack overflow due to the infinite new stack frames that cannot be 
+resolved and eventually result in a segmentation fault. 
+-> funcB should terminate for all other input values assuming that 
+the max given is indeed larger than min and both of their sizes 
+are smaller than the size of the array allocated when address a 
+is entered as a parameter. 
+-> Or else, this will cause funcB to randomly access memory out 
+of what was previously allocated, resulting in random values to 
+be outputted.
 
 3.What gets output when you call funcB(a, min, max) and why?
 
@@ -164,8 +204,11 @@ ANSWER:
 -> a[min] ... a[max] is outputted, each separated by a new line character.
 -> The recursive funcB function has a base case of when the min == max.
 -> The recursive case splits the job via finding the int mid.
--> It gets the first funcB to receive parameters in the lower half of the indexes required while the second funcB receives parameters in the upper half of the indexes required.
--> This way, all the values inside the array from index min to index max are outputted.
+-> It gets the first funcB to receive parameters in the lower half of the 
+indexes required while the second funcB receives parameters in the upper 
+half of the indexes required.
+-> This way, all the values inside the array from index min to index max 
+are outputted.
 
 void funcA (int *a, int size) {
     funcB(a, 0, size-1);

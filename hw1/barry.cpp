@@ -17,7 +17,8 @@ bool increasing(int a)
 		//the second least significant digit, 0 if a < 10
 		int prev = (a / 10) % 10;
 
-		//make your changes only below this line.  You may not use any loops.
+		//make your changes only below this line.  
+		//You may not use any loops.
 
 		//Base Case: When we reached the most significant digit
 		if (prev <= last) {
@@ -36,7 +37,8 @@ bool increasing(int a)
 	    return true;
 	} 
 	//just return false for negative inputs, 
-	//Prof Aaron Cote said we do not need to handle them, I just left it in just in case
+	//Prof Aaron Cote said we do not need to handle them, 
+	//I just left it in just in case
 	else {
 	    return false;
 	}

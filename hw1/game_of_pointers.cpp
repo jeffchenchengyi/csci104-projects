@@ -28,8 +28,9 @@ void check_defected(Warrior*** invaders, Warrior* curr_protector, int rows,
                 invaders[x][y]->power = curr_protector->power;
                 invaders[x][y]->weapon = curr_protector->weapon;
 
-                //Check if there are any reserve protectors to fill the open position, 
-                //set power to reserve warrior power 100, reserve warrior weapon axe
+                //Check if there are any reserve protectors to fill the 
+                //open position, set power to reserve warrior power 100, 
+                //reserve warrior weapon axe
                 if(reserves > 0) {
                     curr_protector->power = 100;
                     curr_protector->weapon = "axe";
@@ -54,8 +55,9 @@ void check_defected(Warrior*** invaders, Warrior* curr_protector, int rows,
     if(defected) {
         output << "Protector defected" << endl;
     } else {
-        //Check if there are any reserve protectors to fill the open position, 
-        //set power to reserve warrior power 100, reserve warrior weapon axe
+        //Check if there are any reserve protectors to fill the open 
+        //position, set power to reserve warrior power 100, reserve 
+        //warrior weapon axe
         if(reserves > 0) {
             curr_protector->power = 100;
             curr_protector->weapon = "axe";
@@ -73,7 +75,8 @@ void check_defected(Warrior*** invaders, Warrior* curr_protector, int rows,
 } 
 
 //To perform actions when invader is killed
-void invader_killed(Warrior*** invaders, Warrior* curr_invader, ofstream &output) {
+void invader_killed(Warrior*** invaders, Warrior* curr_invader, 
+											ofstream &output) {
     //Set their power and weapon to 0 and nothing respectively 
     //to simulate an open position/empty
     curr_invader->power = 0;
@@ -87,8 +90,9 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row,
     //returns true if the invaders breach the walls.
     bool breached_wall = false;
 
-    //If i is out of bounds (there is no row i of invaders nor column i of protectors), 
-    //then nothing happens, and you move on to the next skirmish.
+    //If i is out of bounds (there is no row i of invaders nor column i 
+    //of protectors), then nothing happens, and you move on to the next 
+	//skirmish.
     if(skirmish_row < columns) {
         for(int invaderColIndex = 0; invaderColIndex < rows; invaderColIndex++) {
             Warrior* curr_protector = protectors[invaderColIndex][skirmish_row];
@@ -120,7 +124,8 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row,
                 } 
                 //Scenario 3: Protector weapon == Invader weapon
                 else {
-                    //Scenario 3a: Protector power > Invader power Invader position becomes empty
+                    //Scenario 3a: Protector power > Invader power Invader position 
+                    //becomes empty
                     if(curr_protector->power > curr_invader->power) {
                         invader_killed(invaders, curr_invader, output);
                     } 
