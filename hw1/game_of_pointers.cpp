@@ -111,9 +111,10 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row,
             }
             //Protectors VS Invaders
             else {
-                //In any given duel, if exactly one of the two warriors has an axe, 
-                //that warrior wins.
-                //Scenario 1: Protector wins! Invader position becomes empty
+                //In any given duel, if exactly one of the two warriors 
+                //has an axe, that warrior wins.
+                //Scenario 1: Protector wins! Invader position 
+                //becomes empty
                 if((curr_protector->weapon == "axe") && 
                 		(curr_invader->weapon == "sword")) {
                     invader_killed(invaders, curr_invader, output);
@@ -127,13 +128,13 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row,
                 } 
                 //Scenario 3: Protector weapon == Invader weapon
                 else {
-                    //Scenario 3a: Protector power > Invader power Invader position 
-                    //becomes empty
+                    //Scenario 3a: Protector power > Invader power 
+                    //Invader position becomes empty
                     if(curr_protector->power > curr_invader->power) {
                         invader_killed(invaders, curr_invader, output);
                     } 
-                    //Scenario 3b: Protector power < Invader power Protector loses duel, 
-                    //will check if protector will defect
+                    //Scenario 3b: Protector power < Invader power 
+                    //Protector loses duel, will check if protector will defect
                     else if(curr_protector->power < curr_invader->power) {
                         check_defected(invaders, curr_protector, rows, columns, 
                         										reserves, output);

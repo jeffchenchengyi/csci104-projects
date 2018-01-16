@@ -31,7 +31,9 @@ the max. 10 digit number used to check if
 executable in **`hw1q6`**
 
 ### Memory leak check: 
-> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./hw1q6 hw1q6_input.txt`**, to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed
+> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all 
+./hw1q6 hw1q6_input.txt`**, to check if there are any memory leaks, 
+should be only 72,704 bytes in 1 blocks suppressed
 
 ### Run: 
 > **`./hw1q6 hw1q6_input.txt`**, where **`hw1q6input.txt`** is the input file used. 
@@ -48,11 +50,13 @@ indicates how many words there are inside the sentence to be reversed.
 which compiles executable in **`game_of_pointers`**.
 
 ### Memory leak check: 
-> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
+> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all 
+./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
 to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed.
 
 ### Run: 
-> **`./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, where **`game_of_pointers_input.txt`** is the input file that has at least 4 lines, 
+> **`./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
+where **`game_of_pointers_input.txt`** is the input file that has at least 4 lines, 
 where each line has exactly one non-negative integer. The first integer indicates n, 
 the number of rows of protectors and also the number of columns of invaders. 
 The second integer indicates m, the number of columns of protectors and also the number of rows of invaders. 
