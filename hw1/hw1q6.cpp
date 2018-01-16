@@ -13,7 +13,8 @@ void reverseSentence(ifstream &input, int *numWordsLeft) {
         input >> nextWord;
         cout << nextWord << " ";
     } 
-    //Recursive case: Having the cout after the call to itself ensures that the next word is outputted before the current word
+    //Recursive case: Having the cout after the call to itself 
+    //ensures that the next word is outputted before the current word
     else {
         input >> nextWord;
         (*numWordsLeft)--;

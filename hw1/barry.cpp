@@ -26,12 +26,17 @@ bool increasing(int a)
 		    return false;
 		}
 	} 
-	//If a == 0, it can only mean the original input is 0 or that we have reached the most significant digit, e.g. if a == 6, we received 6 / 10, truncate after decimal point, hence 0, so we will return true so that the function can work for a > 0
+	//If a == 0, it can only mean the original input is 0 
+	//Or that we have reached the most significant digit, 
+	//e.g. if a == 6, we received 6 / 10, truncate after decimal point
+	//hence 0, so we will return true so that the function can work for a > 0
 	else if(a == 0) {
-		//Hence, !increasing(a/10) == false, and the function can continue instead of returning false
+		//Hence, !increasing(a/10) == false, 
+		//and the function can continue instead of returning false
 	    return true;
 	} 
-	//just return false for negative inputs, Prof Aaron Cote said we do not need to handle them, I just left it in just in case
+	//just return false for negative inputs, 
+	//Prof Aaron Cote said we do not need to handle them, I just left it in just in case
 	else {
 	    return false;
 	}
