@@ -14,7 +14,7 @@ struct Warrior {
 
 //Feel free to modify the parameters if you need other values
 //To check if protector can defect or just get killed
-void check_defected(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int invaderColIndex, int rows, int columns, int &reserves, ofstream &output) {
+void check_defected(Warrior*** invaders, Warrior* curr_protector, int rows, int columns, int &reserves, ofstream &output) {
     bool defected = false;
 
     //Checking for any open positions in the invader's army
@@ -23,23 +23,22 @@ void check_defected(Warrior*** protectors, Warrior*** invaders, int skirmish_row
             //Any invader's power < 10 means the invader was killed previously, leaving position open
             if(invaders[x][y]->power < 10) {
                 //Current protector defects to invader position
-                invaders[x][y]->power = protectors[invaderColIndex][skirmish_row]->power;
-                invaders[x][y]->weapon = protectors[invaderColIndex][skirmish_row]->weapon;
+                invaders[x][y]->power = curr_protector->power;
+                invaders[x][y]->weapon = curr_protector->weapon;
 
                 //Check if there are any reserve protectors to fill the open position, set power to reserve warrior power 100, reserve warrior weapon axe
                 if(reserves > 0) {
-                    protectors[invaderColIndex][skirmish_row]->power = 100;
-                    protectors[invaderColIndex][skirmish_row]->weapon = "axe";
+                    curr_protector->power = 100;
+                    curr_protector->weapon = "axe";
                     reserves--;
                 } 
                 //Current protector position is now open, undefended, set power to 0 and weapon to nothing
                 else {
-                    protectors[invaderColIndex][skirmish_row]->power = 0;
-                    protectors[invaderColIndex][skirmish_row]->weapon = "";
+                    curr_protector->power = 0;
+                    curr_protector->weapon = "";
                 }
 
                 defected = true;
-
                 break;
             }
         }
@@ -51,18 +50,27 @@ void check_defected(Warrior*** protectors, Warrior*** invaders, int skirmish_row
     if(defected) {
         output << "Protector defected" << endl;
     } else {
-        //Current protector position is now open, undefended as Protector is killed
-        protectors[invaderColIndex][skirmish_row]->power = 0;
-        protectors[invaderColIndex][skirmish_row]->weapon = "";
+        //Check if there are any reserve protectors to fill the open position, set power to reserve warrior power 100, reserve warrior weapon axe
+        if(reserves > 0) {
+            curr_protector->power = 100;
+            curr_protector->weapon = "axe";
+            reserves--;
+        } 
+        //Current protector position is now open, undefended, set power to 0 and weapon to nothing
+        else {
+            curr_protector->power = 0;
+            curr_protector->weapon = "";
+        }
+        //Ultimately, protector is still killed
         output << "Protector killed" << endl;
     }
 } 
 
 //To perform actions when invader is killed
-void invader_killed(Warrior*** invaders, int skirmish_row, int invaderColIndex, ofstream &output) {
+void invader_killed(Warrior*** invaders, Warrior* curr_invader, ofstream &output) {
     //Set their power and weapon to 0 and nothing respectively to simulate an open position/empty
-    invaders[skirmish_row][invaderColIndex]->power = 0;
-    invaders[skirmish_row][invaderColIndex]->weapon = "";
+    curr_invader->power = 0;
+    curr_invader->weapon = "";
 
     output << "Invader killed" << endl;
 }
@@ -72,37 +80,41 @@ bool skirmish(Warrior*** protectors, Warrior*** invaders, int skirmish_row, int 
     bool breached_wall = false;
 
     //If i is out of bounds (there is no row i of invaders nor column i of protectors), then nothing happens, and you move on to the next skirmish.
-    if(skirmish_row <= columns) {
+    if(skirmish_row < columns) {
         for(int invaderColIndex = 0; invaderColIndex < rows; invaderColIndex++) {
+            Warrior* curr_protector = protectors[invaderColIndex][skirmish_row];
+            Warrior* curr_invader = invaders[skirmish_row][invaderColIndex];
+
             //In any given duel, if there is no invader at that location, then nothing happens.
             //Invaders not present
-            if((protectors[invaderColIndex][skirmish_row]->power >= 10) && (invaders[skirmish_row][invaderColIndex]->power < 10)) {
+            if((curr_protector->power >= 10) && (curr_invader->power < 10)) {
                 output << "No assault" << endl;
             } 
             //Invaders breached wall
-            else if((protectors[invaderColIndex][skirmish_row]->power < 10) && (invaders[skirmish_row][invaderColIndex]->power >= 10)) {
+            else if((curr_protector->power < 10) && (curr_invader->power >= 10)) {
                 breached_wall = true;
+                break;
             }
             //Protectors VS Invaders
             else {
                 //In any given duel, if exactly one of the two warriors has an axe, that warrior wins.
                 //Scenario 1: Protector wins! Invader position becomes empty
-                if((protectors[invaderColIndex][skirmish_row]->weapon == "axe") && (invaders[skirmish_row][invaderColIndex]->weapon == "sword")) {
-                    invader_killed(invaders, skirmish_row, invaderColIndex, output);
+                if((curr_protector->weapon == "axe") && (curr_invader->weapon == "sword")) {
+                    invader_killed(invaders, curr_invader, output);
                 }  
                 //Scenario 2: Invader wins! Protector loses duel, will check if protector will defect
-                else if((protectors[invaderColIndex][skirmish_row]->weapon == "sword") && (invaders[skirmish_row][invaderColIndex]->weapon == "axe")) {
-                    check_defected(protectors, invaders, skirmish_row, invaderColIndex, rows, columns, reserves, output);
+                else if((curr_protector->weapon == "sword") && (curr_invader->weapon == "axe")) {
+                    check_defected(invaders, curr_protector, rows, columns, reserves, output);
                 } 
                 //Scenario 3: Protector weapon == Invader weapon
                 else {
                     //Scenario 3a: Protector power > Invader power Invader position becomes empty
-                    if(protectors[invaderColIndex][skirmish_row]->power > invaders[skirmish_row][invaderColIndex]->power) {
-                        invader_killed(invaders, skirmish_row, invaderColIndex, output);
+                    if(curr_protector->power > curr_invader->power) {
+                        invader_killed(invaders, curr_invader, output);
                     } 
                     //Scenario 3b: Protector power < Invader power Protector loses duel, will check if protector will defect
-                    else if(protectors[invaderColIndex][skirmish_row]->power < invaders[skirmish_row][invaderColIndex]->power) {
-                        check_defected(protectors, invaders, skirmish_row, invaderColIndex, rows, columns, reserves, output);
+                    else if(curr_protector->power < curr_invader->power) {
+                        check_defected(invaders, curr_protector, rows, columns, reserves, output);
                     } 
                     //Scenario 3c: Protector power == Invader power
                     else {
@@ -132,19 +144,19 @@ int main(int argc, char* argv[])
     ofstream output(argv[2]);
 
     //number of rows of protectors, and columns of invaders
-    int rows;
+    int rows = 0;
 
     //number of columns of protectors, and rows of invaders
-    int cols;
+    int cols = 0;
 
     //number of reserve forces for protectors
-    int reserve;
+    int reserve = 0;
 
     //number of skirmishes
-    int skirmishes;
+    int skirmishes = 0;
 
     //if warriors or invaders won
-    bool end;
+    bool end = false;
 
 /*----------------------------END OF SETUP----------------------------*/
 
@@ -263,7 +275,7 @@ int main(int argc, char* argv[])
 
     //Deallocating memory for each row of an array of invader's Warrior*
     for(int j = 0; j < cols; j++) {
-        for(int i = 0; i < cols; i++) {
+        for(int i = 0; i < rows; i++) {
             //Deleting each of the of the lannister invaders (Warrior*) at row j, col i
             delete invaders[j][i];
         }
