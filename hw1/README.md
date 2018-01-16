@@ -9,7 +9,8 @@
 ## [Problem 5:](barry.cpp)
 
 ### Compile: 
-> **`g++ -g -Wall -std=c++11 barry.cpp -o barry`**, which compiles executable in **`barry`**
+> **`g++ -g -Wall -std=c++11 barry.cpp -o barry`**, 
+which compiles executable in **`barry`**
 
 ### Memory leak check: 
 > **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./barry`**, 
@@ -17,15 +18,17 @@ to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks
 suppressed.
 
 ### Run: 
-> **`./barry XXXXXXXXXX`**, where **`XXXXXXXXXX`** is the max. 10 digit number used to 
-check if **_`Increasing order`_** or **_`Not increasing order`_**. 
+> **`./barry XXXXXXXXXX`**, where **`XXXXXXXXXX`** is 
+the max. 10 digit number used to check if 
+**_`Increasing order`_** or **_`Not increasing order`_**. 
 
 
 
 ## [Problem 6:](hw1q6.cpp)
 
 ### Compile: 
-> **`g++ -g -Wall -std=c++11 hw1q6.cpp -o hw1q6`**, which compiles executable in **`hw1q6`**
+> **`g++ -g -Wall -std=c++11 hw1q6.cpp -o hw1q6`**, which compiles 
+executable in **`hw1q6`**
 
 ### Memory leak check: 
 > **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./hw1q6 hw1q6_input.txt`**, to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks suppressed
@@ -41,7 +44,8 @@ indicates how many words there are inside the sentence to be reversed.
 ## [Problem 7:](game_of_pointers.cpp)
 
 ### Compile: 
-> **`g++ -g -Wall -std=c++11 game_of_pointers.cpp -o game_of_pointers`**, which compiles executable in **`game_of_pointers`**.
+> **`g++ -g -Wall -std=c++11 game_of_pointers.cpp -o game_of_pointers`**, 
+which compiles executable in **`game_of_pointers`**.
 
 ### Memory leak check: 
 > **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./game_of_pointers game_of_pointers_input.txt game_of_pointers_output.txt`**, 
