@@ -72,7 +72,8 @@ supported in this course?
 
 1.Git Bash (Windows)
 2.GitHub Desktop Client
-3.Terminal (Mac or Linux) - [CORRECT, the Terminal is used inside the course VM to interct with github through git commands]
+3.Terminal (Mac or Linux) - [CORRECT, the Terminal is used inside 
+the course VM to interct with github through git commands]
 4.Eclipse eGit
 5.Tower Git Client
 
