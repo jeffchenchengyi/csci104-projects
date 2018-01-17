@@ -70,11 +70,9 @@ Part (a):
 Which of the following git user interfaces are accepted and 
 supported in this course?
 
-ANSWER: None!
-
 1.Git Bash (Windows)
 2.GitHub Desktop Client
-3.Terminal (Mac or Linux)
+3.Terminal (Mac or Linux) - [CORRECT, the Terminal is used inside the course VM to interct with github through git commands]
 4.Eclipse eGit
 5.Tower Git Client
 
@@ -83,7 +81,7 @@ When cloning a Git repo, which of the following should you avoid?
 
 1.Cloning into a folder that itself is a git repo.-[CORRECT]
 2.Cloning into a sync'ed folder like Dropbox or Google Drive.-[CORRECT]
-3.Cloning into the Desktop folder of your VM. - [CORRECT]
+3.Cloning into the Desktop folder of your VM.
 
 Part (c):
 Provide the appropriate git command to perform the following operations:
