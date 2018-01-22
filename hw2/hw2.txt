@@ -1,0 +1,129 @@
+Problem 1 (More git questions, 10%)
+In this problem, we will be working with a fictional Sample Repository, 
+which we pretend is located at https://github.com/usc-csci104-spring2018/SampleRepo, 
+and contains README.md. (There is no actual repo there, so don't be surprised if 
+you cannot actually clone it or otherwise interact with it.) 
+This exercise is designed to measure your understanding of the file status 
+lifecycle in git. Please frame your answers in the context of the following 
+lifecycle based on your interaction with the repository as specified below:
+
+Git File Status Lifecycle
+
+figure courtesy of the Pro Git book by Scott Chacon
+
+Parts (a) through (f) should be done in sequence. 
+In other words, when you get to part (f), you should assume that 
+you already executed the earlier commands (a), (b), ..., (e). 
+You must use the terminalogy specified in the lifecycle shown above, 
+for example the output of git status is not accepted as a valid answer. 
+For the purposes of this question, you can assume you have full access 
+(i.e., read/write) to the repository.
+
+Part (a):
+What is the status of README.md after performing the following operations:
+
+#Change directory to the home directory
+cd
+#Clone the SampleRepo repository
+git clone git@github.com:usc-csci104-spring2018/SampleRepo.git
+#Change directory into the local copy of SampleRepo
+cd SampleRepo
+Part (b):
+What is the status of README.md and fun_problem.txt after performing 
+the following operations:
+
+#Create a new empty file named fun_problem.txt
+touch fun_problem.txt
+#List files
+ls
+#Append a line to the end of README.md
+echo "Markdown is easy" >> README.md
+Part (c):
+What is the status of README.md and fun_problem.txt after performing 
+the following operation:
+
+git add README.md fun_problem.txt
+Part (d):
+What is the status of README.md and fun_problem.txt after performing
+the following operations:
+
+git commit -m "My opinion on markdown"
+echo "Markdown is too easy" >> README.md
+echo "So far, so good" >> fun_problem.txt
+Part (e):
+What is the status of README.md and fun_problem.txt after performing 
+the following operations:
+
+git add README.md
+git checkout -- fun_problem.txt
+Also, what are the contents of fun_problem.txt? Why?
+
+Part (f):
+What is the status of README.md after performing the following operation:
+
+echo "Fancy git move" >> README.md
+Explain why this status was reached.
+
+
+
+Problem 3 (Abstract Data Types, 20%)
+For each of the following data storage needs, describe which 
+abstract data types you would suggest using. Natural choices would 
+include list, set, and map.
+
+Try to be specific, e.g., rather than just saying "a list", say "a 
+list of integers" or "a list of structs consisting of a name (string) 
+and a GPA (double)". Also, state any assumptions you have made, and 
+give a brief explanation for your answers: we are grading you at least 
+as much on your justification as on the correctness of the answer. 
+Also, if you give a wrong answer, when you include an explanation, 
+we'll know whether it was a minor error or a major one, and can give 
+you appropriate partial credit. Also, there may be multiple equally 
+good options, so your justification may get you full credit.
+
+1. a data type that stores all of the items at a restaurant, 
+ordered by their number on the menu (an integer from 1 to 100).
+
+2. a data type that stores all of the movies in the Star Wars universe.
+
+3. a data type that stores all of the books on Amazon: given an ISBN 
+(a 13-digit number), it produces the book with that number.
+
+4. a data type that stores all movies: given a year, it produces all movies 
+released in that year.
+
+5. a data type that stores all of the episodes of Game of Thrones: 
+given a season and episode number, it produces the requested episode.
+
+
+
+Problem 4 (Linked Lists, Recursion, 10%)
+Consider the following C++ code. What linked list is returned if funcA 
+is called with the input linked list 1,2,3,4,5? All of the points for 
+this problem will be assigned based on your explanation, since we have 
+full faith in your ability to run this program and copy down the answer. 
+We strongly recommend solving this by hand, and only using a compiler 
+to verify your answer.
+
+struct Node {
+    int value;
+    Node *next;
+};
+
+Node* funcB(Node* in) {
+    if (!in) return nullptr;
+    Node *p = funcB(in->next);
+    if (p) {
+        p->next = in;
+    }
+    return in;
+}
+
+Node* funcA(Node* in) {
+    if (!in) return nullptr;
+    Node *r = in;
+    while (r->next) r = r->next;
+    Node *l = funcB(in);
+    l->next = nullptr;
+    return r;
+}
