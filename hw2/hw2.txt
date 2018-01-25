@@ -105,6 +105,11 @@ full faith in your ability to run this program and copy down the answer.
 We strongly recommend solving this by hand, and only using a compiler 
 to verify your answer.
 
+ANSWER:
+
+linked list returned: 1
+-> 
+
 struct Node {
     int value;
     Node *next;
