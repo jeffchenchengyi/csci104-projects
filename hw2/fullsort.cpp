@@ -103,58 +103,38 @@ Node* recInsertToSorted(Node* newNodePtr, Node* headPtr) {
             headPtr = newNodePtr;
             return headPtr;
         } else {
-            headPtr->next = recInsertToSorted(headPtr->next, newNodePtr);
+            headPtr->next = recInsertToSorted(newNodePtr, headPtr->next);
             return headPtr;
         }
     }
 }
-/*
-Node* removeOutlierNode(Node* headPtr, Node* currentPtr) {
-    if(currentPtr->next == NULL) {
-        return nullptr; 
-    } else {
-        if(currentPtr->value <= currentPtr->next->value) {
-            return removeOutlierNode(headPtr, currentPtr->next);
-        } else {
-            Node* nextPtr = currentPtr->next;
-            currentPtr->next = currentPtr->next->next;
-            nextPtr->next = NULL;
-            Node* newHeadPtr = removeOutlierNode(headPtr, currentPtr);
-            if(newHeadPtr == nullptr) {
-                return recInsertToSorted(headPtr, nextPtr);
-            }
-        }
-    }
-}
-*/
-/*
-Node* newSortedList(Node* in, Node* newHeadPtr) {
+
+Node* traverse(Node* in, Node* newHeadPtr) {
     if(in == NULL) {
-        return NULL;
+        return newHeadPtr;
     } else {
-        Node* modifiedHeadPtr = recInsertToSorted(in, newHeadPtr);
-        Node* lastNodePtr = newSortedList(in->next, modifiedHeadPtr);
-        if(lastNodePtr == NULL) {
-            return modifiedHeadPtr;
-        } else {
-            return lastNodePtr;
-        }
+        Node* copyOfNode = new Node;
+        copyOfNode->next = NULL;
+        copyOfNode->value = in->value;
+        newHeadPtr = recInsertToSorted(copyOfNode, newHeadPtr);
+        return traverse(in->next, newHeadPtr);
     }
 }
-*/
-void traverse(Node* in, Node* &newHeadPtr) {
+
+void removeList(Node* in) {
     if(in == NULL) {
         return;
     } else {
-        Node* copyOfNode = in;
-        newHeadPtr = recInsertToSorted(copyOfNode, newHeadPtr);
-        traverse(copyOfNode->next, newHeadPtr);
+        removeList(in->next);
+        delete in;
+        return;
     }
 }
 
 Node* fullsort(Node* in) {
-    Node* newHeadPtr = NULL;
-    traverse(in, newHeadPtr);
+    Node* nodePtr = NULL;
+    Node* newHeadPtr = traverse(in, nodePtr);
+    removeList(in);
     return newHeadPtr;
 }
 
@@ -177,6 +157,7 @@ int main (int argc, char* argv[])
 	
 	cout << "Sorted list:" << endl;
 	print(newHead);
+	removeList(newHead);
 	
 	return 0;
 }
