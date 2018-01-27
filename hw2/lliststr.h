@@ -55,21 +55,21 @@ class LListStr {
  private:
   struct Item {
     std::string val;
-    Item *prev;
     Item *next;
+    Item *prev;
     Item(std::string v, Item* n, Item* p):
       val(v), next(n), prev(p) {}
   };
 
   // Feel free to add private helper functions if you desire.
-  Item* traverseList(int pos);
-  Item* insertAtHeadOrTail(const std::string &val);
+  Item* traverseList(int pos) const;
+  void insertBetweenHeadAndTail(const std::string &val, int pos);
   void removeAtHeadOrTail(int pos);
   void recRemoveList(Item* currPtr);
   Item* createNewItem(const std::string &val);
   Item* createNewItem(const std::string &val, Item* nextPtr, Item* prevPtr);
-  bool withinInsertBounds(int pos);
-  bool withinBounds(int pos);
+  bool withinInsertBounds(int pos) const;
+  bool withinBounds(int pos) const;
 
   /**
    * Data members
