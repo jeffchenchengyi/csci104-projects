@@ -147,17 +147,18 @@ Chinese Food Menu:
 ||-> 2. Grass Jelly drink
 ||-> 3. Milk tea
 
+Order is important: 
 A list of sub-menu structs containing sub-menu string name(Meat), 
 int size, and a list pointer to the sub-menu list containing 
 fooditem structs consisting of string name(Orange chicken), float
 price, bool bestseller, bool isSpicy, and some printList, getter,
-setter, and void insertNewFoodItem functions.
+setter, void insertNewFoodItem, and void removeFoodItem functions.
 
 
 2. a data type that stores all of the movies in the Star Wars universe.
 
 ANSWER:
-Assuming that the movies are to be displayed on a blog just for 
+Assuming that all the movies are to be displayed on a blog just for 
 visitors to view and is organized like this:
 All Star Wars films:
 -> Trilogies
@@ -174,34 +175,73 @@ All Star Wars films:
 ||-> 2. Caravan of Courage: An Ewok Adventure (1984)
 ||-> 3. Ewoks: The Battle for Endor (1985)
 
+Order is important in order to display movies on the blog in 
+order: 
 A list of sub-catgeory film structs containing sub-catgeory 
 film string name(Trilogies), int size, and a list pointer to 
 the sub-catgeory film containing film structs consisting 
 of string name(I - The Phantom Menace), string netflix url link to 
 purchase, bool bestseller, int year, and some printList, 
-getter, setter, and void insertNewFilm functions.
+getter, setter, void insertNewFilm, and void removeFilm functions.
 
 
 3. a data type that stores all of the books on Amazon: given an ISBN 
 (a 13-digit number), it produces the book with that number.
 
 ANSWER:
+Assuming that the querying of book is only through ISBN, not 
+by book title and database for one book is as shown:
+Key:             Value:
+9780132923729 => book struct with 
+                 string name = Data Abstraction & Problem 
+                 Solving with C++, 6th Ed. Carrano & Henry, 
+                 Pearson, 2013... 
 
+Order is not important, but there is a need for ease of query:
+A map with unique key = ISBN (13-digit number) and value = 
+pointer to book struct that consists of string name, float 
+price, string author, int year, string description, pointer to 
+list of customer reviews, int rating.
 
 
 4. a data type that stores all movies: given a year, 
-it produces all movies 
-released in that year.
+it produces all movies released in that year.
 
 ANSWER:
+Assuming that the user is querying movies for display on website 
+only by year released, not by title:
+Key:    Value:
+2017 => pointer to a movie list containing film
+        structs...
 
+There is a need for ease of query and order is important to output
+all movies in the order of release:
+A map with unique key = year and value = pointer to a list 
+of film structs that consists of string filmTitle, string netflix 
+url link to purchase, string director, int year, string 
+description, pointer to list of customer reviews, int rating.
 
 
 5. a data type that stores all of the episodes of Game of Thrones: 
 given a season and episode number, it produces the requested episode.
 
 ANSWER:
+Assuming that the user is querying the episode on a website by first
+searching with season number, and then searching with episode number
+from the list returned:
+Key:            Value:
+1 (Season 1) => pointer to a list of episode
+                structs, ordered by episode number...
 
+There is a need for ease of query and order is important to output
+all episodes in the order of release before further querying:
+A map with key = Season number and value = pointer to a list of 
+episode structs that consists of string episodeTitle, string netflix 
+url link to purchase, string director, int year, string description, 
+pointer to list of customer reviews, int rating, getter, setter, 
+insert, and delete functions also required for the list. The getter
+function is used to retrieve the episode given the episode number 
+after querying the season number.
 
 
 
@@ -216,7 +256,63 @@ to verify your answer.
 ANSWER:
 
 linked list returned: 1
--> 
+Head pointer of input list |in|->|0th Node, value 1|-> 
+|1st Node, value 2|-> |2nd Node, value 3|-> 
+|3rd Node, value 4|-> |4th Node, value 5|-> NULL
+is passed into funcA. in != NULL, hence nullptr isnt
+returned from if statement. r becomes a copy of
+head pointer in. while loop traverses the list using 
+r pointer until r points to the last element when 
+r->next == NULL. head pointer in is then passed
+into funcB. 
+funcB checks if head pointer in is NULL.
+nullptr isnt returned. 
+in->next is passed into funcB until in->next == NULL
+is passed into funcB in which case a nullptr is returned.
+The nullptr returned is stored in p.
+Since p == nullptr, if statement is not successful and
+in is returned. At this point, in is pointing to 
+the last Node with value of 5. This pointer to Node with 
+value 5 is returned to be stored in p. 
+if statement is successful as p is a pointer to Node
+with value 5. Hence, p->next = in is executed. in was 
+pointing to Node with value 4 and now Node with value 5's
+next is a pointer to Node with value 4.
+|in|->|0th Node, value 1|-> 
+|1st Node, value 2|-> |2nd Node, value 3|-> 
+|3rd Node, value 4|-> <-|4th Node, value 5|
+in is returned and p now stores a pointer to Node with
+value 4. p is not a nullptr so if statement is executed
+and p->next = in. But notice, there's no way of retrieving 
+Node with value 5 anymore, it's lost.
+|in|->|0th Node, value 1|-> 
+|1st Node, value 2|-> |2nd Node, value 3|-> 
+<-|3rd Node, value 4| <-|4th Node, value 5|
+in is returned and p now stores a pointer to Node with
+value 3. p is not a nullptr so if statement is executed
+and p->next = in. But notice, there's no way of retrieving 
+Node with value 4 anymore, it's lost.
+|in|->|0th Node, value 1|-> 
+|1st Node, value 2|-> <-|2nd Node, value 3| 
+<-|3rd Node, value 4| <-|4th Node, value 5|
+in is returned and p now stores a pointer to Node with
+value 2. p is not a nullptr so if statement is executed
+and p->next = in. But notice, there's no way of retrieving 
+Node with value 3 anymore, it's lost.
+|in|->|0th Node, value 1|-> 
+<-|1st Node, value 2| <-|2nd Node, value 3| 
+<-|3rd Node, value 4| <-|4th Node, value 5|
+in is returned and p now stores a pointer to Node with
+value 1. p is not a nullptr so if statement is executed
+and p->next = in, in was originally pointing to Node 
+with value 1. Meaning that now the list has lost all
+previous Nodes and is pointing at itself.
+|in|-> <-|0th Node, value 1| 
+<-|1st Node, value 2| <-|2nd Node, value 3| 
+<-|3rd Node, value 4| <-|4th Node, value 5|
+in is returned to funcA now and stored in l.
+l->next = nullptr, meaning that in, which is pointing to 
+the Node with value 1.
 
 struct Node {
     int value;
