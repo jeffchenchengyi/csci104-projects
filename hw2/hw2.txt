@@ -129,13 +129,57 @@ good options, so your justification may get you full credit.
 ordered by their number on the menu (an integer from 1 to 100).
 
 ANSWER:
+Assuming that the menu is to be placed on a website just for 
+consumers to view and is organized like this:
+Chinese Food Menu:
+-> Meat
+||-> 1. Orange Chicken
+||-> 2. Stir-fried beef
+||-> 3. Sweet and sour pork
+-> Vegetable
+||-> 1. Brocolli with garlic
+||-> 2. Spinach with 3 egg
+-> Noodle
+||-> 1. Egg noodle with pork chop
+||-> 2. Dry noodle with minced pork
+-> Drink
+||-> 1. Lime juice
+||-> 2. Grass Jelly drink
+||-> 3. Milk tea
 
+A list of sub-menu structs containing sub-menu string name(Meat), 
+int size, and a list pointer to the sub-menu list containing 
+fooditem structs consisting of string name(Orange chicken), float
+price, bool bestseller, bool isSpicy, and some printList, getter,
+setter, and void insertNewFoodItem functions.
 
 
 2. a data type that stores all of the movies in the Star Wars universe.
 
 ANSWER:
+Assuming that the movies are to be displayed on a blog just for 
+visitors to view and is organized like this:
+All Star Wars films:
+-> Trilogies
+||-> 1. I – The Phantom Menace (1999)
+||-> 2. II – Attack of the Clones (2002)
+||-> 3. III – Revenge of the Sith (2005)
+-> Anthology
+||-> 1. Rogue One: A Star Wars Story (2016)
+||-> 2. Solo: A Star Wars Story (2018)
+-> Animated
+||-> 1. The Clone Wars (2008)
+-> TV
+||-> 1. Holiday Special (1978)
+||-> 2. Caravan of Courage: An Ewok Adventure (1984)
+||-> 3. Ewoks: The Battle for Endor (1985)
 
+A list of sub-catgeory film structs containing sub-catgeory 
+film string name(Trilogies), int size, and a list pointer to 
+the sub-catgeory film containing film structs consisting 
+of string name(I - The Phantom Menace), string netflix url link to 
+purchase, bool bestseller, int year, and some printList, 
+getter, setter, and void insertNewFilm functions.
 
 
 3. a data type that stores all of the books on Amazon: given an ISBN 
