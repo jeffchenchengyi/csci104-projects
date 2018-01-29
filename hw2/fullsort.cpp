@@ -8,6 +8,22 @@ struct Node {
     Node *next;
 };
 
+Node* recInsertToSorted(Node* newNodePtr, Node* headPtr) {
+    if(headPtr == NULL) {
+        headPtr = newNodePtr;
+        return headPtr;
+    } else {
+        if(newNodePtr->value <= headPtr->value) {
+            newNodePtr->next = headPtr;
+            headPtr = newNodePtr;
+            return headPtr;
+        } else {
+            headPtr->next = recInsertToSorted(newNodePtr, headPtr->next);
+            return headPtr;
+        }
+    }
+}
+
 Node* traverse(Node* in, Node* newHeadPtr) {
     if(in == NULL) {
         return newHeadPtr;
