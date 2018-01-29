@@ -255,10 +255,13 @@ to verify your answer.
 
 ANSWER:
 
-linked list returned: 1
-Head pointer of input list |in|->|0th Node, value 1|-> 
+linked list returned: 5 4 3 2 1
+Head pointer of input list 
+--------------------------------------------------
+|in|->|0th Node, value 1|-> 
 |1st Node, value 2|-> |2nd Node, value 3|-> 
 |3rd Node, value 4|-> |4th Node, value 5|-> NULL
+--------------------------------------------------
 is passed into funcA. in != NULL, hence nullptr isnt
 returned from if statement. r becomes a copy of
 head pointer in. while loop traverses the list using 
@@ -278,41 +281,76 @@ if statement is successful as p is a pointer to Node
 with value 5. Hence, p->next = in is executed. in was 
 pointing to Node with value 4 and now Node with value 5's
 next is a pointer to Node with value 4.
+--------------------------------------------------
 |in|->|0th Node, value 1|-> 
 |1st Node, value 2|-> |2nd Node, value 3|-> 
 |3rd Node, value 4|-> <-|4th Node, value 5|
+--------------------------------------------------
 in is returned and p now stores a pointer to Node with
 value 4. p is not a nullptr so if statement is executed
 and p->next = in. But notice, there's no way of retrieving 
 Node with value 5 anymore, it's lost.
+--------------------------------------------------
 |in|->|0th Node, value 1|-> 
 |1st Node, value 2|-> |2nd Node, value 3|-> 
 <-|3rd Node, value 4| <-|4th Node, value 5|
+--------------------------------------------------
 in is returned and p now stores a pointer to Node with
 value 3. p is not a nullptr so if statement is executed
 and p->next = in. But notice, there's no way of retrieving 
 Node with value 4 anymore, it's lost.
+--------------------------------------------------
 |in|->|0th Node, value 1|-> 
 |1st Node, value 2|-> <-|2nd Node, value 3| 
 <-|3rd Node, value 4| <-|4th Node, value 5|
+--------------------------------------------------
 in is returned and p now stores a pointer to Node with
 value 2. p is not a nullptr so if statement is executed
 and p->next = in. But notice, there's no way of retrieving 
 Node with value 3 anymore, it's lost.
+--------------------------------------------------
 |in|->|0th Node, value 1|-> 
 <-|1st Node, value 2| <-|2nd Node, value 3| 
 <-|3rd Node, value 4| <-|4th Node, value 5|
+--------------------------------------------------
 in is returned and p now stores a pointer to Node with
 value 1. p is not a nullptr so if statement is executed
 and p->next = in, in was originally pointing to Node 
 with value 1. Meaning that now the list has lost all
 previous Nodes and is pointing at itself.
+--------------------------------------------------
 |in|-> <-|0th Node, value 1| 
 <-|1st Node, value 2| <-|2nd Node, value 3| 
 <-|3rd Node, value 4| <-|4th Node, value 5|
+--------------------------------------------------
 in is returned to funcA now and stored in l.
-l->next = nullptr, meaning that in, which is pointing to 
-the Node with value 1.
+l->next = nullptr. in is currently pointing to 
+the Node with value 1, while Node with value 1's
+next is pointing to nullptr.
+--------------------------------------------------
+            |in|
+             |
+             V
+nullptr <-|0th Node, value 1| 
+<-|1st Node, value 2| <-|2nd Node, value 3| 
+<-|3rd Node, value 4| <-|4th Node, value 5|
+--------------------------------------------------
+r, which was pointing to the last element before
+the list was reversed is now the head of the list
+--------------------------------------------------
+    |r|
+     |
+     V
+|0th Node, value 5| 
+->|1st Node, value 4|->|2nd Node, value 3| 
+->|3rd Node, value 2|->|4th Node, value 1|->nullptr
+                                 ^
+                                 |
+                                |in|
+--------------------------------------------------
+r is returned by funcA which is pointing to list
+5 4 3 2 1, while in points to a single Node with 
+value 1 that has next pointing to nullptr.
 
 struct Node {
     int value;
