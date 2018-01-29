@@ -20,7 +20,8 @@ For the purposes of this question, you can assume you have full access
 (i.e., read/write) to the repository.
 
 Part (a):
-What is the status of README.md after performing the following operations:
+What is the status of README.md after performing the 
+following operations:
 
 #Change directory to the home directory
 cd
@@ -28,6 +29,11 @@ cd
 git clone git@github.com:usc-csci104-spring2018/SampleRepo.git
 #Change directory into the local copy of SampleRepo
 cd SampleRepo
+
+ANSWER: 
+The status of README.md is currently tracked(Unmodified).
+
+
 Part (b):
 What is the status of README.md and fun_problem.txt after performing 
 the following operations:
@@ -38,11 +44,23 @@ touch fun_problem.txt
 ls
 #Append a line to the end of README.md
 echo "Markdown is easy" >> README.md
+
+ANSWER:
+The status of README.md is currently tracked(Modified)
+and fun_problem.txt is currently untracked.
+
+
 Part (c):
 What is the status of README.md and fun_problem.txt after performing 
 the following operation:
 
 git add README.md fun_problem.txt
+
+ANSWER:
+Both README.md and fun_problem.txt are currently tracked(Staged) and 
+will go into the next commit.
+
+
 Part (d):
 What is the status of README.md and fun_problem.txt after performing
 the following operations:
@@ -50,6 +68,12 @@ the following operations:
 git commit -m "My opinion on markdown"
 echo "Markdown is too easy" >> README.md
 echo "So far, so good" >> fun_problem.txt
+
+ANSWER:
+Both README.md and fun_problem.txt became tracked(Unmodified) and 
+currently are tracked(Modified) after the echo commands.
+
+
 Part (e):
 What is the status of README.md and fun_problem.txt after performing 
 the following operations:
@@ -58,11 +82,31 @@ git add README.md
 git checkout -- fun_problem.txt
 Also, what are the contents of fun_problem.txt? Why?
 
+ANSWER:
+README.md is currently tracked(Staged) and will go into the next
+commit. But fun_problem.txt is currently tracked(Unmodified) as
+git checkout discard the changes made 
+by `echo "So far, so good" >> fun_problem.txt` in part (d), 
+reverting the status of the file to the
+last commit in part (d). fun_problem.txt presently still contains 
+nothing.
+
+
 Part (f):
 What is the status of README.md after performing the following operation:
 
 echo "Fancy git move" >> README.md
 Explain why this status was reached.
+
+ANSWER:
+README.md is now listed as both staged for commit and also unstaged.
+The README.md version that is tracked(Staged) contains data before
+`echo "Fancy git move" >> README.md`, because git add README.md in 
+part (e) only staged that version into the commit. Presently, there 
+will also be another version of the README.md in the actual working
+directory with changes made after `echo "Fancy git move" >> README.md`,
+but has not been staged yet. "If you modify a file after you run git add, you have to run git add again to stage the latest version of the file" - courtesy of the Pro Git book by Scott Chacon.
+
 
 
 
@@ -84,16 +128,36 @@ good options, so your justification may get you full credit.
 1. a data type that stores all of the items at a restaurant, 
 ordered by their number on the menu (an integer from 1 to 100).
 
+ANSWER:
+
+
+
 2. a data type that stores all of the movies in the Star Wars universe.
+
+ANSWER:
+
+
 
 3. a data type that stores all of the books on Amazon: given an ISBN 
 (a 13-digit number), it produces the book with that number.
 
-4. a data type that stores all movies: given a year, it produces all movies 
+ANSWER:
+
+
+
+4. a data type that stores all movies: given a year, 
+it produces all movies 
 released in that year.
+
+ANSWER:
+
+
 
 5. a data type that stores all of the episodes of Game of Thrones: 
 given a season and episode number, it produces the requested episode.
+
+ANSWER:
+
 
 
 
