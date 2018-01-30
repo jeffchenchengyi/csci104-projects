@@ -59,9 +59,12 @@ to check if there are any memory leaks, should be only
 ### Run: 
 > **`./assassin assassin_input.txt`**, where **`assassin_input.txt`**, 
 contains the list of commands for the game, such as:
+
 >**`ADD 0 Sandra
 ADD 0 Aaron
 ACT 1`**
+
 > Output on Terminal:
-**`Assassinated: Aaron
+
+>**`Assassinated: Aaron
 Winner: Sandra`**
