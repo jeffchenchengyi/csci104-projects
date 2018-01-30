@@ -4,7 +4,7 @@ struct Node {
 };
 
 Node* recInsertToSorted(Node* newNodePtr, Node* headPtr) {
-    if(headPtr == NULL) {
+    if(headPtr == nullptr) {
         headPtr = newNodePtr;
         return headPtr;
     } else {
@@ -20,11 +20,11 @@ Node* recInsertToSorted(Node* newNodePtr, Node* headPtr) {
 }
 
 Node* traverse(Node* in, Node* newHeadPtr) {
-    if(in == NULL) {
+    if(in == nullptr) {
         return newHeadPtr;
     } else {
         Node* copyOfNode = new Node;
-        copyOfNode->next = NULL;
+        copyOfNode->next = nullptr;
         copyOfNode->value = in->value;
         newHeadPtr = recInsertToSorted(copyOfNode, newHeadPtr);
         return traverse(in->next, newHeadPtr);
@@ -32,7 +32,7 @@ Node* traverse(Node* in, Node* newHeadPtr) {
 }
 
 void removeList(Node* in) {
-    if(in == NULL) {
+    if(in == nullptr) {
         return;
     } else {
         removeList(in->next);
@@ -42,7 +42,7 @@ void removeList(Node* in) {
 }
 
 Node* fullsort(Node* in) {
-    Node* nodePtr = NULL;
+    Node* nodePtr = nullptr;
     Node* newHeadPtr = traverse(in, nodePtr);
     removeList(in);
     return newHeadPtr;
