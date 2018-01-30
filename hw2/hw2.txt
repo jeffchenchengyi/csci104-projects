@@ -158,13 +158,13 @@ setter, void insertNewFoodItem, and void removeFoodItem functions.
 2. a data type that stores all of the movies in the Star Wars universe.
 
 ANSWER:
-Assuming that all the movies are to be displayed on a blog just for 
-visitors to view and is organized like this:
+Assuming that all the movies are to be displayed on a blog 
+just for visitors to view and is organized like this:
 All Star Wars films:
 -> Trilogies
-||-> 1. I – The Phantom Menace (1999)
-||-> 2. II – Attack of the Clones (2002)
-||-> 3. III – Revenge of the Sith (2005)
+||-> 1. I - The Phantom Menace (1999)
+||-> 2. II - Attack of the Clones (2002)
+||-> 3. III - Revenge of the Sith (2005)
 -> Anthology
 ||-> 1. Rogue One: A Star Wars Story (2016)
 ||-> 2. Solo: A Star Wars Story (2018)
