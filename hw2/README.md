@@ -66,5 +66,4 @@ contains the list of commands for the game, such as:
 
 > Output on Terminal:
 
->**`Assassinated: Aaron`**
->**`Winner: Sandra`**
+>**`Assassinated: Aaron \s Winner: Sandra`**
