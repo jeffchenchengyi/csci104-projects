@@ -105,7 +105,9 @@ The README.md version that is tracked(Staged) contains data before
 part (e) only staged that version into the commit. Presently, there 
 will also be another version of the README.md in the actual working
 directory with changes made after `echo "Fancy git move" >> README.md`,
-but has not been staged yet. "If you modify a file after you run git add, you have to run git add again to stage the latest version of the file" - courtesy of the Pro Git book by Scott Chacon.
+but has not been staged yet. "If you modify a file after you run git add, 
+you have to run git add again to stage the latest version of the file" 
+- courtesy of the Pro Git book by Scott Chacon.
 
 
 
@@ -227,16 +229,18 @@ given a season and episode number, it produces the requested episode.
 
 ANSWER:
 Assuming that the user is querying the episode on a website by first
-searching with season number, and then searching with episode number
-from the list returned:
-Key:            Value:
-1 (Season 1) => pointer to a list of episode
-                structs, ordered by episode number...
+searching with season number (an integer or name of season), and 
+then searching with episode number (an integer) from the list returned:
+Season number: 1
+Episode number: 3
+-> Season 7 (2017) [Position 6 in list]
+||-> 3. The Queen's Justice [Position 2 in list]
 
-There is a need for ease of query and order is important to output
-all episodes in the order of release before further querying:
-A map with key = Season number and value = pointer to a list of 
-episode structs that consists of string episodeTitle, string netflix 
+Order is important as there may be times when we want to just output
+all episodes in the season before selecting which episode:
+A list of season structs with positons in list corresponding 
+to the order of season number that contain pointers to a list of 
+episode structs that consist of string episodeTitle, string netflix 
 url link to purchase, string director, int year, string description, 
 pointer to list of customer reviews, int rating, getter, setter, 
 insert, and delete functions also required for the list. The getter
