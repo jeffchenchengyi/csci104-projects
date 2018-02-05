@@ -7,37 +7,6 @@
 //#include "stackstr.h"
 
 using namespace std;
-/*
-//Only '<', '>', & alphabets can succeed '-'
-bool isLegalAftAddChar(char x) {
-    return (x == '<' || x == '>' || isalpha(x)) ? true : false;
-}
-
-//Only '(', '<', '>', & alphabets can succeed '-'
-bool isLegalAftSubtrChar(char x) {
-    return (x == '(' || x == '<' || x == '>' || isalpha(x)) ? true : false;
-}
-
-//Only '-', '+', ')', & alphabets can succeed alphabets
-bool isLegalAftAlphaChar(char x) {
-    return (x == '-' || x == '+' || x == ')' || isalpha(x)) ? true : false;
-}
-
-//Only '(', '<', '>', & alphabets can succeed '<' or '>'
-bool isLegalAftRemoveChar(char x) {
-    return (x == '(' || x == '<' || x == '>' || isalpha(x)) ? true : false;
-}
-
-//Only '<', '>', '(', & alphabet can succeed ')'
-bool isLegalAftOpenParenChar(char x) {
-    return (x == '<' || x == '>' || x == '(' || isalpha(x)) ? true : false;
-}
-
-//Only '-', ')', & nothing can succeed ')'
-bool isLegalAftCloseParenChar(char x) {
-    return (x == '-' || x == ')') ? true : false;
-}
-*/
 
 bool isRemoveBack(string x) {
     return (x == "<") ? true : false;
@@ -77,7 +46,167 @@ bool isLegalChar(char c) {
             isAdd(x) || 
             isSubtract(x) || 
             isRemoveFront(x) || 
-            isRemoveBack(x)) ? true : false;
+            isRemoveBack(x)
+            ) ? true : false;
+}
+
+bool isParensOk(const string &line) {
+    int open_paren_count = 0;
+    int close_paren_count = 0;
+    int len = line.length();
+    for(int i = 0; i < len; i++) {
+        if(isOpenParen(line[i])) {
+            open_paren_count++;
+        } else if(isCloseParen(line[i])) {
+            close_paren_count++;
+        }
+    }
+    return (open_paren_count == close_paren_count) ? true : false;
+}
+
+//To ensure substring is not <Y> or any other wrong format
+bool isLegalStringExp(string &Y) {
+    bool isLegalString = true;
+    int len = Y.length();
+    //Ensure last character is an alphabet
+    if(isalpha(Y[len - 1])) {
+        while(isalpha(Y[len - 1]) && (len > 0)) {
+            Y.pop_back();
+            len--;
+        }
+    } else {
+        isLegalString = false;
+        return isLegalString;
+    }
+    //Ensures no more alphabets remain in string
+    //after removing alphabets from the back
+    for(int i = 0; i < len; i++) {
+        if(isalpha(Y[i])) {
+            isLegalString = false;
+            return isLegalString;
+        }
+    }
+    return isLegalString;
+}
+
+//To ensure that all operators are in the correct pos
+bool isOperatorsOk(const string &line) {
+    string simple_string;
+    int len = line.length();
+    for(int i = 0; i < len; i++) {
+        if(isalpha(line[i]) || 
+                isRemoveFront(line[i]) || 
+                isRemoveBack(line[i])) {
+            string Y;
+            while(!(isAdd(line[i]) ||
+                    isSubtract(line[i]) ||
+                    isOpenParen(line[i]) ||
+                    isCloseParen(line[i]))
+                ) {
+                Y.append(line[i]);
+                i++;
+            }
+            //To nullify last i++;
+            i--;
+            if(!isLegalStringExp(Y)) {
+                return false;
+            }
+            simple_string.append("Y");
+        } else {
+            simple_string.append(line[i]);
+        }
+    }
+    //Check if there exists at most one "-" is between parentheses
+    //Check if every "+" is between parentheses
+    int simple_str_len = simple_string.length();
+    for(int i = 0; i < simple_str_len; i++) {
+        if(isSubtract(simple_string[i])) {
+            //Check left side of subtract sign
+            if((i - 1) >= 0) {
+                if(simple_string[i - 1] == "Y") {
+                    if((i - 2) >= 0) {
+                        if(!isOpenParen(simple_string[i - 2])) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else if(isCloseParen(simple_string[i - 1])) {
+                    if((i - 2) >= 0) {
+                        if(simple_string[i - 2] != "Y") {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+            //Check right side of subtract sign
+            if((i + 1) < simple_str_len) {
+                if(simple_string[i + 1] == "Y") {
+                    if((i + 2) < simple_str_len) {
+                        if(!isCloseParen(simple_string[i + 2])) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else if(isOpenParen(simple_string[i + 1])) {
+                    if((i + 2) < simple_str_len) {
+                        if(simple_string[i + 2] != "Y") {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else if(isAdd(simple_string[i])) {
+            //Check that my sides are both Y
+            if(simple_string[i - 1] != "Y") {
+                return false;
+            }
+            if(simple_string[i - 1] != "Y") {
+                return false;
+            }
+        }
+    }
+}
+
+bool isIllegalExp(const string &line) {
+    return (!(isParensOk(line)) || 
+            !(isOperatorsOk(line))
+            ) ? true : false;
+}
+
+bool checkMalformed(string &line) {
+    bool malformed = false;
+    int len = line.length();
+    //Traverse through string to eliminate whitespace
+    //and signal if there exists illegal chars
+    for(int i = 0; i < len; i++) {
+        if(!isLegalChar(line[i])) {
+            if(isWhiteSpace(line[i])) {
+                line.erase(i, 1);
+                i--;
+                len--;
+            } else {
+                malformed = true;
+                return malformed;
+            }
+        }
+    }
+
+    malformed = isIllegalExp(line);
+    return malformed;
 }
 
 string editString(string x) {
@@ -96,7 +225,7 @@ string editString(string x) {
     return new_string;
 }
 
-void evalExpression(stack<string>& current_stack) {
+void evalExpression(stack<string> &current_stack) {
     string filtered_string;
     stack<string> exp_stack;
     bool addition = true;
@@ -104,7 +233,8 @@ void evalExpression(stack<string>& current_stack) {
         string current_string;
         while(!(isAdd(current_stack.top()) || 
                 isSubtract(current_stack.top()) || 
-                isOpenParen(current_stack.top()))) {
+                isOpenParen(current_stack.top()))
+                ) {
             current_string.insert(0, current_stack.top());
             current_stack.pop();
         }
@@ -172,30 +302,13 @@ int main(int argc, char* argv[])
     //Getting the command in the input file
     while(getline(input, line)) {
         int len = line.length();
-        bool malformed = false;
 
         //Stack to store original string
         stack<string> original_stack;
 
-        //Stack to track final string
-        stack<string> final_stack;
-
         //If input string is length == 0, it is malformed
-        //Traverse through string to eliminate whitespace
-        //and signal if there exists illegal chars
         if(len != 0) {
-            for(int i = 0; i < len; i++) {
-                if(!isLegalChar(line[i])) {
-                    if(isWhiteSpace(line[i])) {
-                        line.erase(i, 1);
-                        i--;
-                        len--;
-                    } else {
-                        malformed = true;
-                        break;
-                    }
-                }
-            }
+            bool malformed = checkMalformed(line);
             if(malformed) {
                 output << "Malformed" << endl;
             } else {
