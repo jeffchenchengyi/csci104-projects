@@ -50,7 +50,7 @@ bool isLegalChar(char c) {
             ) ? true : false;
 }
 
-bool isParensOk(const string &line) {
+bool isParensOk(const string& line) {
     int open_paren_count = 0;
     int close_paren_count = 0;
     int len = line.length();
@@ -66,7 +66,7 @@ bool isParensOk(const string &line) {
 }
 
 //To ensure substring is not <Y> or any other wrong format
-bool isLegalStringExp(const string &original_Y) {
+bool isLegalStringExp(const string& original_Y) {
     string Y = original_Y;
     bool isLegalString = true;
     int len = Y.length();
@@ -94,7 +94,7 @@ bool isLegalStringExp(const string &original_Y) {
 }
 
 //To ensure that all operators are in the correct pos
-bool isOperatorsOk(const string &line) {
+bool isOperatorsOk(const string& line) {
     string simple_string;
     int len = line.length();
     for(int i = 0; i < len; i++) {
@@ -196,9 +196,27 @@ bool isOperatorsOk(const string &line) {
             }
         } else if(isOpenParen(string(1, simple_string[i]))) {
             if((i + 1) < simple_str_len) {
-                if(string(1, simple_string[i + 1]) != "Y" && 
-                        !isOpenParen(string(1, simple_string[i + 1]))
-                        ) {
+                if(string(1, simple_string[i + 1]) == "Y"){
+                    if((i + 2) < simple_str_len) {
+                        if(!(isAdd(string(1, simple_string[i + 2])) ||
+                            isSubtract(string(1, simple_string[i + 2])))
+                            ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else if(isOpenParen(string(1, simple_string[i + 1]))) {
+                    if((i + 2) < simple_str_len) {
+                        if(!(string(1, simple_string[i + 2]) == "Y" ||
+                            isOpenParen(string(1, simple_string[i + 2])))
+                            ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             } else {
@@ -206,9 +224,27 @@ bool isOperatorsOk(const string &line) {
             }
         } else if(isCloseParen(string(1, simple_string[i]))) {
             if((i - 1) >= 0) {
-                if(string(1, simple_string[i - 1]) != "Y" && 
-                        !isCloseParen(string(1, simple_string[i - 1]))
-                        ) {
+                if(string(1, simple_string[i - 1]) == "Y") {
+                    if((i - 2) >= 0) {
+                        if(!(isAdd(string(1, simple_string[i - 2])) ||
+                            isSubtract(string(1, simple_string[i - 2])))
+                            ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else if(isCloseParen(string(1, simple_string[i - 1]))) {
+                    if((i - 2) >= 0) {
+                        if(!(string(1, simple_string[i - 2]) == "Y" ||
+                            isCloseParen(string(1, simple_string[i - 2])))
+                            ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             } else {
@@ -219,20 +255,20 @@ bool isOperatorsOk(const string &line) {
     return true;
 }
 
-bool isIllegalExp(const string &line) {
+bool isIllegalExp(const string& line) {
     return (!(isParensOk(line)) || 
             !(isOperatorsOk(line))
             ) ? true : false;
 }
 
-bool isMalformed(string &line) {
+bool isMalformed(string& line) {
     bool malformed = false;
     int len = line.length();
     //Traverse through string to eliminate whitespace
     //and signal if there exists illegal chars
     for(int i = 0; i < len; i++) {
         if(!isLegalChar(line[i])) {
-            if(isWhiteSpace(line[i])) {
+            if(isWhiteSpace(line[i]) || isblank(line[i])) {
                 line.erase(i, 1);
                 i--;
                 len--;
@@ -249,6 +285,7 @@ bool isMalformed(string &line) {
 
 string editString(string x) {
     int index = x.length() - 1;
+    //cout << x << " " << x.length() << endl;
     string new_string;
     while(isalpha(x[index]) && index >= 0) {
         new_string.insert(0, string(1, x[index]));
@@ -266,10 +303,11 @@ string editString(string x) {
             }
         }
     }
+    //cout << " " << new_string << endl;
     return new_string;
 }
 
-void evalExpression(stack<string> &current_stack) {
+void evalExpression(stack<string>& current_stack) {
     string filtered_string;
     stack<string> exp_stack;
     bool addition = true;
@@ -311,7 +349,6 @@ void evalExpression(stack<string> &current_stack) {
             filtered_string.erase(pos, sub_string.length());
         }
     }
-
     //Remove the opening parentheses
     current_stack.pop();
     current_stack.push(filtered_string);
@@ -365,12 +402,19 @@ int main(int argc, char* argv[])
                     }
                 }
                 string final_string;
+                int count = 1;
                 while(!original_stack.empty()) {
                     final_string.insert(0, original_stack.top());
                     original_stack.pop();
+                    count++;
                 }
-                cout << final_string << endl;
-                cout << editString(final_string) << endl;
+                string updated_string;
+                for (int i = 0; i < (int)final_string.length(); i++) {
+                    if(final_string[i]) {
+                        updated_string.append(string(1, final_string[i]));
+                    }
+                }
+                output << editString(updated_string) << endl;
             }
         } else {
             output << "Malformed" << endl;
