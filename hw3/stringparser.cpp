@@ -55,9 +55,10 @@ bool isParensOk(const string &line) {
     int close_paren_count = 0;
     int len = line.length();
     for(int i = 0; i < len; i++) {
-        if(isOpenParen(line[i])) {
+        string s(1, line[i]);
+        if(isOpenParen(s)) {
             open_paren_count++;
-        } else if(isCloseParen(line[i])) {
+        } else if(isCloseParen(s)) {
             close_paren_count++;
         }
     }
@@ -65,7 +66,8 @@ bool isParensOk(const string &line) {
 }
 
 //To ensure substring is not <Y> or any other wrong format
-bool isLegalStringExp(string &Y) {
+bool isLegalStringExp(const string &original_Y) {
+    string Y = original_Y;
     bool isLegalString = true;
     int len = Y.length();
     //Ensure last character is an alphabet
@@ -74,6 +76,8 @@ bool isLegalStringExp(string &Y) {
             Y.pop_back();
             len--;
         }
+    } else if(isOpenParen(string(1, Y[len - 1]))) {
+        Y.pop_back();
     } else {
         isLegalString = false;
         return isLegalString;
@@ -95,16 +99,20 @@ bool isOperatorsOk(const string &line) {
     int len = line.length();
     for(int i = 0; i < len; i++) {
         if(isalpha(line[i]) || 
-                isRemoveFront(line[i]) || 
-                isRemoveBack(line[i])) {
+                isRemoveFront(string(1, line[i])) || 
+                isRemoveBack(string(1, line[i]))) {
             string Y;
-            while(!(isAdd(line[i]) ||
-                    isSubtract(line[i]) ||
-                    isOpenParen(line[i]) ||
-                    isCloseParen(line[i]))
+            while(!(isAdd(string(1, line[i])) ||
+                    isSubtract(string(1, line[i])) ||
+                    isOpenParen(string(1, line[i])) ||
+                    isCloseParen(string(1, line[i]))) &&
+                    (i < len)
                 ) {
-                Y.append(line[i]);
+                Y.append(string(1, line[i]));
                 i++;
+            }
+            if(isOpenParen(string(1, line[i]))) {
+                Y.append(string(1, line[i]));
             }
             //To nullify last i++;
             i--;
@@ -113,27 +121,28 @@ bool isOperatorsOk(const string &line) {
             }
             simple_string.append("Y");
         } else {
-            simple_string.append(line[i]);
+            simple_string.append(string(1, line[i]));
         }
     }
     //Check if there exists at most one "-" is between parentheses
     //Check if every "+" is between parentheses
     int simple_str_len = simple_string.length();
+
     for(int i = 0; i < simple_str_len; i++) {
-        if(isSubtract(simple_string[i])) {
+        if(isSubtract(string(1, simple_string[i]))) {
             //Check left side of subtract sign
             if((i - 1) >= 0) {
-                if(simple_string[i - 1] == "Y") {
+                if(string(1, simple_string[i - 1]) == "Y") {
                     if((i - 2) >= 0) {
-                        if(!isOpenParen(simple_string[i - 2])) {
+                        if(!isOpenParen(string(1, simple_string[i - 2]))) {
                             return false;
                         }
                     } else {
                         return false;
                     }
-                } else if(isCloseParen(simple_string[i - 1])) {
+                } else if(isCloseParen(string(1, simple_string[i - 1]))) {
                     if((i - 2) >= 0) {
-                        if(simple_string[i - 2] != "Y") {
+                        if(string(1, simple_string[i - 2]) != "Y") {
                             return false;
                         }
                     } else {
@@ -147,17 +156,17 @@ bool isOperatorsOk(const string &line) {
             }
             //Check right side of subtract sign
             if((i + 1) < simple_str_len) {
-                if(simple_string[i + 1] == "Y") {
+                if(string(1, simple_string[i + 1]) == "Y") {
                     if((i + 2) < simple_str_len) {
-                        if(!isCloseParen(simple_string[i + 2])) {
+                        if(!isCloseParen(string(1, simple_string[i + 2]))) {
                             return false;
                         }
                     } else {
                         return false;
                     }
-                } else if(isOpenParen(simple_string[i + 1])) {
+                } else if(isOpenParen(string(1, simple_string[i + 1]))) {
                     if((i + 2) < simple_str_len) {
-                        if(simple_string[i + 2] != "Y") {
+                        if(string(1, simple_string[i + 2]) != "Y") {
                             return false;
                         }
                     } else {
@@ -169,16 +178,45 @@ bool isOperatorsOk(const string &line) {
             } else {
                 return false;
             }
-        } else if(isAdd(simple_string[i])) {
-            //Check that my sides are both Y
-            if(simple_string[i - 1] != "Y") {
+        } else if(isAdd(string(1, simple_string[i]))) {
+            //Check that my sides of addition sign are both Y
+            if((i - 1) >= 0) {
+                if(string(1, simple_string[i - 1]) != "Y") {
+                    return false;
+                }
+            } else {
                 return false;
             }
-            if(simple_string[i - 1] != "Y") {
+            if((i + 1) < simple_str_len) {
+                if(string(1, simple_string[i + 1]) != "Y") {
+                    return false;
+                }
+            } else {
                 return false;
             }
-        }
+        } else if(isOpenParen(string(1, simple_string[i]))) {
+            if((i + 1) < simple_str_len) {
+                if(string(1, simple_string[i + 1]) != "Y" && 
+                        !isOpenParen(string(1, simple_string[i + 1]))
+                        ) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else if(isCloseParen(string(1, simple_string[i]))) {
+            if((i - 1) >= 0) {
+                if(string(1, simple_string[i - 1]) != "Y" && 
+                        !isCloseParen(string(1, simple_string[i - 1]))
+                        ) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } 
     }
+    return true;
 }
 
 bool isIllegalExp(const string &line) {
@@ -187,7 +225,7 @@ bool isIllegalExp(const string &line) {
             ) ? true : false;
 }
 
-bool checkMalformed(string &line) {
+bool isMalformed(string &line) {
     bool malformed = false;
     int len = line.length();
     //Traverse through string to eliminate whitespace
@@ -210,16 +248,22 @@ bool checkMalformed(string &line) {
 }
 
 string editString(string x) {
-    int len = x.length();
+    int index = x.length() - 1;
     string new_string;
-    for (int i = len - 1; i >= 0; i--) {
+    while(isalpha(x[index]) && index >= 0) {
+        new_string.insert(0, string(1, x[index]));
+        index--;
+    }
+    for(int i = index; i >= 0; i--) {
         string s(1, x[i]);
-        if(isRemoveFront(s) && (new_string.length() > 1)) {
-            new_string.erase(0, 1);
-        } else if(isRemoveBack(s) && (new_string.length() > 1)) {
-            new_string.pop_back();
-        } else {
-            new_string.insert(0, s);
+        if(isRemoveFront(s)) {
+            if(new_string.length() > 1) {
+                new_string.erase(0, 1);
+            }
+        } else if(isRemoveBack(s)) {
+            if(new_string.length() > 1) {
+                new_string.pop_back();
+            }
         }
     }
     return new_string;
@@ -308,7 +352,7 @@ int main(int argc, char* argv[])
 
         //If input string is length == 0, it is malformed
         if(len != 0) {
-            bool malformed = checkMalformed(line);
+            bool malformed = isMalformed(line);
             if(malformed) {
                 output << "Malformed" << endl;
             } else {
@@ -325,7 +369,8 @@ int main(int argc, char* argv[])
                     final_string.insert(0, original_stack.top());
                     original_stack.pop();
                 }
-                output << editString(final_string) << endl;
+                cout << final_string << endl;
+                cout << editString(final_string) << endl;
             }
         } else {
             output << "Malformed" << endl;
