@@ -3,11 +3,11 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <stack>
-//#include "stackstr.h"
+#include "stackstr.h"
 
 using namespace std;
 
+/*-------------START OF LEGAL CHAR CHECK FUNCTIONS--------------*/
 bool isRemoveBack(string x) {
     return (x == "<") ? true : false;
 }
@@ -31,7 +31,9 @@ bool isCloseParen(string x) {
 bool isOpenParen(string x) {
     return (x == "(") ? true : false;
 }
+/*-------------END OF LEGAL CHAR CHECK FUNCTIONS--------------*/
 
+/*-------------START OF CHECKING FUNCTIONS--------------*/
 //Check if char is one of the valid characters allowed
 bool isLegalChar(char c) {
     string x(1, c);
@@ -92,9 +94,11 @@ bool isLegalStringExp(const string& original_Y) {
     return isLegalString;
 }
 
+//To check that there is only either one '-' or multiple
+//'+' in between a set of parentheses
 bool isCorrectFormatInsideParen(const string& exp) {
     int exp_len = exp.length();
-    stack<string> exp_stack;
+    StackStr exp_stack;
     for(int i = 0; i < exp_len; i++) {
         if(isCloseParen(string(1, exp[i]))) {
             int subtract_count = 0;
@@ -169,6 +173,8 @@ bool isOperatorsOk(const string& line) {
     return true;
 }
 
+//To check if my operators, parentheses, and strings 
+//are legal
 bool isIllegalExp(const string& line) {
     if(isParensOk(line)) {
         return isOperatorsOk(line) ? false : true;
@@ -177,6 +183,8 @@ bool isIllegalExp(const string& line) {
     }
 }
 
+//To remove unecessary whitespaces and check if input
+//malformed
 bool isMalformed(string& line) {
     bool malformed = false;
     int len = line.length();
@@ -198,7 +206,11 @@ bool isMalformed(string& line) {
     malformed = isIllegalExp(line);
     return malformed;
 }
+/*-------------END OF CHECKING FUNCTIONS--------------*/
 
+/*-------------START OF EVALUATION FUNCTIONS--------------*/
+//Reads the removeFront and removeBack operators to edit 
+//string accordingly
 string editString(string x) {
     int index = x.length() - 1;
     string new_string;
@@ -226,9 +238,12 @@ string editString(string x) {
     return new_string;
 }
 
-void evalExpression(stack<string>& current_stack) {
+//Evaluates the expression and pushes it back onto
+//the stack, contains a *SPECIAL CHECK* to ensure
+//no (cat -cat) situation
+bool evalExpression(StackStr& current_stack) {
     string filtered_string;
-    stack<string> exp_stack;
+    StackStr exp_stack;
     bool addition = true;
 
     //Where we form the strings to be evaluated from the
@@ -269,6 +284,13 @@ void evalExpression(stack<string>& current_stack) {
         string sub_string = editString(exp_stack.top());
         exp_stack.pop();
         int pos = filtered_string.find(sub_string);
+
+        //*SPECIAL CHECK* to ensure that no empty string
+        //is returned, else malformed
+        if(filtered_string == sub_string) {
+            return false;
+        }
+
         if(pos >= 0 && pos < len) {
             filtered_string.erase(pos, sub_string.length());
         }
@@ -277,7 +299,9 @@ void evalExpression(stack<string>& current_stack) {
     //Remove the opening parentheses
     current_stack.pop();
     current_stack.push(filtered_string);
+    return true;
 }
+/*-------------END OF EVALUATION FUNCTIONS--------------*/
 
 int main(int argc, char* argv[])
 {
@@ -310,7 +334,7 @@ int main(int argc, char* argv[])
         int len = line.length();
 
         //Stack to store original string
-        stack<string> original_stack;
+        StackStr original_stack;
 
         //If input string is length == 0, it is malformed
         if(len != 0) {
@@ -320,28 +344,37 @@ int main(int argc, char* argv[])
             } else {
                 for(int i = 0; i < len; i++) {
                     if(isCloseParen(string(1, line[i]))) {
-                        evalExpression(original_stack);
+                        malformed = !(evalExpression(original_stack));
+                        if(malformed) {
+                            break;
+                        }
                     } else {
                         string s(1, line[i]);
                         original_stack.push(s);
                     }
                 }
 
-                //Transfer remaining items from stack to a string
-                string final_string;
-                while(!original_stack.empty()) {
-                    final_string.insert(0, original_stack.top());
-                    original_stack.pop();
-                }
-
-                //Remove all uneccessary whitespaces 
-                string updated_string;
-                for (int i = 0; i < (int)final_string.length(); i++) {
-                    if(final_string[i]) {
-                        updated_string.append(string(1, final_string[i]));
+                //Check again if it was a malformed expression because 
+                //(cat - cat) is not legal
+                if(!malformed) {
+                    //Transfer remaining items from stack to a string
+                    string final_string;
+                    while(!original_stack.empty()) {
+                        final_string.insert(0, original_stack.top());
+                        original_stack.pop();
                     }
+
+                    //Remove all uneccessary whitespaces 
+                    string updated_string;
+                    for (int i = 0; i < (int)final_string.length(); i++) {
+                        if(final_string[i]) {
+                            updated_string.append(string(1, final_string[i]));
+                        }
+                    }
+                    output << editString(updated_string) << endl;
+                } else {
+                    output << "Malformed" << endl;
                 }
-                output << editString(updated_string) << endl;
             }
         } else {
             output << "Malformed" << endl;
