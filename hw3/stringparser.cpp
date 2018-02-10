@@ -98,6 +98,9 @@ bool isLegalStringExp(const string& original_Y) {
 //'+' in between a set of parentheses
 bool isCorrectFormatInsideParen(const string& exp) {
     int exp_len = exp.length();
+
+    //To check that '-'/'+' must be between parentheses
+    int paren_open = 0;
     StackStr exp_stack;
     for(int i = 0; i < exp_len; i++) {
         if(isCloseParen(string(1, exp[i]))) {
@@ -127,6 +130,25 @@ bool isCorrectFormatInsideParen(const string& exp) {
             }
             exp_stack.pop();
             exp_stack.push("Y");
+            paren_open--;
+        } else if(isOpenParen(string(1, exp[i]))) {
+            paren_open++;
+            exp_stack.push(string(1, exp[i]));
+        } else if(isAdd(string(1, exp[i])) ||
+                    isSubtract(string(1, exp[i]))
+                ) {
+            if(paren_open > 0) {
+                if(exp[i - 1] != 'Y' && 
+                        !isCloseParen(string(1, exp[i - 1])) &&
+                        exp[i + 1] != 'Y' &&
+                        !isOpenParen(string(1, exp[i + 1]))
+                    ) {
+                    return false;
+                }
+                exp_stack.push(string(1, exp[i]));
+            } else {
+                return false;
+            }
         } else {
             exp_stack.push(string(1, exp[i]));
         }
