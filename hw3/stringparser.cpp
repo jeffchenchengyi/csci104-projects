@@ -84,7 +84,7 @@ bool isLegalStringExp(const string& original_Y) {
         isLegalString = false;
         return isLegalString;
     }
-    
+
     //Ensures no more alphabets remain in string
     //after removing alphabets from the back
     for(int i = 0; i < len; i++) {
@@ -106,6 +106,12 @@ bool isCorrectFormatInsideParen(const string& exp) {
     StackStr exp_stack;
     for(int i = 0; i < exp_len; i++) {
         if(isCloseParen(string(1, exp[i]))) {
+            //*SPECIAL CHECK* to ensure (a+b)(b+c) is malformed
+            if(i + 1 < exp_len) {
+                if(isOpenParen(string(1, exp[i + 1]))) {
+                    return false;
+                }
+            }
             int subtract_count = 0;
             int add_count = 0;
             string before_close = exp_stack.top();
