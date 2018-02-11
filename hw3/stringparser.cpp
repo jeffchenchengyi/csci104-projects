@@ -71,9 +71,10 @@ bool isLegalStringExp(const string& original_Y) {
     string Y = original_Y;
     bool isLegalString = true;
     int len = Y.length();
+
     //Ensure last character is an alphabet
     if(isalpha(Y[len - 1])) {
-        while(isalpha(Y[len - 1]) && (len > 0)) {
+        while((len > 0) && isalpha(Y[len - 1])) {
             Y.pop_back();
             len--;
         }
@@ -83,6 +84,7 @@ bool isLegalStringExp(const string& original_Y) {
         isLegalString = false;
         return isLegalString;
     }
+    
     //Ensures no more alphabets remain in string
     //after removing alphabets from the back
     for(int i = 0; i < len; i++) {
@@ -120,6 +122,9 @@ bool isCorrectFormatInsideParen(const string& exp) {
                     exp_stack.pop();
                 }
             }
+
+            //To make sure there is only either 1 '-' or multiple
+            //'+' between parentheses 
             if(!(((subtract_count == 1) && (add_count == 0)) || 
                     ((subtract_count == 0) && (add_count > 0)))
                     ) {
@@ -187,6 +192,7 @@ bool isOperatorsOk(const string& line) {
             simple_string.append(string(1, line[i]));
         }
     }
+
     //Check if there exists at most one "-" is between parentheses
     //Check if every "+" is between parentheses
     if(!isCorrectFormatInsideParen(simple_string)) {
