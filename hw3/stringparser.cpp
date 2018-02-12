@@ -106,9 +106,11 @@ bool isCorrectFormatInsideParen(const string& exp) {
     StackStr exp_stack;
     for(int i = 0; i < exp_len; i++) {
         if(isCloseParen(string(1, exp[i]))) {
-            //*SPECIAL CHECK* to ensure (a+b)(b+c) is malformed
+            //*SPECIAL CHECK* to ensure (Y+Y)(Y+Y), (Y+Y)Y is malformed
             if(i + 1 < exp_len) {
-                if(isOpenParen(string(1, exp[i + 1]))) {
+                if(isOpenParen(string(1, exp[i + 1])) ||
+                        exp[i + 1] == 'Y'
+                    ) {
                     return false;
                 }
             }
@@ -143,6 +145,14 @@ bool isCorrectFormatInsideParen(const string& exp) {
             exp_stack.push("Y");
             paren_open--;
         } else if(isOpenParen(string(1, exp[i]))) {
+            //*SPECIAL CHECK* to ensure (Y+Y)(Y+Y), Y(Y+Y) is malformed
+            if(i - 1 >= 0) {
+                if(isCloseParen(string(1, exp[i - 1])) ||
+                        exp[i - 1] == 'Y'
+                    ) {
+                    return false;
+                }
+            }
             paren_open++;
             exp_stack.push(string(1, exp[i]));
         } else if(isAdd(string(1, exp[i])) ||
@@ -188,12 +198,27 @@ bool isOperatorsOk(const string& line) {
             if(isOpenParen(string(1, line[i]))) {
                 Y.append(string(1, line[i]));
             }
+
             //To nullify last i++;
             i--;
+
+            //Check if '<', '>', and alphabets are in legal format
             if(!isLegalStringExp(Y)) {
                 return false;
             }
-            simple_string.append("Y");
+
+            //Check if Y is just '<', '>' and no alphabets
+            int y_len = Y.length();
+            bool existAlpha = false;
+            for(int j = 0; j < y_len; j++) {
+                if(isalpha(Y[j])) {
+                    existAlpha = true;
+                }
+            }
+            if(existAlpha) {
+                //Y contains only alphabets, without the '<' or '>'
+                simple_string.append("Y");
+            }
         } else {
             simple_string.append(string(1, line[i]));
         }
