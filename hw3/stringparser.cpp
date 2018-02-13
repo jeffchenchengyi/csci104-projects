@@ -51,7 +51,7 @@ bool isLegalChar(char c) {
 //parens are equal
 bool isParensOk(const string& line) {
     int extra_paren_count = 0;
-    int len = line.length();
+    int len = int(line.length());
     for(int i = 0; i < len; i++) {
         string s(1, line[i]);
         if(isOpenParen(s)) {
@@ -70,7 +70,7 @@ bool isParensOk(const string& line) {
 bool isLegalStringExp(const string& original_Y) {
     string Y = original_Y;
     bool isLegalString = true;
-    int len = Y.length();
+    int len = int(Y.length());
 
     //Ensure last character is an alphabet
     if(isalpha(Y[len - 1])) {
@@ -99,7 +99,7 @@ bool isLegalStringExp(const string& original_Y) {
 //To check that there is only either one '-' or multiple
 //'+' in between a set of parentheses
 bool isCorrectFormatInsideParen(const string& exp) {
-    int exp_len = exp.length();
+    int exp_len = int(exp.length());
 
     //To check that '-'/'+' must be between parentheses
     int paren_open = 0;
@@ -180,7 +180,7 @@ bool isCorrectFormatInsideParen(const string& exp) {
 //To ensure that all operators are in the correct pos
 bool isOperatorsOk(const string& line) {
     string simple_string;
-    int len = line.length();
+    int len = int(line.length());
     for(int i = 0; i < len; i++) {
         if(isalpha(line[i]) || 
                 isRemoveFront(string(1, line[i])) || 
@@ -208,7 +208,7 @@ bool isOperatorsOk(const string& line) {
             }
 
             //Check if Y is just '<', '>' and no alphabets
-            int y_len = Y.length();
+            int y_len = int(Y.length());
             bool existAlpha = false;
             for(int j = 0; j < y_len; j++) {
                 if(isalpha(Y[j])) {
@@ -246,7 +246,7 @@ bool isIllegalExp(const string& line) {
 //malformed
 bool isMalformed(string& line) {
     bool malformed = false;
-    int len = line.length();
+    int len = int(line.length());
     //Traverse through string to eliminate whitespace
     //and signal if there exists illegal chars
     for(int i = 0; i < len; i++) {
@@ -271,7 +271,7 @@ bool isMalformed(string& line) {
 //Reads the removeFront and removeBack operators to edit 
 //string accordingly
 string editString(string x) {
-    int index = x.length() - 1;
+    int index = int(x.length()) - 1;
     string new_string;
 
     //Insert all the alphabets in the new string first
@@ -338,11 +338,11 @@ bool evalExpression(StackStr& current_stack) {
         }
     } else {
         filtered_string = editString(exp_stack.top());
-        int len = filtered_string.length();
+        int len = int(filtered_string.length());
         exp_stack.pop();
         string sub_string = editString(exp_stack.top());
         exp_stack.pop();
-        int pos = filtered_string.find(sub_string);
+        int pos = int(filtered_string.find(sub_string));
 
         //*SPECIAL CHECK* to ensure that no empty string
         //is returned, else malformed
@@ -390,7 +390,7 @@ int main(int argc, char* argv[])
 
     //Getting the command in the input file
     while(getline(input, line)) {
-        int len = line.length();
+        int len = int(line.length());
 
         //Stack to store original string
         StackStr original_stack;
@@ -425,7 +425,7 @@ int main(int argc, char* argv[])
 
                     //Remove all uneccessary whitespaces 
                     string updated_string;
-                    for (int i = 0; i < (int)final_string.length(); i++) {
+                    for (int i = 0; i < int(final_string.length()); i++) {
                         if(final_string[i]) {
                             updated_string.append(string(1, final_string[i]));
                         }
