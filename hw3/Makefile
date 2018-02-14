@@ -14,4 +14,4 @@ lliststr.o: lliststr.cpp lliststr.h
 
 .PHONY: clean
 clean:
-	rm stringparser stackstr.o lliststr.o
+	rm -f stringparser stackstr.o lliststr.o

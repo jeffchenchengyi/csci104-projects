@@ -7,7 +7,21 @@
 
 ## EITHER - 
 
-### Use [MakeFile](Makefile) to compile both lliststr.o, stackstr.o, and stringparser:
+## [Problem 4 (Stacks, 10%)](stackstr.cpp)
+### [Header file for Stack class](stackstr.h)
+### [Header file for LListStr class](lliststr.h)
+### [Cpp file for LListStr class](lliststr.cpp)
+
+### Use [MakeFile](Makefile) to compile stackstr.cpp stackstr.h lliststr.o:
+> **`make stackstr.o`** 
+
+### Remove executables:
+> **`make clean`**
+
+
+## [Problem 5 (String Expression Parser and Evaluator, 50%)](stringparser.cpp)
+
+### Use [MakeFile](Makefile) to compile lliststr.o, stackstr.o, stringparser.cpp:
 > **`make stringparser`** 
 
 ### Memory leak check: 
