@@ -7,7 +7,7 @@
 
 ## EITHER - 
 
-### Use [MakeFile](Makefile) to compile both stackstr.o and stringparser:
+### Use [MakeFile](Makefile) to compile both lliststr.o, stackstr.o, and stringparser:
 > **`make stringparser`** 
 
 ### Memory leak check: 
@@ -17,6 +17,9 @@ suppressed.
 
 ### Run: 
 > **`./stringparser`**
+
+### Remove executables:
+> **`make clean`**
 
 
 
