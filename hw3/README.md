@@ -25,12 +25,12 @@
 > **`make stringparser`** 
 
 ### Memory leak check: 
-> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./stringparser`**, 
+> **`valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./stringparser input.txt output.txt`**, 
 to check if there are any memory leaks, should be only 72,704 bytes in 1 blocks 
 suppressed.
 
 ### Run: 
-> **`./stringparser`**
+> **`./stringparser input.txt output.txt`**
 
 ### Remove executables:
 > **`make clean`**
@@ -60,7 +60,7 @@ suppressed.
 ## [Problem 5 (String Expression Parser and Evaluator, 50%)](stringparser.cpp)
 
 ### Compile: 
-> **`g++ -g -Wall -std=c++11 stringparser.cpp stackstr.cpp lliststr.cpp -o stringparser`**, which compiles 
+> **`g++ -g -Wall -std=c++11 stringparser.cpp stackstr.cpp lliststr.cpp -o stringparser input.txt output.txt`**, which compiles 
 executable in **`stringparser`**
 
 ### Memory leak check: 
@@ -69,4 +69,4 @@ executable in **`stringparser`**
 should be only 72,704 bytes in 1 blocks suppressed
 
 ### Run: 
-> **`./stringparser`**
+> **`./stringparser input.txt output.txt`**
