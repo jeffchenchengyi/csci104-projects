@@ -196,7 +196,31 @@ using namespace std;
 				) {
 			if(query_map_itr->second == (int(command_vec.size()) - 1)) {
 				result_set.insert(query_map_itr->first);
-				cout << query_map_itr->first << endl;
+			}
+		}
+		return result_set;
+	}
+
+	const set<string> unionString(
+			vector<string>& command_vec, 
+			map< string, set<WebPage*> >& word_map
+			) {
+		set<string> result_set;
+		for(int i = 1; i < int(command_vec.size()); i++) {
+			for(int j = 0; j < int(command_vec[i].size()); j++) {
+				command_vec[i][j] = tolower(command_vec[i][j]);
+			}
+			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
+			if(word_map_itr != word_map.end()) {
+				set<WebPage*> wordwebpage_set = word_map_itr->second;
+				set<WebPage*>::iterator wordwebpage_itr;
+				for(
+						wordwebpage_itr = wordwebpage_set.begin(); 
+						wordwebpage_itr != wordwebpage_set.end(); 
+						wordwebpage_itr++
+						) {
+					result_set.insert((*wordwebpage_itr)->getWebLink());
+				}
 			}
 		}
 		return result_set;
@@ -251,7 +275,7 @@ using namespace std;
 					results = intersectString(command_vec, word_map);
 				} 
 				else if(command_vec[0] == "OR") {
-					//results = unionString(command_vec, word_map);
+					results = unionString(command_vec, word_map);
 				} 
 				else if(command_vec[0] == "INCOMING") {
 					//getIncomingLinks(command_vec, webpage_set);
