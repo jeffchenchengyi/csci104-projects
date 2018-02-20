@@ -11,6 +11,8 @@ class WebPage {
     std::string getWebLink();
     void addIncomingLink(WebPage*);
     void addOutgoingLink(WebPage*);
+    const std::set<WebPage*>& getIncomingLinkSet();
+    const std::set<WebPage*>& getOutgoingLinkSet(); 
 
  private:
     std::string weblink;

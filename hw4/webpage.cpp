@@ -16,11 +16,11 @@ WebPage::~WebPage() {
 }
 
 void WebPage::setWebLink(string newWebLink) {
-	WebPage::weblink = newWebLink;
+	weblink = newWebLink;
 }
 
 string WebPage::getWebLink() {
-	return WebPage::weblink;
+	return weblink;
 }
 
 void WebPage::addIncomingLink(WebPage* incominglink_ptr) {
@@ -29,4 +29,12 @@ void WebPage::addIncomingLink(WebPage* incominglink_ptr) {
 
 void WebPage::addOutgoingLink(WebPage* outgoinglink_ptr) {
 	outgoinglinks_set.insert(outgoinglink_ptr);
+}
+
+const set<WebPage*>& WebPage::getIncomingLinkSet() {
+	return incominglinks_set;
+}
+
+const set<WebPage*>& WebPage::getOutgoingLinkSet() {
+	return outgoinglinks_set;
 }
