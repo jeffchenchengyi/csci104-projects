@@ -154,6 +154,32 @@ using namespace std;
 /*------------- END TOKENIZATION/PASRSING FUNCTIONS-------------*/
 
 /*------------- START QUERY HANDLING FUNCTIONS -------------*/
+	void displayWebPage(string weblink, ofstream& output) {
+		ifstream webpage_file(weblink.c_str());
+		if(!webpage_file) {
+    		cout << "Web Page file could not be open." << endl;
+        	return;
+    	}
+    	output << weblink << endl;
+    	while(webpage_file.peek() != EOF) {
+    		char curr_char;
+    		webpage_file.get(curr_char);
+    		if(isOpenParen(string(1, curr_char))) {
+    			while(webpage_file.peek() != EOF) {
+    				char inparen;
+ 					if(isCloseParen(string(1, webpage_file.peek()))) {
+ 						webpage_file.get(inparen);
+ 						break;
+ 					} else {
+ 						webpage_file.get(inparen);
+ 					}
+    			}
+    		} else {
+    			output << curr_char;
+    		}
+    	}
+	}
+
 	const set<string> intersectString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
@@ -226,6 +252,58 @@ using namespace std;
 		return result_set;
 	}
 
+	const set<string> getIncomingLinks(
+			vector<string>& command_vec,
+			const set< WebPage* >& webpage_set
+			) {
+		set< WebPage* >::iterator webpage_itr;
+		for(
+				webpage_itr = webpage_set.begin(); 
+				webpage_itr != webpage_set.end(); 
+				webpage_itr++
+				) {
+			if((*webpage_itr)->getWebLink() == command_vec[1]) {
+				return (*webpage_itr)->getIncomingLinkSet();
+			}
+		}
+	}
+
+	const set<string> getOutgoingLinks(
+			vector<string>& command_vec,
+			const set< WebPage* >& webpage_set
+			) {
+		set< WebPage* >::iterator webpage_itr;
+		for(
+				webpage_itr = webpage_set.begin(); 
+				webpage_itr != webpage_set.end(); 
+				webpage_itr++
+				) {
+			if((*webpage_itr)->getWebLink() == command_vec[1]) {
+				return (*webpage_itr)->getOutgoingLinkSet();
+			}
+		}
+	}
+
+	const set<string> searchWord(
+			const string& word, 
+			map< string, set<WebPage*> >& word_map
+			) {
+		set<string> result_set;
+		map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(word);
+		if(word_map_itr != word_map.end()) {
+			set<WebPage*> wordwebpage_set = word_map_itr->second;
+			set<WebPage*>::iterator wordwebpage_itr;
+			for(
+					wordwebpage_itr = wordwebpage_set.begin(); 
+					wordwebpage_itr != wordwebpage_set.end(); 
+					wordwebpage_itr++
+					) {
+				result_set.insert((*wordwebpage_itr)->getWebLink());
+			}
+		}
+		return result_set;
+	}
+
 	void outputResults(
 			const set<string>& results,
 			ofstream& output
@@ -267,7 +345,7 @@ using namespace std;
 		//Execution of commands
 		if(command_vec.size() > 1) {
 			if(command_vec[0] == "PRINT") {
-				//displayWebPage(command_vec);
+				displayWebPage(command_vec[1], output);
 			} else {
 				bool isValid = true;
 				set<string> results;
@@ -278,10 +356,10 @@ using namespace std;
 					results = unionString(command_vec, word_map);
 				} 
 				else if(command_vec[0] == "INCOMING") {
-					//getIncomingLinks(command_vec, webpage_set);
+					results = getIncomingLinks(command_vec, webpage_set);
 				} 
 				else if(command_vec[0] == "OUTGOING") {
-					//getOutgoingLinks(command_vec, webpage_set);
+					results = getOutgoingLinks(command_vec, webpage_set);
 				} 
 				else {
 					output << "Invalid query" << endl;
@@ -294,7 +372,7 @@ using namespace std;
 			}
 		} else {
 			set<string> results;
-			//results = searchWord(command_vec[0]);
+			results = searchWord(command_vec[0], word_map);
 			outputResults(results, output);
 		}
 	}
