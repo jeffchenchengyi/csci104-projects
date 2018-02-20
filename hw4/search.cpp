@@ -154,7 +154,8 @@ using namespace std;
 	void analyzeQuery(
 			string query_command, 
 			const set< WebPage* >& webpage_set, 
-			const map< string, set<WebPage*> >& word_map
+			const map< string, set<WebPage*> >& word_map,
+			ofstream& output
 			) {
 		vector<string> command_vec;
 		for(int i = 0; i < int(query_command.length()); i++) {
@@ -163,28 +164,33 @@ using namespace std;
 					i < int(query_command.length()) && 
 					!isblank(query_command[i])
 					) {
-				command_token.append(string(1, query_command[i]));
+				command_token.append(string(1, tolower(query_command[i])));
 				i++;
 			}
 			command_vec.push_back(command_token);
 		}
+		cout << command_vec.size() << endl;
 		if(command_vec[0] == "AND") {
-
+			//intersectString(command_vec, word_map);
 		} 
 		else if(command_vec[0] == "OR") {
-
+			//unionString(command_vec, word_map);
 		} 
 		else if(command_vec[0] == "PRINT") {
-
+			//displayWebPage(command_vec);
 		} 
 		else if(command_vec[0] == "INCOMING") {
-
+			//getIncomingLinks(command_vec, webpage_set);
 		} 
 		else if(command_vec[0] == "OUTGOING") {
-
+			//getOutgoingLinks(command_vec, webpage_set);
 		} 
 		else {
-
+			if(command_vec.size() > 1) {
+				output << "Invalid query" << endl;
+			} else {
+				//searchWord(command_vec[0]);
+			}
 		}
 	}
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/
@@ -268,9 +274,9 @@ int main(int argc, char* argv[])
 	string query_command;
 	while(getline(query, query_command)) {
     	if(!query_command.empty()) {
-    		analyzeQuery(query_command, webpage_set, word_map);
+    		analyzeQuery(query_command, webpage_set, word_map, output);
     	} else {
-    		//cout << "Invalid query" << endl;
+    		output << "Invalid query" << endl;
     	}
     }
 /*------------- END QUERY HANDLING-------------*/
