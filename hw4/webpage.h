@@ -9,15 +9,15 @@ class WebPage {
     ~WebPage();
     void setWebLink(std::string);
     std::string getWebLink();
-    void addIncomingLink(WebPage*);
-    void addOutgoingLink(WebPage*);
-    const std::set<WebPage*>& getIncomingLinkSet();
-    const std::set<WebPage*>& getOutgoingLinkSet(); 
+    void addIncomingLink(std::string);
+    void addOutgoingLink(std::string);
+    const std::set<std::string>& getIncomingLinkSet();
+    const std::set<std::string>& getOutgoingLinkSet(); 
 
  private:
     std::string weblink;
-    std::set<WebPage*> incominglinks_set;
-    std::set<WebPage*> outgoinglinks_set;
+    std::set<std::string> incominglinks_set;
+    std::set<std::string> outgoinglinks_set;
 };
 
 #endif

@@ -23,18 +23,18 @@ string WebPage::getWebLink() {
 	return weblink;
 }
 
-void WebPage::addIncomingLink(WebPage* incominglink_ptr) {
-	incominglinks_set.insert(incominglink_ptr);
+void WebPage::addIncomingLink(string incominglink) {
+	incominglinks_set.insert(incominglink);
 }
 
-void WebPage::addOutgoingLink(WebPage* outgoinglink_ptr) {
-	outgoinglinks_set.insert(outgoinglink_ptr);
+void WebPage::addOutgoingLink(string outgoinglink) {
+	outgoinglinks_set.insert(outgoinglink);
 }
 
-const set<WebPage*>& WebPage::getIncomingLinkSet() {
+const set<string>& WebPage::getIncomingLinkSet() {
 	return incominglinks_set;
 }
 
-const set<WebPage*>& WebPage::getOutgoingLinkSet() {
+const set<string>& WebPage::getOutgoingLinkSet() {
 	return outgoinglinks_set;
 }

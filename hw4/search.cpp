@@ -44,7 +44,7 @@ using namespace std;
 		else {
 			set<WebPage*> newWebPage_set; //Create new set with pointer to WebPage obj
 			newWebPage_set.insert(webpage_ptr);
-			word_map.insert(make_pair(token, newWebPage_set));
+			word_map.insert(word_map_itr, make_pair(token, newWebPage_set));
 		}
 	}
 
@@ -84,15 +84,18 @@ using namespace std;
 			) {
 		string mdlink;
 		readLink(webpage_file, mdlink);
+		//Find the WebPage obj that mdlink directs to
+		//If the WebPage obj is not found, only the outgoing link 
+		//for current webpage is added
 		for(set< WebPage* >::iterator webpage_itr = webpage_set.begin(); 
 	    		webpage_itr != webpage_set.end(); 
 	    			webpage_itr++) {
 			if(((*webpage_itr)->getWebLink()) == mdlink) {
-				(*webpage_itr)->addIncomingLink(webpage_ptr); //Add incoming link for target webpage
-				webpage_ptr->addOutgoingLink(*webpage_itr); //Adding outgoing link for current webpage
+				(*webpage_itr)->addIncomingLink(webpage_ptr->getWebLink()); //Add incoming link for target webpage
 				break;
 			}
 		}
+		webpage_ptr->addOutgoingLink(mdlink); //Adding outgoing link for current webpage
 		char openParen;
 		webpage_file.get(openParen); //Remove the closing paren in the ifstream obj
 	}
@@ -151,12 +154,80 @@ using namespace std;
 /*------------- END TOKENIZATION/PASRSING FUNCTIONS-------------*/
 
 /*------------- START QUERY HANDLING FUNCTIONS -------------*/
+	const set<string> intersectString(
+			vector<string>& command_vec, 
+			map< string, set<WebPage*> >& word_map
+			) {
+		map<string, int> query_map;
+		map<string, int>::iterator query_map_itr; 
+		set<string> result_set;
+		for(int i = 1; i < int(command_vec.size()); i++) {
+			for(int j = 0; j < int(command_vec[i].size()); j++) {
+				command_vec[i][j] = tolower(command_vec[i][j]);
+			}
+			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
+			if(word_map_itr != word_map.end()) {
+				set<WebPage*> wordwebpage_set = word_map_itr->second;
+				set<WebPage*>::iterator wordwebpage_itr;
+				for(
+						wordwebpage_itr = wordwebpage_set.begin(); 
+						wordwebpage_itr != wordwebpage_set.end(); 
+						wordwebpage_itr++
+						) {
+					query_map_itr = query_map.find((*wordwebpage_itr)->getWebLink());
+					//If query_map already has the weblink as a key, increment its count
+					//else create a new key: weblink, value: count pair
+					if(query_map_itr != query_map.end()) {
+						(query_map_itr->second)++;
+					} else {
+						query_map.insert(make_pair((*wordwebpage_itr)->getWebLink(), 1));
+					}
+				}
+			} else {
+				break;
+			}
+		}
+		//Any weblinks that have command_vec - 1 # of counts means it contains
+		//all required query keywords in AND
+		for(
+				query_map_itr = query_map.begin(); 
+				query_map_itr != query_map.end(); 
+				query_map_itr++
+				) {
+			if(query_map_itr->second == (int(command_vec.size()) - 1)) {
+				result_set.insert(query_map_itr->first);
+				cout << query_map_itr->first << endl;
+			}
+		}
+		return result_set;
+	}
+
+	void outputResults(
+			const set<string>& results,
+			ofstream& output
+			) {
+		if(results.size() > 0) {
+			output << int(results.size()) << endl;
+			set<string>::iterator results_itr;
+			for(
+					results_itr = results.begin(); 
+					results_itr != results.end(); 
+					results_itr++
+					) {
+				output << *(results_itr) << endl;
+			}
+		} else {
+			output << 0 << endl;
+		}
+	}
+
 	void analyzeQuery(
 			string query_command, 
 			const set< WebPage* >& webpage_set, 
-			const map< string, set<WebPage*> >& word_map,
+			map< string, set<WebPage*> >& word_map,
 			ofstream& output
 			) {
+		//Split the query_command into the search command and the specified queries
 		vector<string> command_vec;
 		for(int i = 0; i < int(query_command.length()); i++) {
 			string command_token;
@@ -164,33 +235,43 @@ using namespace std;
 					i < int(query_command.length()) && 
 					!isblank(query_command[i])
 					) {
-				command_token.append(string(1, tolower(query_command[i])));
+				command_token.append(string(1, query_command[i]));
 				i++;
 			}
 			command_vec.push_back(command_token);
 		}
-		cout << command_vec.size() << endl;
-		if(command_vec[0] == "AND") {
-			//intersectString(command_vec, word_map);
-		} 
-		else if(command_vec[0] == "OR") {
-			//unionString(command_vec, word_map);
-		} 
-		else if(command_vec[0] == "PRINT") {
-			//displayWebPage(command_vec);
-		} 
-		else if(command_vec[0] == "INCOMING") {
-			//getIncomingLinks(command_vec, webpage_set);
-		} 
-		else if(command_vec[0] == "OUTGOING") {
-			//getOutgoingLinks(command_vec, webpage_set);
-		} 
-		else {
-			if(command_vec.size() > 1) {
-				output << "Invalid query" << endl;
+		//Execution of commands
+		if(command_vec.size() > 1) {
+			if(command_vec[0] == "PRINT") {
+				//displayWebPage(command_vec);
 			} else {
-				//searchWord(command_vec[0]);
+				bool isValid = true;
+				set<string> results;
+				if(command_vec[0] == "AND") {
+					results = intersectString(command_vec, word_map);
+				} 
+				else if(command_vec[0] == "OR") {
+					//results = unionString(command_vec, word_map);
+				} 
+				else if(command_vec[0] == "INCOMING") {
+					//getIncomingLinks(command_vec, webpage_set);
+				} 
+				else if(command_vec[0] == "OUTGOING") {
+					//getOutgoingLinks(command_vec, webpage_set);
+				} 
+				else {
+					output << "Invalid query" << endl;
+					isValid = false;
+				}
+				//Output results of search if command was valid
+				if(isValid) {
+					outputResults(results, output);
+				}
 			}
+		} else {
+			set<string> results;
+			//results = searchWord(command_vec[0]);
+			outputResults(results, output);
 		}
 	}
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/
