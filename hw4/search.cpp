@@ -180,7 +180,7 @@ using namespace std;
     	}
 	}
 
-	const set<string> intersectString(
+	const pair< set<string>, bool > intersectString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
 			) {
@@ -224,10 +224,10 @@ using namespace std;
 				result_set.insert(query_map_itr->first);
 			}
 		}
-		return result_set;
+		return make_pair(result_set, true);
 	}
 
-	const set<string> unionString(
+	const pair< set<string>, bool > unionString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
 			) {
@@ -249,38 +249,50 @@ using namespace std;
 				}
 			}
 		}
-		return result_set;
+		return make_pair(result_set, true);
 	}
 
-	const set<string> getIncomingLinks(
+	const pair< set<string>, bool > getIncomingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
 			) {
 		set< WebPage* >::iterator webpage_itr;
+		bool isFound = false;
 		for(
 				webpage_itr = webpage_set.begin(); 
 				webpage_itr != webpage_set.end(); 
 				webpage_itr++
 				) {
 			if((*webpage_itr)->getWebLink() == command_vec[1]) {
-				return (*webpage_itr)->getIncomingLinkSet();
+				isFound = true;
+				return make_pair((*webpage_itr)->getIncomingLinkSet(), isFound);
 			}
+		}
+		if(!isFound) {
+			set<string> outgoingLinkSet;
+			return make_pair(outgoingLinkSet, isFound);
 		}
 	}
 
-	const set<string> getOutgoingLinks(
+	const pair< set<string>, bool > getOutgoingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
 			) {
 		set< WebPage* >::iterator webpage_itr;
+		bool isFound = false;
 		for(
 				webpage_itr = webpage_set.begin(); 
 				webpage_itr != webpage_set.end(); 
 				webpage_itr++
 				) {
 			if((*webpage_itr)->getWebLink() == command_vec[1]) {
-				return (*webpage_itr)->getOutgoingLinkSet();
+				isFound = true;
+				return make_pair((*webpage_itr)->getOutgoingLinkSet(), isFound);
 			}
+		}
+		if(!isFound) {
+			set<string> outgoingLinkSet;
+			return make_pair(outgoingLinkSet, isFound);
 		}
 	}
 
@@ -343,12 +355,13 @@ using namespace std;
 			command_vec.push_back(command_token);
 		}
 		//Execution of commands
+		set<string> weblink_set;
 		if(command_vec.size() > 1) {
 			if(command_vec[0] == "PRINT") {
 				displayWebPage(command_vec[1], output);
 			} else {
-				bool isValid = true;
-				set<string> results;
+				//Set of weblinks, bool to check if results was found
+				pair< set<string>, bool > results = make_pair(weblink_set, false); 
 				if(command_vec[0] == "AND") {
 					results = intersectString(command_vec, word_map);
 				} 
@@ -362,18 +375,18 @@ using namespace std;
 					results = getOutgoingLinks(command_vec, webpage_set);
 				} 
 				else {
-					output << "Invalid query" << endl;
-					isValid = false;
+					//If the command was just word1 word2 without any AND, OR,...
 				}
 				//Output results of search if command was valid
-				if(isValid) {
-					outputResults(results, output);
+				if(results.second) {
+					outputResults(results.first, output);
+				} else {
+					output << "Invalid query" << endl;
 				}
 			}
 		} else {
-			set<string> results;
-			results = searchWord(command_vec[0], word_map);
-			outputResults(results, output);
+			weblink_set = searchWord(command_vec[0], word_map);
+			outputResults(weblink_set, output);
 		}
 	}
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/
