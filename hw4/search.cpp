@@ -107,12 +107,13 @@ using namespace std;
 			ifstream& webpage_file,
 			char special_char
 			) {
-		string anchortext;
-		//anchortext.append(string(1, special_char)); //To add "[" to anchor text
-		readWord(webpage_file, anchortext);
-		webpage_file.get(special_char); //Extract closing bracket
-		//anchortext.append(string(1, special_char)); //To add "]" to anchor text
-		updateWordMap(webpage_ptr, word_map, anchortext);
+		//while loop is used to ensure cases like [word1 word2 word3] are read well
+		while(!isCloseBrack(string(1, special_char))) {
+			string anchortext;
+			readWord(webpage_file, anchortext);
+			updateWordMap(webpage_ptr, word_map, anchortext);
+			webpage_file.get(special_char); //Extract closing bracket
+		}
 	}
 
 	//Remove special chars from ifstream obj & checks for
@@ -453,7 +454,7 @@ int main(int argc, char* argv[])
 /*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
 
 /*------------- START QUERY HANDLING-------------*/
-	/*
+	
 	for(map< string, set<WebPage*> >::iterator word_map_itr = word_map.begin(); 
     		word_map_itr != word_map.end(); 
     			word_map_itr++) {
@@ -466,7 +467,7 @@ int main(int argc, char* argv[])
     	}
     	cout << endl;
 	}
-	*/
+	
 	string query_command;
 	while(getline(query, query_command)) {
     	if(!query_command.empty()) {
