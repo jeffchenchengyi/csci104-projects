@@ -454,7 +454,7 @@ int main(int argc, char* argv[])
 /*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
 
 /*------------- START QUERY HANDLING-------------*/
-	
+	/*
 	for(map< string, set<WebPage*> >::iterator word_map_itr = word_map.begin(); 
     		word_map_itr != word_map.end(); 
     			word_map_itr++) {
@@ -467,7 +467,7 @@ int main(int argc, char* argv[])
     	}
     	cout << endl;
 	}
-	
+	*/
 	string query_command;
 	while(getline(query, query_command)) {
     	if(!query_command.empty()) {
