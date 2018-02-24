@@ -158,7 +158,7 @@ using namespace std;
 	void displayWebPage(string weblink, ofstream& output) {
 		ifstream webpage_file(weblink.c_str());
 		if(!webpage_file) {
-    		cout << "Web Page file could not be open." << endl;
+    		output << "Invalid query" << endl;
         	return;
     	}
     	output << weblink << endl;
