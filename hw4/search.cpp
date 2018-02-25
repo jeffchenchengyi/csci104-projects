@@ -299,9 +299,12 @@ using namespace std;
 	}
 
 	const set<string> searchWord(
-			const string& word, 
+			string& word, 
 			map< string, set<WebPage*> >& word_map
 			) {
+		for(int i = 0; i < int(word.length()); i++) {
+			word[i] = tolower(word[i]);
+		}
 		set<string> result_set;
 		map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(word);
 		if(word_map_itr != word_map.end()) {
@@ -345,22 +348,22 @@ using namespace std;
 			) {
 		//Split the query_command into the search command and the specified queries
 		vector<string> command_vec;
-		for(int i = 0; i < int(query_command.length()); i++) {
-			string command_token;
-			while(
-					i < int(query_command.length()) && 
-					!isblank(query_command[i])
-					) {
-				command_token.append(string(1, query_command[i]));
-				i++;
-			}
+		string command_token;
+		istringstream iss(query_command);
+		while(iss >> command_token) {
 			command_vec.push_back(command_token);
 		}
+
 		//Execution of commands
 		set<string> weblink_set;
 		if(command_vec.size() > 1) {
 			if(command_vec[0] == "PRINT") {
-				displayWebPage(command_vec[1], output);
+				//Must only have 1 argument after PRINT
+				if(command_vec.size() != 2) {
+					output << "Invalid query" << endl;
+				} else {
+					displayWebPage(command_vec[1], output);
+				}
 			} else {
 				//Set of weblinks, bool to check if results was found
 				pair< set<string>, bool > results = make_pair(weblink_set, false); 
@@ -371,10 +374,16 @@ using namespace std;
 					results = unionString(command_vec, word_map);
 				} 
 				else if(command_vec[0] == "INCOMING") {
-					results = getIncomingLinks(command_vec, webpage_set);
+					//Must only have 1 argument after INCOMING
+					if(command_vec.size() == 2) {
+						results = getIncomingLinks(command_vec, webpage_set);
+					}
 				} 
 				else if(command_vec[0] == "OUTGOING") {
-					results = getOutgoingLinks(command_vec, webpage_set);
+					//Must only have 1 argument after OUTGOING
+					if(command_vec.size() == 2) {
+						results = getOutgoingLinks(command_vec, webpage_set);
+					}
 				} 
 				else {
 					//If the command was just word1 word2 without any AND, OR,...
