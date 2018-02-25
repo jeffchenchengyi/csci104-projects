@@ -179,6 +179,7 @@ using namespace std;
     			output << curr_char;
     		}
     	}
+    	output << endl;
 	}
 
 	const pair< set<string>, bool > intersectString(
@@ -454,20 +455,6 @@ int main(int argc, char* argv[])
 /*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
 
 /*------------- START QUERY HANDLING-------------*/
-	/*
-	for(map< string, set<WebPage*> >::iterator word_map_itr = word_map.begin(); 
-    		word_map_itr != word_map.end(); 
-    			word_map_itr++) {
-		cout << endl;
-    	cout << word_map_itr->first << " => " << endl;
-    	for(set< WebPage* >::iterator webpage_itr = (word_map_itr->second).begin(); 
-    		webpage_itr != (word_map_itr->second).end(); 
-    			webpage_itr++) {
-    		cout << (*webpage_itr)->getWebLink() << endl;
-    	}
-    	cout << endl;
-	}
-	*/
 	string query_command;
 	while(getline(query, query_command)) {
     	if(!query_command.empty()) {
