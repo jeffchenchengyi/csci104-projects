@@ -356,49 +356,54 @@ using namespace std;
 
 		//Execution of commands
 		set<string> weblink_set;
-		if(command_vec.size() > 1) {
-			if(command_vec[0] == "PRINT") {
-				//Must only have 1 argument after PRINT
-				if(command_vec.size() != 2) {
-					output << "Invalid query" << endl;
+		if(command_vec.size() > 0) {
+			if(command_vec.size() > 1) {
+				if(command_vec[0] == "PRINT") {
+					//Must only have 1 argument after PRINT
+					if(command_vec.size() != 2) {
+						output << "Invalid query" << endl;
+					} else {
+						displayWebPage(command_vec[1], output);
+					}
 				} else {
-					displayWebPage(command_vec[1], output);
+					//Set of weblinks, bool to check if results was found
+					pair< set<string>, bool > results = make_pair(weblink_set, false); 
+					if(command_vec[0] == "AND") {
+						results = intersectString(command_vec, word_map);
+					} 
+					else if(command_vec[0] == "OR") {
+						results = unionString(command_vec, word_map);
+					} 
+					else if(command_vec[0] == "INCOMING") {
+						//Must only have 1 argument after INCOMING
+						if(command_vec.size() == 2) {
+							results = getIncomingLinks(command_vec, webpage_set);
+						}
+					} 
+					else if(command_vec[0] == "OUTGOING") {
+						//Must only have 1 argument after OUTGOING
+						if(command_vec.size() == 2) {
+							results = getOutgoingLinks(command_vec, webpage_set);
+						}
+					} 
+					else {
+						//If the command was just word1 word2 without any AND, OR,...
+					}
+					//Output results of search if command was valid
+					if(results.second) {
+						outputResults(results.first, output);
+					} else {
+						output << "Invalid query" << endl;
+					}
 				}
 			} else {
-				//Set of weblinks, bool to check if results was found
-				pair< set<string>, bool > results = make_pair(weblink_set, false); 
-				if(command_vec[0] == "AND") {
-					results = intersectString(command_vec, word_map);
-				} 
-				else if(command_vec[0] == "OR") {
-					results = unionString(command_vec, word_map);
-				} 
-				else if(command_vec[0] == "INCOMING") {
-					//Must only have 1 argument after INCOMING
-					if(command_vec.size() == 2) {
-						results = getIncomingLinks(command_vec, webpage_set);
-					}
-				} 
-				else if(command_vec[0] == "OUTGOING") {
-					//Must only have 1 argument after OUTGOING
-					if(command_vec.size() == 2) {
-						results = getOutgoingLinks(command_vec, webpage_set);
-					}
-				} 
-				else {
-					//If the command was just word1 word2 without any AND, OR,...
-				}
-				//Output results of search if command was valid
-				if(results.second) {
-					outputResults(results.first, output);
-				} else {
-					output << "Invalid query" << endl;
-				}
+				weblink_set = searchWord(command_vec[0], word_map);
+				outputResults(weblink_set, output);
 			}
 		} else {
-			weblink_set = searchWord(command_vec[0], word_map);
-			outputResults(weblink_set, output);
-		}
+			//If query was just trailing whitespaces
+			output << "Invalid query" << endl;
+		} 
 	}
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/
 
