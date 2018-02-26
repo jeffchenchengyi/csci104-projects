@@ -3,7 +3,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <set>
+#include <vector>
 #include <map>
 #include "webpage.h"
 using namespace std;
@@ -24,17 +24,17 @@ string WebPage::getWebLink() {
 }
 
 void WebPage::addIncomingLink(string incominglink) {
-	incominglinks_set.insert(incominglink);
+	incominglinks_vec.push_back(incominglink);
 }
 
 void WebPage::addOutgoingLink(string outgoinglink) {
-	outgoinglinks_set.insert(outgoinglink);
+	outgoinglinks_vec.push_back(outgoinglink);
 }
 
-const set<string>& WebPage::getIncomingLinkSet() {
-	return incominglinks_set;
+const vector<string>& WebPage::getIncomingLinkVec() {
+	return incominglinks_vec;
 }
 
-const set<string>& WebPage::getOutgoingLinkSet() {
-	return outgoinglinks_set;
+const vector<string>& WebPage::getOutgoingLinkVec() {
+	return outgoinglinks_vec;
 }

@@ -185,13 +185,13 @@ using namespace std;
 	}
 
 	//For AND command
-	const pair< set<string>, bool > intersectString(
+	const pair< vector<string>, bool > intersectString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
 			) {
 		map<string, int> query_map;
 		map<string, int>::iterator query_map_itr; 
-		set<string> result_set;
+		vector<string> result_vec;
 		//Traverse each word in command vec
 		for(int i = 1; i < int(command_vec.size()); i++) {
 			//convert all chars to lowercase
@@ -231,18 +231,18 @@ using namespace std;
 				query_map_itr++
 				) {
 			if(query_map_itr->second == (int(command_vec.size()) - 1)) {
-				result_set.insert(query_map_itr->first);
+				result_vec.push_back(query_map_itr->first);
 			}
 		}
-		return make_pair(result_set, true);
+		return make_pair(result_vec, true);
 	}
 
 	//For OR command
-	const pair< set<string>, bool > unionString(
+	const pair< vector<string>, bool > unionString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
 			) {
-		set<string> result_set;
+		vector<string> result_vec;
 		for(int i = 1; i < int(command_vec.size()); i++) {
 			//convert all chars into lowercase
 			for(int j = 0; j < int(command_vec[i].size()); j++) {
@@ -260,14 +260,14 @@ using namespace std;
 						wordwebpage_itr != wordwebpage_set.end(); 
 						wordwebpage_itr++
 						) {
-					result_set.insert((*wordwebpage_itr)->getWebLink());
+					result_vec.push_back((*wordwebpage_itr)->getWebLink());
 				}
 			}
 		}
-		return make_pair(result_set, true);
+		return make_pair(result_vec, true);
 	}
 
-	const pair< set<string>, bool > getIncomingLinks(
+	const pair< vector<string>, bool > getIncomingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
 			) {
@@ -280,16 +280,16 @@ using namespace std;
 				) {
 			if((*webpage_itr)->getWebLink() == command_vec[1]) {
 				isFound = true;
-				return make_pair((*webpage_itr)->getIncomingLinkSet(), isFound);
+				return make_pair((*webpage_itr)->getIncomingLinkVec(), isFound);
 			}
 		}
 		if(!isFound) {
-			set<string> outgoingLinkSet;
-			return make_pair(outgoingLinkSet, isFound);
+			vector<string> outgoingLinkVec;
+			return make_pair(outgoingLinkVec, isFound);
 		}
 	}
 
-	const pair< set<string>, bool > getOutgoingLinks(
+	const pair< vector<string>, bool > getOutgoingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
 			) {
@@ -302,23 +302,23 @@ using namespace std;
 				) {
 			if((*webpage_itr)->getWebLink() == command_vec[1]) {
 				isFound = true;
-				return make_pair((*webpage_itr)->getOutgoingLinkSet(), isFound);
+				return make_pair((*webpage_itr)->getOutgoingLinkVec(), isFound);
 			}
 		}
 		if(!isFound) {
-			set<string> outgoingLinkSet;
-			return make_pair(outgoingLinkSet, isFound);
+			vector<string> outgoingLinkVec;
+			return make_pair(outgoingLinkVec, isFound);
 		}
 	}
 
-	const set<string> searchWord(
+	const vector<string> searchWord(
 			string& word, 
 			map< string, set<WebPage*> >& word_map
 			) {
 		for(int i = 0; i < int(word.length()); i++) {
 			word[i] = tolower(word[i]);
 		}
-		set<string> result_set;
+		vector<string> result_vec;
 		map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(word);
 		if(word_map_itr != word_map.end()) {
 			set<WebPage*> wordwebpage_set = word_map_itr->second;
@@ -328,19 +328,19 @@ using namespace std;
 					wordwebpage_itr != wordwebpage_set.end(); 
 					wordwebpage_itr++
 					) {
-				result_set.insert((*wordwebpage_itr)->getWebLink());
+				result_vec.push_back((*wordwebpage_itr)->getWebLink());
 			}
 		}
-		return result_set;
+		return result_vec;
 	}
 
 	void outputResults(
-			const set<string>& results,
+			vector<string>& results,
 			ofstream& output
 			) {
 		if(results.size() > 0) {
 			output << int(results.size()) << endl;
-			set<string>::iterator results_itr;
+			vector<string>::iterator results_itr;
 			for(
 					results_itr = results.begin(); 
 					results_itr != results.end(); 
@@ -368,7 +368,7 @@ using namespace std;
 		}
 
 		//Execution of commands
-		set<string> weblink_set;
+		vector<string> weblink_vec;
 		if(command_vec.size() > 0) {
 			if(command_vec.size() > 1) {
 				if(command_vec[0] == "PRINT") {
@@ -380,7 +380,7 @@ using namespace std;
 					}
 				} else {
 					//Set of weblinks, bool to check if results was found
-					pair< set<string>, bool > results = make_pair(weblink_set, false); 
+					pair< vector<string>, bool > results = make_pair(weblink_vec, false); 
 					if(command_vec[0] == "AND") {
 						results = intersectString(command_vec, word_map);
 					} 
@@ -410,8 +410,8 @@ using namespace std;
 					}
 				}
 			} else {
-				weblink_set = searchWord(command_vec[0], word_map);
-				outputResults(weblink_set, output);
+				weblink_vec = searchWord(command_vec[0], word_map);
+				outputResults(weblink_vec, output);
 			}
 		} else {
 			//If query was just trailing whitespaces

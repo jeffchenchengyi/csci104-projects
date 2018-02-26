@@ -1,6 +1,6 @@
 #ifndef WEBPAGE_H
 #define WEBPAGE_H
-#include <set>
+#include <vector>
 #include <string>
 
 class WebPage {
@@ -11,13 +11,13 @@ class WebPage {
     std::string getWebLink();
     void addIncomingLink(std::string);
     void addOutgoingLink(std::string);
-    const std::set<std::string>& getIncomingLinkSet();
-    const std::set<std::string>& getOutgoingLinkSet(); 
+    const std::vector<std::string>& getIncomingLinkVec();
+    const std::vector<std::string>& getOutgoingLinkVec(); 
 
  private:
     std::string weblink;
-    std::set<std::string> incominglinks_set;
-    std::set<std::string> outgoinglinks_set;
+    std::vector<std::string> incominglinks_vec;
+    std::vector<std::string> outgoinglinks_vec;
 };
 
 #endif
