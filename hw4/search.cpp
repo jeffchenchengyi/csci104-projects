@@ -155,6 +155,7 @@ using namespace std;
 /*------------- END TOKENIZATION/PARSING FUNCTIONS-------------*/
 
 /*------------- START QUERY HANDLING FUNCTIONS -------------*/
+	//For PRINT command
 	void displayWebPage(string weblink, ofstream& output) {
 		ifstream webpage_file(weblink.c_str());
 		if(!webpage_file) {
@@ -162,6 +163,7 @@ using namespace std;
         	return;
     	}
     	output << weblink << endl;
+    	//prints char by char but leaves out anything in and incl. ()
     	while(webpage_file.peek() != EOF) {
     		char curr_char;
     		webpage_file.get(curr_char);
@@ -182,6 +184,7 @@ using namespace std;
     	output << endl;
 	}
 
+	//For AND command
 	const pair< set<string>, bool > intersectString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
@@ -189,14 +192,19 @@ using namespace std;
 		map<string, int> query_map;
 		map<string, int>::iterator query_map_itr; 
 		set<string> result_set;
+		//Traverse each word in command vec
 		for(int i = 1; i < int(command_vec.size()); i++) {
+			//convert all chars to lowercase
 			for(int j = 0; j < int(command_vec[i].size()); j++) {
 				command_vec[i][j] = tolower(command_vec[i][j]);
 			}
+			//Find word in word_map O(logn)
 			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
 			if(word_map_itr != word_map.end()) {
 				set<WebPage*> wordwebpage_set = word_map_itr->second;
 				set<WebPage*>::iterator wordwebpage_itr;
+				//Check if the same weblink exists for each word O(m) 
+				//where m is the number of weblinks in my result set
 				for(
 						wordwebpage_itr = wordwebpage_set.begin(); 
 						wordwebpage_itr != wordwebpage_set.end(); 
@@ -229,19 +237,24 @@ using namespace std;
 		return make_pair(result_set, true);
 	}
 
+	//For OR command
 	const pair< set<string>, bool > unionString(
 			vector<string>& command_vec, 
 			map< string, set<WebPage*> >& word_map
 			) {
 		set<string> result_set;
 		for(int i = 1; i < int(command_vec.size()); i++) {
+			//convert all chars into lowercase
 			for(int j = 0; j < int(command_vec[i].size()); j++) {
 				command_vec[i][j] = tolower(command_vec[i][j]);
 			}
+			//iterator to the word in word_map
 			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
 			if(word_map_itr != word_map.end()) {
-				set<WebPage*> wordwebpage_set = word_map_itr->second;
+				set<WebPage*> wordwebpage_set = word_map_itr->second; //Set of all weblinks that contain that word
 				set<WebPage*>::iterator wordwebpage_itr;
+				//Go through all weblinks and insert them into the result_set, 
+				//duplicates will be eliminated in the insertion
 				for(
 						wordwebpage_itr = wordwebpage_set.begin(); 
 						wordwebpage_itr != wordwebpage_set.end(); 
