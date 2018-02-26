@@ -243,6 +243,7 @@ using namespace std;
 			map< string, set<WebPage*> >& word_map
 			) {
 		vector<string> result_vec;
+		set<string> temp_set;
 		for(int i = 1; i < int(command_vec.size()); i++) {
 			//convert all chars into lowercase
 			for(int j = 0; j < int(command_vec[i].size()); j++) {
@@ -253,16 +254,23 @@ using namespace std;
 			if(word_map_itr != word_map.end()) {
 				set<WebPage*> wordwebpage_set = word_map_itr->second; //Set of all weblinks that contain that word
 				set<WebPage*>::iterator wordwebpage_itr;
-				//Go through all weblinks and insert them into the result_set, 
-				//duplicates will be eliminated in the insertion
+				//Go through all weblinks and insert them into the result_vec, 
+				//check for duplicates too, during the insertion
 				for(
 						wordwebpage_itr = wordwebpage_set.begin(); 
 						wordwebpage_itr != wordwebpage_set.end(); 
 						wordwebpage_itr++
 						) {
-					result_vec.push_back((*wordwebpage_itr)->getWebLink());
+					temp_set.insert((*wordwebpage_itr)->getWebLink());
 				}
 			}
+		}
+		for(
+				set<string>::iterator set_itr = temp_set.begin(); 
+				set_itr != temp_set.end(); 
+				set_itr++
+				) {
+			result_vec.push_back(*set_itr);
 		}
 		return make_pair(result_vec, true);
 	}
