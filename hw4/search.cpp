@@ -10,7 +10,7 @@
 
 using namespace std;
 
-/*------------- START TOKENIZATION/PASRSING FUNCTIONS -------------*/
+/*------------- START TOKENIZATION/PARSING FUNCTIONS -------------*/
 	bool isCloseParen(string x) {
 	    return (x == ")") ? true : false;
 	}
@@ -152,7 +152,7 @@ using namespace std;
 			checkSpecChar(webpage_ptr, word_map, webpage_file, webpage_set); //Check what the special char is
 		}
 	}
-/*------------- END TOKENIZATION/PASRSING FUNCTIONS-------------*/
+/*------------- END TOKENIZATION/PARSING FUNCTIONS-------------*/
 
 /*------------- START QUERY HANDLING FUNCTIONS -------------*/
 	void displayWebPage(string weblink, ofstream& output) {
@@ -459,7 +459,6 @@ int main(int argc, char* argv[])
     		webpage_itr != webpage_set.end(); 
     			webpage_itr++) {
     	ifstream webpage_file(((*webpage_itr)->getWebLink()).c_str()); //why must put c_str()???
-    	//ifstream webpage_file("data/text1.txt");
     	if(!webpage_file) {
     		cout << "Web Page file could not be open." << endl;
         	return 1;
