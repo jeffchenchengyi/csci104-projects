@@ -63,6 +63,7 @@ using namespace std;
 		}
 	}
 
+	//to get the link after anchor text in parentheses
 	void readLink(
 			ifstream& webpage_file, 
 			string& token
@@ -77,6 +78,7 @@ using namespace std;
 		}
 	}
 
+	//to store and create the link in parentheses to incominglink/outgoinglinkvec in webpage class
 	void createMdLink(
 			WebPage* webpage_ptr, 
 			ifstream& webpage_file,
@@ -139,6 +141,7 @@ using namespace std;
 		}
 	}
 
+	//to parse all the words in the text to valid string tokens in word_map
 	void tokenize(
 			WebPage* webpage_ptr, 
 			ifstream& webpage_file, 
@@ -275,6 +278,7 @@ using namespace std;
 		return make_pair(result_vec, true);
 	}
 
+	//for INCOMING command
 	const pair< vector<string>, bool > getIncomingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
@@ -297,6 +301,7 @@ using namespace std;
 		}
 	}
 
+	//for OUTGOING COMMAND
 	const pair< vector<string>, bool > getOutgoingLinks(
 			vector<string>& command_vec,
 			const set< WebPage* >& webpage_set
@@ -319,6 +324,7 @@ using namespace std;
 		}
 	}
 
+	//for single word query
 	const vector<string> searchWord(
 			string& word, 
 			map< string, set<WebPage*> >& word_map
@@ -342,6 +348,7 @@ using namespace std;
 		return result_vec;
 	}
 
+	//to print out the number of matched files and matched files line by line
 	void outputResults(
 			vector<string>& results,
 			ofstream& output
@@ -361,6 +368,7 @@ using namespace std;
 		}
 	}
 
+	//to identitfy what the command wants to be done
 	void analyzeQuery(
 			string query_command, 
 			const set< WebPage* >& webpage_set, 
