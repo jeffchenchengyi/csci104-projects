@@ -1,17 +1,12 @@
 CXX = g++
 CPPFLAGS = -g -Wall -std=c++11
 
-all: stringparser
-
-stringparser: lliststr.o stackstr.o stringparser.cpp 
+functor_test: functor.o functor_test.cpp 
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-stackstr.o: stackstr.cpp stackstr.h lliststr.o 
-	$(CXX) $(CPPFLAGS) -c $< -o $@
-
-lliststr.o: lliststr.cpp lliststr.h
+functor.o: functor.cpp functor.h
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm -f stringparser stackstr.o lliststr.o
+	rm -f functor.o functor_test
