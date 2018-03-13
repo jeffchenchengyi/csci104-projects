@@ -1,6 +1,9 @@
 CXX = g++
 CPPFLAGS = -g -Wall -std=c++11
 
+qsort_test: qsort.h qsort_test.cpp 
+	$(CXX) $(CPPFLAGS) $^ -o $@
+
 functor_test: functor.o functor_test.cpp 
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
@@ -9,4 +12,4 @@ functor.o: functor.cpp functor.h
 
 .PHONY: clean
 clean:
-	rm -f functor.o functor_test
+	rm -f functor.o functor_test qsort_test

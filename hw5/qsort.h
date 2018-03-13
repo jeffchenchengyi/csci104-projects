@@ -1,82 +1,71 @@
-#ifndef LLISTSTR_H
-#define LLISTSTR_H
+#ifndef QSORT_H
+#define QSORT_H
+#include <vector>
+#include <cmath>
 
-#include <string>
+//Swaps two values in a given array
+template <class T>
+void swapVal(std::vector<T> &myArray, int i, int j) {
+    T temp = myArray[i];
+    myArray[i] = myArray[j];
+    myArray[j] = temp;
+}
 
-class LListStr {
- public:
-  /**
-   * Default constructor
-   */
-  LListStr();
+//Changes median of 3 (start, end, mid) to the last element of array
+template <class T, class Comparator>
+void medianOfThree(std::vector<T> &myArray, Comparator comp, int start, int mid, int end) {
+  if(!comp(myArray[start], myArray[mid])) { 
+    swapVal(myArray, start, mid);
+  }
+  if(!comp(myArray[start], myArray[end])) { 
+    swapVal(myArray, start, end);
+  }
+  if(comp(myArray[mid], myArray[end])) { 
+    swapVal(myArray, mid, end);
+  }
+}
 
-  /**
-   * Destructor
-   */
-  ~LListStr();
+//Partitioning function using the init_pivot_idx as the initial pos of the pivot, 
+//returns the correct position of pivot after placing all elements less than
+//pivot element on left of pivot and all elements strictly more than pivot element on
+//right of pivot element (according to comparator)
+//*Pivot is always the last element
+template <class T, class Comparator>
+int partition(std::vector<T> &myArray, Comparator comp, int start, int end) {
+  T pivot_element = myArray[end];
+  int new_pivot_idx = start; //Counts how many elements are less than the pivot
+  int left_idx = start; 
+  //Loops through the array and when we see an element less than the pivot,
+  //we increment new_pivot_idx, which accounts for the one element less
+  //than the pivot, placing the new_pivot_idx in the correct position
+  //Before that, we will swap the new_pivot_idx element with the left_idx
+  //to make sure that the lesser element is on the left of the new_pivot_idx
+  while(left_idx < end) {
+    if(comp(myArray[left_idx], pivot_element)) {
+      swapVal(myArray, left_idx, new_pivot_idx);
+      new_pivot_idx++;
+    }
+    left_idx++;
+  }
+  swapVal(myArray, new_pivot_idx, end);
+  return new_pivot_idx;
+}
 
-  /**
-   * Returns the current number of items in the list
-   */
-  int size() const;
+template <class T, class Comparator>
+void quick_sort(std::vector<T> &myArray, Comparator comp, int start, int end) {
+  //Ensure that myArray has more than one element
+  if(start < end) {
+    int mid = floor((start + end) / 2);
+    medianOfThree(myArray, comp, start, mid, end); 
+    int new_pivot_idx = partition(myArray, comp, start, end);
+    quick_sort(myArray, comp, start, new_pivot_idx - 1);
+    quick_sort(myArray, comp, new_pivot_idx + 1, end);
+  }
+}
 
-  /**
-   * Returns true if the list is empty, false otherwise
-   */
-  bool empty() const;
-
-  /**
-   * Inserts val so it appears at the index given as pos. If the
-   * index pos is invalid, this function should return without
-   * modifying the list.
-   */
-  void insert(int pos, const std::string &val);
-
-  /**
-   * Removes the value at the index given by pos. If the
-   * index pos is invalid, this function should return without
-   * modifying the list.
-   */
-  void remove(int pos);
-
-  /**
-   * Overwrites the old value at the index given by pos with val. If the
-   * index pos is invalid, this function should return without
-   * modifying the list.
-   */
-  void set(int pos, const std::string &val);
-
-  /**
-   * Returns the value at the index given by pos.  If the index pos is invalid,
-   * then you should return the empty string.
-   */
-  std::string get(int pos) const;
-
- private:
-  struct Item {
-    std::string val;
-    Item *next;
-    Item *prev;
-    Item(std::string v, Item* n, Item* p):
-      val(v), next(n), prev(p) {}
-  };
-
-  // Feel free to add private helper functions if you desire.
-  Item* traverseList(int pos) const;
-  void insertBetweenHeadAndTail(const std::string &val, int pos);
-  void removeAtHeadOrTail(int pos);
-  void recRemoveList(Item* currPtr);
-  Item* createNewItem(const std::string &val);
-  Item* createNewItem(const std::string &val, Item* nextPtr, Item* prevPtr);
-  bool withinInsertBounds(int pos) const;
-  bool withinBounds(int pos) const;
-
-  /**
-   * Data members
-   */
-  Item* head_;
-  Item* tail_;
-  int size_;
-};
+template <class T, class Comparator>
+void QuickSort (std::vector<T> &myArray, Comparator comp) {
+  quick_sort(myArray, comp, 0, myArray.size() - 1);
+}
 
 #endif
