@@ -28,5 +28,31 @@ vector<pair<int, int>> assignPlates(
         int calories_per_plate = (total_calories / int(turkeys.size()));
         QuickSort(turkeys, less<int>()); //O(nlogn), worst - O(n^2)
         QuickSort(potatoes, less<int>()); //O(nlogn), worst - O(n^2)
+        int start_idx = 0;
+        int end_idx = int(turkeys.size()) - 1;
+        while(end_idx >= 0 && start_idx < int(turkeys.size())) {
+            if((turkeys[start_idx] + potatoes[end_idx]) == calories_per_plate) {
+                result_vec.push_back(make_pair(turkeys[start_idx], potatoes[end_idx]));
+                start_idx++; end_idx--;
+            } else {
+                return vector<pair<int, int>>();
+            }
+        }
+        return result_vec;
     }
+}
+
+int main()
+{
+    vector<int> turkeys = {550, 500, 580, 600};
+    vector<int> potatoes = {520, 470, 440};
+    try {
+        vector<pair<int, int>> result = assignPlates(turkeys, potatoes);
+        for(vector<pair<int, int>>::iterator itr = result.begin(); itr != result.end(); itr++) {
+            cout << "Turkey: " << itr->first << " Potatoes: " << itr->second << endl;
+        }
+    } catch(LengthMismatch& error) {
+        cout << error.what() << endl;
+    }
+    return 0;
 }

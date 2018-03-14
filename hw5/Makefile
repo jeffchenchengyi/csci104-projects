@@ -1,7 +1,7 @@
 CXX = g++
 CPPFLAGS = -g -Wall -std=c++11
 
-Thanksgiving_test: LengthMismatch.o Thanksgiving.cpp Thanksgiving_test.cpp 
+Thanksgiving: LengthMismatch.o Thanksgiving.cpp 
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 LengthMismatch.o: LengthMismatch.cpp LengthMismatch.h
@@ -18,4 +18,4 @@ functor.o: functor.cpp functor.h
 
 .PHONY: clean
 clean:
-	rm -f functor.o functor_test qsort_test LengthMismatch.o
+	rm -f functor.o functor_test qsort_test LengthMismatch.o Thanksgiving
