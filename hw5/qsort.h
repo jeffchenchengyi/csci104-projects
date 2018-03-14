@@ -59,7 +59,6 @@ void quick_sort(std::vector<T> &myArray, Comparator comp, int start, int end) {
   if(start < end) {
     int mid = floor((start + end) / 2);
     medianOfThree(myArray, comp, start, mid, end);
-    std::cout << "median: " << myArray[end] << std::endl;
     int new_pivot_idx = partition(myArray, comp, start, end);
     quick_sort(myArray, comp, start, new_pivot_idx - 1);
     quick_sort(myArray, comp, new_pivot_idx + 1, end);
