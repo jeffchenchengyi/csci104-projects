@@ -3,7 +3,18 @@ Give an array of size 10 of doubles, where the pivot will always
 be the 2nd largest or 2nd smallest element of the array (when using 
 the median-of-3 pivot). Explain your answer.
 
-
+Array (Double): {1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0}
+Any array where the the max and min values lies at each ends of the array,
+and the other values of the array are either the 2nd largest or 2nd smallest
+element of the array.
+This way, the first time we are finding the median of 3, we will always be
+comparing between the min, 2nd largest/smallest, max values, which the median
+would be the 2nd largest/smallest value.
+Any other time that we are finding the median of 3, we would be comparing either
+a min or max value, but not both, with 2 other values which could only be the 
+2nd largest/smallest.
+Hence, the median of 3 will always choose the 2nd largest/smallest value in 
+arrays with such a configuration.
 
 
 Problem 2 (Break Interpolation Search, 10%)
