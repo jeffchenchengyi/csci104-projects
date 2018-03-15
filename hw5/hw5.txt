@@ -3,6 +3,7 @@ Give an array of size 10 of doubles, where the pivot will always
 be the 2nd largest or 2nd smallest element of the array (when using 
 the median-of-3 pivot). Explain your answer.
 
+ANSWER:
 Array (Double): {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
 An array that is sorted like the one above would yield the 2nd 
 largest/smallest value using the median of 3 method.
@@ -68,6 +69,22 @@ that it could take linear time in the worst case.
 Describe an array of size n of double, such that Interpolation Search will 
 query each entry of the array before finally finding its target. 
 Explain your answer.
+
+ANSWER:
+Array of size n(Double): {1.0, 2.0, 3.0, ..., 9.0, 10.0, 100,000.0}
+
+An array like the one above where the distribution is heavily skewed such
+that the Value Range >> Index Range will cause Interpolation Search to 
+query each entry in the array before finding the target.
+
+Target Index = [(Index Range / Value Range) * (Target Value - Start Value)] + Start Index
+
+The formula above is used to find the index to search for in Interpolation Search.
+However, if the Value Range >> Index Range, (Index Range / Value Range) -> 0,
+which causes [(Index Range / Value Range) * (Target Value - Start Value)] -> 0,
+causing the Target Index = Start Index, making the search linear as each element before
+the target value needs to be queried as the index is incrementing by approx. 1 in 
+each iteration of the search.
 
 
 
