@@ -42,9 +42,9 @@ vector<pair<int, int>> assignPlates(
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    vector<int> turkeys = {550, 500, 580, 600};
+    vector<int> turkeys = {550, 500, 580};
     vector<int> potatoes = {520, 470, 440};
     try {
         vector<pair<int, int>> result = assignPlates(turkeys, potatoes);

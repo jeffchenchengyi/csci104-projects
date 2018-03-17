@@ -4,57 +4,120 @@ be the 2nd largest or 2nd smallest element of the array (when using
 the median-of-3 pivot). Explain your answer.
 
 ANSWER:
-Array (Double): {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
-An array that is sorted like the one above would yield the 2nd 
+Array (Double): {8.0, 1.0, 4.0, 6.0, 7.0, 2.0, 0.0, 3.0, 5.0, 9.0}
+An array like the one above would yield the 2nd 
 largest/smallest value using the median of 3 method.
 
 The first recursive call - quick_sort(myArray, comp, 0, myArray.size() - 1)
 - will be called, hence quick_sort(myArray, less<T>(), 0, 9). 
-start = 0.0 < end = 9.0, if statement is executed, and mid is
+start = 8.0 < end = 9.0, if statement is executed, and mid is
 calculated as floor((0 + 9) / 2) = 4. medianOfThree function is called
 with start = 0, mid = 4, end = 9. 
 
-1st if statement is not executed as
+1st if statement is executed as
+comp(C++'s standard less-than functor less<T>) evaluates to false as
+myArray[0] = 8.0 and myArray[4] = 7.0 are not in order, !false = true, 
+statement is executed and values are swapped. 
+
+2nd if statement is not executed as 
 comp(C++'s standard less-than functor less<T>) evaluates to true as
-myArray[0] = 0.0 and myArray[4] = 4.0 are in order, !true = false, 
-statement is not executed and values are not swapped. 
+myArray[0] = 7.0 and myArray[9] = 9.0 are in order, !true = false,
+hence values should not be swapped.
 
-2nd if statement is not executed as well for the same reason as before,
-that myArray[0] = 0.0 and myArray[9] = 9.0 are in order, hence values
-should not be swapped.
-
-3rd if statement is executed however, because we want to make it such
-that the median is at the end position. Therefore, since myArray[4] = 4.0
+3rd if statement is executed, because we want to make it such
+that the median is at the end position. Therefore, since myArray[4] = 8.0
 and myArray[9] = 9.0 is in order, we will swap the values to get the 
-median = 4.0 in the end position.
-Hence, median chosen with the median of 3 method is 4.0, which is 
+median = 8.0 in the end position.
+Hence, median chosen with the median of 3 method is 8.0, which is 
 the 2nd largest/smallest element of the 3.
+
+Array currently looks like: {7.0, 1.0, 4.0, 6.0, 9.0, 2.0, 0.0, 3.0, 5.0, 8.0}
+
+Back in the quick_sort function, partition is called, placing all the elements
+smaller than 8.0 on the left of position 8 and all the elements greater than
+8.0 on the right of position 8.
+
+Array currently looks like: {7.0, 1.0, 4.0, 6.0, 2.0, 0.0, 3.0, 5.0, 8.0, 9.0}
+
+Subsequently, recursive calls to quicksort(myArray, less<T>(), 0, 7) and
+quicksort(myArray, less<T>(), 9, 9).
+
+quicksort(myArray, less<T>(), 0, 7):
+The median chosen for quicksort(myArray, less<T>(), 0, 7) will be 6.0 as
+start = 7.0, mid = 6.0, end = 5.0, hence 2nd largest/smallest of the 3.
+
+Array currently looks like: {5.0, 1.0, 4.0, 7.0, 2.0, 0.0, 3.0, 6.0, 8.0, 9.0}
+
+Back in the quick_sort function, partition is called, placing all the elements
+smaller than 6.0 on the left of position 6 and all the elements greater than
+6.0 on the right of position 6.
+
+Array currently looks like: {5.0, 1.0, 4.0, 2.0, 0.0, 3.0, 6.0, 7.0, 8.0, 9.0}
+
+Subsequently, recursive calls to quicksort(myArray, less<T>(), 0, 5) and
+quicksort(myArray, less<T>(), 7, 7).
+
+quicksort(myArray, less<T>(), 0, 5):
+The median chosen for quicksort(myArray, less<T>(), 0, 5) will be 4.0 as
+start = 5.0, mid = 4.0, end = 3.0, hence 2nd largest/smallest of the 3.
+
+Array currently looks like: {3.0, 1.0, 5.0, 2.0, 0.0, 4.0, 6.0, 7.0, 8.0, 9.0}
 
 Back in the quick_sort function, partition is called, placing all the elements
 smaller than 4.0 on the left of position 4 and all the elements greater than
 4.0 on the right of position 4.
+
+Array currently looks like: {3.0, 1.0, 2.0, 0.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
+
 Subsequently, recursive calls to quicksort(myArray, less<T>(), 0, 3) and
-quicksort(myArray, less<T>(), 5, 9).
+quicksort(myArray, less<T>(), 5, 5).
 
+quicksort(myArray, less<T>(), 0, 3):
 The median chosen for quicksort(myArray, less<T>(), 0, 3) will be 1.0 as
-start = 0.0, mid = 1.0, end = 3.0, hence 2nd largest/smallest of the 3.
-quicksort(myArray, less<T>(), 0, 0) is then called, which will return as 
-start = 0 is not less than end = 0.
-quicksort(myArray, less<T>(), 2, 3) is then called, in which median chosen 
-is 2.0 as start = 2, mid = 2, end = 3, hence 2nd largest/smallest of the 3.
-This is the base case as we are only actually comparing 2 elements as start 
-and mid point to the same element 2.0 in the array.
+start = 3.0, mid = 1.0, end = 0.0, hence 2nd largest/smallest of the 3.
 
-The median chosen for quicksort(myArray, less<T>(), 5, 9) will be 7.0 as
-start = 5.0, mid = 7.0, end = 9.0, hence 2nd largest/smallest of the 3.
-quicksort(myArray, less<T>(), 5.0, 6.0) is then called, in which median chosen 
-is 5.0 as start = 5, mid = 5, end = 6, hence 2nd largest/smallest of the 3.
+Array currently looks like: {0.0, 3.0, 2.0, 1.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
+
+Back in the quick_sort function, partition is called, placing all the elements
+smaller than 1.0 on the left of position 1 and all the elements greater than
+1.0 on the right of position 1.
+
+Array currently looks like: {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
+
+Subsequently, recursive calls to quicksort(myArray, less<T>(), 0, 0) and
+quicksort(myArray, less<T>(), 2, 3).
+
+quicksort(myArray, less<T>(), 0, 0):
+quicksort(myArray, less<T>(), 0, 0) is then called after all the subsequent returns
+, which will return as start = 0 is not less than end = 0.
+
+quicksort(myArray, less<T>(), 2, 3):
 This is the base case as we are only actually comparing 2 elements as start 
-and mid point to the same element 5.0 in the array.
-quicksort(myArray, less<T>(), 8.0, 9.0) is then called, in which median chosen 
-is 8.0 as start = 8, mid = 8, end = 9, hence 2nd largest/smallest of the 3.
-This is the base case as we are only actually comparing 2 elements as start 
-and mid point to the same element 8.0 in the array.
+and mid point to the same element 2.0 in the array, any of which are the 
+2nd largest/smallest element. 
+
+Array currently looks like: {0.0, 1.0, 3.0, 2.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
+
+Back in the quick_sort function, partition is called, placing all the elements
+smaller than 2.0 on the left of position 2 and all the elements greater than
+2.0 on the right of position 2.
+
+Array currently looks like: {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
+
+After the return, 
+quicksort(myArray, less<T>(), 5, 5):
+quicksort(myArray, less<T>(), 5, 5) is then called after all the subsequent returns
+, which will return as start = 5 is not less than end = 5.
+
+quicksort(myArray, less<T>(), 7, 7):
+quicksort(myArray, less<T>(), 7, 7) is then called after all the subsequent returns
+, which will return as start = 7 is not less than end = 7.
+
+quicksort(myArray, less<T>(), 9, 9):
+quicksort(myArray, less<T>(), 9, 9) is then called after all the subsequent returns
+, which will return as start = 9 is not less than end = 9.
+
+Array is now sorted: {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}
 
 Hence, all the medians we chose in this array are all the 2nd largest/smallest
 among the 3 elements we compare in the median of 3 method.
@@ -91,129 +154,5 @@ each iteration of the search.
 
 
 Problem 3 (Median Finding in Linear Time, 30%)
-In class, we had talked about the fact that Quicksort works best when 
-it can use the median of the input array as a pivot in each round. 
-We asserted that there is an algorithm with linear time that finds the median. 
-Here, we will give you that algorithm, and you will analyze it. 
-In fact, the algorithm is more general than finding the median: you give it 
-an array a of items of type T (which can be compared), as well as a position k, 
-and it will return in time O(n) the kth smallest element of a. 
-(Ties are broken arbitrarily.) The algorithm is the following.
-
-T quantile (T* a, int left, int right, int k)
-{ /* a is the array to look in.
-     left and right are the bounds of the subarray we search in.
-     k is the index (starting at 0, with a left end of left) 
-     of the element we would like, in the sorted version of the array. 
-     If that sounds confusing, think about it as follows:
-     We could sort a between left and right, and return a[k+left]
-     after sorting. But that would take too long. */
-
-  if (right <= left + 10) // we are down to a small array
-  {  // sorting and looking up after sorting is fast enough.
-    InsertionSort (a, left, right);  // Sorts a between left and right.
-    return a[k+left];
-  }
-    else   // we still have a pretty big array left
-  {
-    int smallsize = (right-left)/5;
-    T *b = new T[smallsize];
-
-    /* The next loop considers the array in groups of 5.
-       For each such group, the median (which is element 2) is copied
-       into the new array b. 
-       If the number of elements is not divisible by 5, then the last
-       few elements are not considered here. */
-    for (int i = 0; i < smallsize; i ++)
-       b[i] = quantile (a, left+5*i, left+5*(i+1)-1, 2);
-
-    /* The next line is key: it finds the median of the elements of b,
-       i.e., the median of the medians of groups-of-5. */
-    T pivot = quantile (b, 0, smallsize-1, smallsize/2);
-
-    /* Now, we need to find the pivot in a, so we can swap it into
-       the rightmost position. We use linear search, since a is not sorted. */
-    int p = linearSearch (a, left, right, pivot);
-    a.swap (p, right);
-
-    // The partition function here is exactly our old friend from Quicksort.
-    int m = partition (a, left, right);
-
-    /* Finally, we can compare the position of the pivot to the position we
-       are looking for. 
-       If they are equal, the pivot was what we wanted.
-       If we are looking for an earlier position, 
-       we need to search in the left subarray.
-       If we are looking for a later position, 
-       we need to search in the right subarray.
-       But we also need to subtract the pivot's position, 
-       since position 5 in an array of size 8
-       is equal to position 1 in the right half of the array. */
-    if (left+k == m) return a[m];
-    else if (left+k < m) return quantile (a, left, m-1, k);
-    else return quantile (a, m+1, right, k-(m+1-left));
-}
-First go through this algorithm and understand it as best you can. 
-You do not need to understand why it works to solve this problem, 
-so focus on what it does. Simulating it by hand a bit, or coding 
-it up if you like, may also help you.
-
-We will walk you through the analysis with several smaller questions. 
-You are welcome to try a different route, but our suggestions are 
-meant to help keep you from going off on a wrong path. 
-The quantity n here should be right-left.
-
-
-Part a (Set up a Recurrence Relation, 20%)
-1. Analyze the running time of all the parts of the function other than 
-the recursive calls. You may use everything you know about the 
-running time of linear search, the partition function, and Insertion Sort.
-
-2. In the loop that assigns values to each b[i], how big is the input size 
-for each recursive call? 
-Thus, how long do the recursive calls to quantile() take? 
-How many such recursive calls are made? How far can you simplify the 
-total time for all of this?
-
-3. In the recursive call that assigns a value to pivot, how big is the array? 
-Thus, how long does the recursive call take?
-
-4. Explain why at least 3n/10 elements in a are <= the pivot, and at 
-least 3n/10 elements are >= the pivot. Which are those elements? 
-(You can ignore constant terms, i.e., if it's really 3n/10-4 elements 
-which are smaller/larger, feel free to discard the -4 term.)
-
-5. As a result of your analysis, how big at most is the array for the 
-recursive call that is made in the last or second-to-last line?
-
-6. Putting everything together, show that the recurrence relation for 
-the running time of the quantile() function is T(n) = T(n/5)+T(7n/10)+Θ(n) n >= 10. 
-Also specify the base case for your recurrence relation.
-
-
-Part b (Solve the Recurrence, 10%)
-Next, we need to solve the recurrence, by drawing the recursive call 
-tree (as we did with Mergesort in class).
-
-1. Each node/block in your tree should correspond to a specific recursive call 
-to quantile(). This call has a corresponding array on which the function is 
-supposed to run. 
-Label each node in your tree with the size of the array.
-
-2. For each node, specify the run time attributed to this specific recursive call. 
-This should include any sub-calls which do not get their own node in the tree. 
-It should not include run time attributed to other nodes in the tree.
-
-3. Draw edges between the nodes, indicating the important recursive calls 
-which are made. 
-Make sure to indicate the size of the array for each node. 
-Do this for a few layers.
-
-4. How much total work is done in the nodes in the ith layer, for each i?
-
-5. How many layers are there?
-
-6. Now add up the work across all the layers, using your knowledge of summations.
-
-If all went well, you should have arrived at an answer of O(n). 
-If not, you may want to go back and see where you went wrong along the way.
+ANSWER: 
+Analysis is in hw5q3.pdf

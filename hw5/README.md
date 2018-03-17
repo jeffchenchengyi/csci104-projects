@@ -1,6 +1,11 @@
 # Instructions on how to execute hw5 programs:
 
-## [Problems 1c, 2, and 3:](hw5.txt)
+## [Problems 1c (Break QuickSort, 5%), 2 (Break Interpolation Search, 10%):](hw5.txt)
+
+> Answers are in **`hw5.txt`**.
+
+
+## [Problem 3 (Median Finding in Linear Time, 30%):](hw5q3.pdf)
 
 > Answers are in **`hw5.txt`**.
 
@@ -29,7 +34,7 @@
 
 
 ## [Problem 5 (Thanksgiving Dinner, 20%)](Thanksgiving.cpp)
-### Use [MakeFile](Makefile) to compile LengthMismatch.o, Thanksgiving.cpp:
+### Use [MakeFile](Makefile) to compile LengthMismatch.o, Thanksgiving.cpp once an int main() is added:
 > **`make Thanksgiving`** 
 
 ### Memory leak check: 
