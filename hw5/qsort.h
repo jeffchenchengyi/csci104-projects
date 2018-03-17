@@ -57,7 +57,7 @@ template <class T, class Comparator>
 void quick_sort(std::vector<T> &myArray, Comparator comp, int start, int end) {
   //Ensure that myArray has more than one element
   if(start < end) {
-    int mid = floor((start + end) / 2);
+    int mid = int(floor((start + end) / 2));
     medianOfThree(myArray, comp, start, mid, end);
     int new_pivot_idx = partition(myArray, comp, start, end);
     quick_sort(myArray, comp, start, new_pivot_idx - 1);
