@@ -41,18 +41,3 @@ vector<pair<int, int>> assignPlates(
         return result_vec;
     }
 }
-
-int main(int argc, char* argv[])
-{
-    vector<int> turkeys = {550, 500, 580};
-    vector<int> potatoes = {520, 470, 440};
-    try {
-        vector<pair<int, int>> result = assignPlates(turkeys, potatoes);
-        for(vector<pair<int, int>>::iterator itr = result.begin(); itr != result.end(); itr++) {
-            cout << "Turkey: " << itr->first << " Potatoes: " << itr->second << endl;
-        }
-    } catch(LengthMismatch& error) {
-        cout << error.what() << endl;
-    }
-    return 0;
-}
