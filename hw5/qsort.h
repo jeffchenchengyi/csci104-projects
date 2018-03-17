@@ -67,7 +67,7 @@ void quick_sort(std::vector<T> &myArray, Comparator comp, int start, int end) {
 
 template <class T, class Comparator>
 void QuickSort (std::vector<T> &myArray, Comparator comp) {
-  quick_sort(myArray, comp, 0, myArray.size() - 1);
+  quick_sort(myArray, comp, 0, int(myArray.size()) - 1);
 }
 
 #endif
