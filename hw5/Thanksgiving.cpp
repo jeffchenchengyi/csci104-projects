@@ -30,6 +30,8 @@ vector<pair<int, int>> assignPlates(
         QuickSort(potatoes, less<int>()); //O(nlogn), worst - O(n^2)
         int start_idx = 0;
         int end_idx = int(turkeys.size()) - 1;
+        //Compare largest element of one array with the smallest element of the other,
+        //if they dont add up to the average, a pair wont exist in the arrays
         while(end_idx >= 0 && start_idx < int(turkeys.size())) {
             if((turkeys[start_idx] + potatoes[end_idx]) == calories_per_plate) {
                 result_vec.push_back(make_pair(turkeys[start_idx], potatoes[end_idx]));

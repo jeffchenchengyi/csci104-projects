@@ -136,6 +136,8 @@ Explain your answer.
 ANSWER:
 Array of size n(Double): {1.0, 2.0, 3.0, ..., 9.0, 10.0, 100,000.0}
 
+Target = 10.0
+
 An array like the one above where the distribution is heavily skewed such
 that the Value Range >> Index Range will cause Interpolation Search to 
 query each entry in the array before finding the target.
@@ -147,7 +149,10 @@ However, if the Value Range >> Index Range, (Index Range / Value Range) -> 0,
 which causes [(Index Range / Value Range) * (Target Value - Start Value)] -> 0,
 causing the Target Index = Start Index, making the search linear as each element before
 the target value needs to be queried as the index is incrementing by approx. 1 in 
-each iteration of the search.
+each iteration of the search. Hence, we will query each element of the array from 
+position 0 until we reach the 2nd last position of the array. The last element is queried
+when finding the value range.
+Thus, taking linear runtime.
 
 
 
