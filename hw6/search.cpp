@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include "setutility.h"
 #include "webpage.h"
 
 using namespace std;
@@ -187,187 +188,6 @@ using namespace std;
     	output << endl;
 	}
 
-	//For AND command
-	const pair< vector<string>, bool > intersectString(
-			vector<string>& command_vec, 
-			map< string, set<WebPage*> >& word_map
-			) {
-		map<string, int> query_map;
-		map<string, int>::iterator query_map_itr; 
-		vector<string> result_vec;
-		//Traverse each word in command vec
-		for(int i = 1; i < int(command_vec.size()); i++) {
-			//convert all chars to lowercase
-			for(int j = 0; j < int(command_vec[i].size()); j++) {
-				command_vec[i][j] = tolower(command_vec[i][j]);
-			}
-			//Find word in word_map O(logn)
-			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
-			if(word_map_itr != word_map.end()) {
-				set<WebPage*> wordwebpage_set = word_map_itr->second;
-				set<WebPage*>::iterator wordwebpage_itr;
-				//Check if the same weblink exists for each word O(m) 
-				//where m is the number of weblinks in my result set
-				for(
-						wordwebpage_itr = wordwebpage_set.begin(); 
-						wordwebpage_itr != wordwebpage_set.end(); 
-						wordwebpage_itr++
-						) {
-					query_map_itr = query_map.find((*wordwebpage_itr)->getWebLink());
-					//If query_map already has the weblink as a key, increment its count
-					//else create a new key: weblink, value: count pair
-					if(query_map_itr != query_map.end()) {
-						(query_map_itr->second)++;
-					} else {
-						query_map.insert(make_pair((*wordwebpage_itr)->getWebLink(), 1));
-					}
-				}
-			} else {
-				break;
-			}
-		}
-		//Any weblinks that have command_vec - 1 # of counts means it contains
-		//all required query keywords in AND
-		for(
-				query_map_itr = query_map.begin(); 
-				query_map_itr != query_map.end(); 
-				query_map_itr++
-				) {
-			if(query_map_itr->second == (int(command_vec.size()) - 1)) {
-				result_vec.push_back(query_map_itr->first);
-			}
-		}
-		return make_pair(result_vec, true);
-	}
-
-	//For OR command
-	const pair< vector<string>, bool > unionString(
-			vector<string>& command_vec, 
-			map< string, set<WebPage*> >& word_map
-			) {
-		vector<string> result_vec;
-		set<string> temp_set;
-		for(int i = 1; i < int(command_vec.size()); i++) {
-			//convert all chars into lowercase
-			for(int j = 0; j < int(command_vec[i].size()); j++) {
-				command_vec[i][j] = tolower(command_vec[i][j]);
-			}
-			//iterator to the word in word_map
-			map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(command_vec[i]);
-			if(word_map_itr != word_map.end()) {
-				set<WebPage*> wordwebpage_set = word_map_itr->second; //Set of all weblinks that contain that word
-				set<WebPage*>::iterator wordwebpage_itr;
-				//Go through all weblinks and insert them into the result_vec, 
-				//check for duplicates too, during the insertion
-				for(
-						wordwebpage_itr = wordwebpage_set.begin(); 
-						wordwebpage_itr != wordwebpage_set.end(); 
-						wordwebpage_itr++
-						) {
-					temp_set.insert((*wordwebpage_itr)->getWebLink());
-				}
-			}
-		}
-		for(
-				set<string>::iterator set_itr = temp_set.begin(); 
-				set_itr != temp_set.end(); 
-				set_itr++
-				) {
-			result_vec.push_back(*set_itr);
-		}
-		return make_pair(result_vec, true);
-	}
-
-	//for INCOMING command
-	const pair< vector<string>, bool > getIncomingLinks(
-			vector<string>& command_vec,
-			const set< WebPage* >& webpage_set
-			) {
-		set< WebPage* >::iterator webpage_itr;
-		bool isFound = false;
-		for(
-				webpage_itr = webpage_set.begin(); 
-				webpage_itr != webpage_set.end(); 
-				webpage_itr++
-				) {
-			if((*webpage_itr)->getWebLink() == command_vec[1]) {
-				isFound = true;
-				return make_pair((*webpage_itr)->getIncomingLinkVec(), isFound);
-			}
-		}
-		if(!isFound) {
-			vector<string> outgoingLinkVec;
-			return make_pair(outgoingLinkVec, isFound);
-		}
-	}
-
-	//for OUTGOING COMMAND
-	const pair< vector<string>, bool > getOutgoingLinks(
-			vector<string>& command_vec,
-			const set< WebPage* >& webpage_set
-			) {
-		set< WebPage* >::iterator webpage_itr;
-		bool isFound = false;
-		for(
-				webpage_itr = webpage_set.begin(); 
-				webpage_itr != webpage_set.end(); 
-				webpage_itr++
-				) {
-			if((*webpage_itr)->getWebLink() == command_vec[1]) {
-				isFound = true;
-				return make_pair((*webpage_itr)->getOutgoingLinkVec(), isFound);
-			}
-		}
-		if(!isFound) {
-			vector<string> outgoingLinkVec;
-			return make_pair(outgoingLinkVec, isFound);
-		}
-	}
-
-	//for single word query
-	const vector<string> searchWord(
-			string& word, 
-			map< string, set<WebPage*> >& word_map
-			) {
-		for(int i = 0; i < int(word.length()); i++) {
-			word[i] = tolower(word[i]);
-		}
-		vector<string> result_vec;
-		map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(word);
-		if(word_map_itr != word_map.end()) {
-			set<WebPage*> wordwebpage_set = word_map_itr->second;
-			set<WebPage*>::iterator wordwebpage_itr;
-			for(
-					wordwebpage_itr = wordwebpage_set.begin(); 
-					wordwebpage_itr != wordwebpage_set.end(); 
-					wordwebpage_itr++
-					) {
-				result_vec.push_back((*wordwebpage_itr)->getWebLink());
-			}
-		}
-		return result_vec;
-	}
-
-	//to print out the number of matched files and matched files line by line
-	void outputResults(
-			vector<string>& results,
-			ofstream& output
-			) {
-		if(results.size() > 0) {
-			output << int(results.size()) << endl;
-			vector<string>::iterator results_itr;
-			for(
-					results_itr = results.begin(); 
-					results_itr != results.end(); 
-					results_itr++
-					) {
-				output << *(results_itr) << endl;
-			}
-		} else {
-			output << 0 << endl;
-		}
-	}
-
 	//to identitfy what the command wants to be done
 	void analyzeQuery(
 			string query_command, 
@@ -398,10 +218,10 @@ using namespace std;
 					//Set of weblinks, bool to check if results was found
 					pair< vector<string>, bool > results = make_pair(weblink_vec, false); 
 					if(command_vec[0] == "AND") {
-						results = intersectString(command_vec, word_map);
+						results = intersectT(command_vec, word_map);
 					} 
 					else if(command_vec[0] == "OR") {
-						results = unionString(command_vec, word_map);
+						results = unionT(command_vec, word_map);
 					} 
 					else if(command_vec[0] == "INCOMING") {
 						//Must only have 1 argument after INCOMING
@@ -426,7 +246,7 @@ using namespace std;
 					}
 				}
 			} else {
-				weblink_vec = searchWord(command_vec[0], word_map);
+				weblink_vec = search(command_vec[0], word_map);
 				outputResults(weblink_vec, output);
 			}
 		} else {
