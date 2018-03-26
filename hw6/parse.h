@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef PARSE_H
+#define PARSE_H
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,11 +11,10 @@
 #include "webpage.h"
 #include "queryhandler.h"
 
-class Parser {
+class Parse {
     public:
-        Parser(std::ifstream& input, std::ofstream& output);
-        Parser(std::ifstream& input, std::ifstream& query, std::ofstream& output); 
-        virtual ~Parser();
+        Parse(std::ifstream& input, std::ifstream& query, std::ofstream& output); //For search.cpp
+        virtual ~Parse();
         void tokenize(
             WebPage* webpage_ptr, 
             std::ifstream& webpage_file, 

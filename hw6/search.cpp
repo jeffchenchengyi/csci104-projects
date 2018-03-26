@@ -6,12 +6,13 @@
 #include <vector>
 #include <set>
 #include <map>
-#include "parser.h"
+#include "configvarextractor.h"
+#include "parse.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-/*------------- START INITIALIZE REQUIRED FILES -------------
+/*
     //To check if the config file was also included as a command line parameter
     ifstream config;
     if(argc < 2) {
@@ -26,47 +27,17 @@ int main(int argc, char* argv[]) {
         cerr << "Configuration file could not be open." << endl;
         return -1;
     }
-------------- END INITIALIZE REQUIRED FILES -------------*/
 
-/*------------- START CONFIGURATION VARIABLES -------------
-    string INDEX_FILE, QUERY_FILE, OUTPUT_FILE;
-    string config_line;
-    while(getline(config, config_line)) {
-    	string data, variable;
-    	if(!config_line.empty()) {
-    		stringstream ss(config_line);
-    		char curr_char;
-    		while(ss >> curr_char) {
-    			if(curr_char == '=') {
-	    			while(ss >> curr_char) {
-	    				if(curr_char == '#') {
-	    					break;
-	    				} else {
-	    					data.append(string(1, curr_char));
-	    				}
-	    			}
-	  				break;
-	   			} else if(curr_char == '#') {
-	   				break;
-	   			} else {
-	  				variable.append(string(1, curr_char));
-	   			}
-			}
-    	}
-    	if(!data.empty()) {
-    		if(variable == "INDEX_FILE") {
-    			INDEX_FILE = data;
-    		} else if(variable == "QUERY_FILE") {
-    			QUERY_FILE = data;
-    		} else if(variable == "OUTPUT_FILE") {
-    			OUTPUT_FILE = data;
-    		}
-    	}
-    }
+	map<string, string> var_map;
+	var_map.insert(make_pair("INDEX_FILE", ""));
+	var_map.insert(make_pair("QUERY_FILE", ""));
+	var_map.insert(make_pair("OUTPUT_FILE", ""));
+	ConfigVarExtractor(config, var_map);
 
-    ifstream input(INDEX_FILE);
-    ifstream query(QUERY_FILE);
-    ofstream output(OUTPUT_FILE);*/
+    ifstream input(var_map[INDEX_FILE]);
+    ifstream query(var_map[QUERY_FILE]);
+    ofstream output(var_map[OUTPUT_FILE]);*/
+
     if (argc < 4) {
        cerr << "Please provide input, query, and output file" << endl;
        return -1;
@@ -78,22 +49,24 @@ int main(int argc, char* argv[]) {
 
     //If the input file given could not be found or could not be open
     if(input.fail()) {
-        cout << "Input file could not be open." << endl;
+        cout << "INDEX_FILE could not be open." << endl;
         return 1;
     }
 
     //If the query file given could not be found or could not be open
     if(query.fail()) {
-        cout << "Query file could not be open." << endl;
+        cout << "QUERY_FILE could not be open." << endl;
         return 1;
     }
 
     //If the output file given could not be found or could not be open
     if(output.fail()) {
-        cout << "Output file could not be open." << endl;
+        cout << "OUTPUT_FILE could not be open." << endl;
         return 1;
     }
-/*------------- END CONFIGURATION VARIABLES -------------*/
-    Parser(input, query, output);
+
+    //Handles parsing and querying in Parser class
+    Parse(input, query, output);
+
     return 0;
 }

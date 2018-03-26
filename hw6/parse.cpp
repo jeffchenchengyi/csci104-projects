@@ -7,26 +7,13 @@
 #include <set>
 #include <map>
 #include "webpage.h"
-#include "parser.h"
+#include "parse.h"
 #include "queryhandler.h"
 using namespace std;
 
 /*------------- START ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
-//Constructor for crawler.cpp, output is the index file after crawling
-Parser::Parser(ifstream& input, ofstream& output) {
-	string weblink; //"data/webpg1.txt", "data/webpg2.txt", "data/webpg3.txt"
-    while(getline(input, weblink)) {
-    	if(!weblink.empty()) {
-    		WebPage* webpage_ptr = new WebPage(weblink);
-    		webpage_set.insert(webpage_ptr);
-    	}
-    }
-}
-/*------------- END ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
-
-/*------------- START ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 //Constructor for search.cpp, query is the file with commands on what to search, output is result
-Parser::Parser(ifstream& input, ifstream& query, ofstream& output) {
+Parse::Parse(ifstream& input, ifstream& query, ofstream& output) {
 	string weblink; //"data/webpg1.txt", "data/webpg2.txt", "data/webpg3.txt"
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
@@ -54,7 +41,7 @@ Parser::Parser(ifstream& input, ifstream& query, ofstream& output) {
 /*------------- END ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 
 /*------------- START DEALLOCATE WEBPAGE DYNAMIC MEM -------------*/
-Parser::~Parser() {
+Parse::~Parse() {
 	set< WebPage* >::iterator webpage_itr;
 	for(webpage_itr = webpage_set.begin(); 
     	webpage_itr != webpage_set.end(); 
@@ -65,24 +52,24 @@ Parser::~Parser() {
 /*------------- END DEALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 
 /*------------- START GENERAL TOKENIZATION/PARSING FUNCTIONS -------------*/
-bool Parser::isCloseParen(string x) {
+bool Parse::isCloseParen(string x) {
     return (x == ")") ? true : false;
 }
 
-bool Parser::isOpenParen(string x) {
+bool Parse::isOpenParen(string x) {
     return (x == "(") ? true : false;
 }
 
-bool Parser::isCloseBrack(string x) {
+bool Parse::isCloseBrack(string x) {
     return (x == "]") ? true : false;
 }
 
-bool Parser::isOpenBrack(string x) {
+bool Parse::isOpenBrack(string x) {
     return (x == "[") ? true : false;
 }
 
 //to parse all the words in the text to valid string tokens in word_map
-void Parser::tokenize(
+void Parse::tokenize(
 	WebPage* webpage_ptr, 
 	ifstream& webpage_file, 
 	map< string, set<WebPage*> >& word_map,
@@ -97,7 +84,7 @@ void Parser::tokenize(
 }
 
 //Store all alphanum into token until special char
-void Parser::readWord(
+void Parse::readWord(
 	ifstream& webpage_file, 
 	string& token
 	) {
@@ -111,7 +98,7 @@ void Parser::readWord(
 }
 
 //Inserts token into word_map
-void Parser::updateWordMap(
+void Parse::updateWordMap(
 	WebPage* webpage_ptr, 
 	map< string, set<WebPage*> >& word_map,
 	const string& token
@@ -133,7 +120,7 @@ void Parser::updateWordMap(
 
 //Remove special chars from ifstream obj & checks for
 //MD Links 
-void Parser::checkSpecChar(
+void Parse::checkSpecChar(
 	WebPage* webpage_ptr, 
 	map< string, set<WebPage*> >& word_map,
 	ifstream& webpage_file,
@@ -154,7 +141,7 @@ void Parser::checkSpecChar(
 }
 
 //to store and create the link in parentheses to incominglink/outgoinglinkvec in webpage class
-void Parser::createMdLink(
+void Parse::createMdLink(
 	WebPage* webpage_ptr, 
 	ifstream& webpage_file,
 	const set< WebPage* >& webpage_set
@@ -178,7 +165,7 @@ void Parser::createMdLink(
 }
 
 //Handles anchortext, when '[' is seen from checkSpecChar()
-void Parser::createAnchortext(
+void Parse::createAnchortext(
 	WebPage* webpage_ptr, 
 	map< string, set<WebPage*> >& word_map,
 	ifstream& webpage_file,
@@ -194,7 +181,7 @@ void Parser::createAnchortext(
 }
 
 //to get the link after anchor text in parentheses
-void Parser::readLink(
+void Parse::readLink(
 	ifstream& webpage_file, 
 	string& token
 	) {
@@ -207,4 +194,3 @@ void Parser::readLink(
 	}
 }
 /*------------- END GENERAL TOKENIZATION/PARSING FUNCTIONS-------------*/
-

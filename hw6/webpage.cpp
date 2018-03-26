@@ -9,7 +9,7 @@
 using namespace std;
 
 WebPage::WebPage(string weblink) {
-	WebPage::setWebLink(weblink);
+	setWebLink(weblink);
 }
 
 WebPage::~WebPage() {
