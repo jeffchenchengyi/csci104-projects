@@ -17,6 +17,8 @@ class Crawl {
     
     private:
         //Member variables
+        std::set< WebPage* > webpage_set; //{webpg1obj_ptr, webpg2obj_ptr, webpg3obj_ptr} 
+        std::vector<std::string> webpages_explored; //Contains vector of weblink strings to be used to print out to output
 
         //Member functions
 };

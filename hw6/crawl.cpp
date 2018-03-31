@@ -6,82 +6,104 @@
 #include <vector>
 #include <set>
 #include <map>
-#include "webpage.h"
 #include "crawl.h"
 using namespace std;
 
-/*------------- START ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 //Constructor for crawler.cpp, input is the seed file, output is the new index file
 Crawl::Crawl(ifstream& input, ofstream& output) {
 	string weblink; //"data/webpg1.txt", "data/webpg2.txt", "data/webpg3.txt"
+	set<string> visited_weblink_set;
+	vector<string> webpages_explored;
+
+	//Start of crawling using DFS algo
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
-    		WebPage* webpage_ptr = new WebPage(weblink);
-    		webpage_set.insert(webpage_ptr);
+    		DFScrawl(visited_weblink_set, webpages_explored, weblink);
     	}
     }
-    /*------------- START TOKENIZATION/PARSING OF WEBPAGES-------------*/
-    set< WebPage* >::iterator webpage_itr;
-    for(webpage_itr = webpage_set.begin(); 
-    	webpage_itr != webpage_set.end(); 
-    	webpage_itr++) {
-    	ifstream webpage_file(((*webpage_itr)->getWebLink()).c_str()); //why must put c_str()???
-    	if(!webpage_file) {
-    		cerr << "Web Page file could not be open." << endl;
-    	} else {
-    		tokenize(*(webpage_itr), webpage_file, word_map, webpage_set);
-    	}
+    
+    //Output all files explored in order to output file
+    vector<string>::iterator vec_itr;
+    for(vec_itr = webpages_explored.begin(); 
+    	vec_itr != webpages_explored.end(); 
+    	vec_itr++) {
+    	output << *vec_itr << endl;
 	}
-	/*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
-
-	//Handles all queries in query file
-	QueryHandler(query, webpage_set, word_map, output);
 }
-/*------------- END ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 
-/*------------- START DEALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 Crawl::~Crawl() {
-	set< WebPage* >::iterator webpage_itr;
-	for(webpage_itr = webpage_set.begin(); 
-    	webpage_itr != webpage_set.end(); 
-    	webpage_itr++) {
-    	delete (*webpage_itr);
-	}
 }
 
-bool Parse::isCloseParen(string x) {
+bool Crawl::isCloseParen(string x) {
     return (x == ")") ? true : false;
 }
 
-bool Parse::isOpenParen(string x) {
+bool Crawl::isOpenParen(string x) {
     return (x == "(") ? true : false;
 }
 
-bool Parse::isCloseBrack(string x) {
+bool Crawl::isCloseBrack(string x) {
     return (x == "]") ? true : false;
 }
 
-bool Parse::isOpenBrack(string x) {
+bool Crawl::isOpenBrack(string x) {
     return (x == "[") ? true : false;
 }
 
+//DFS algorthm to explore links to new webpages
+void Crawl::DFScrawl(
+	set<string>& visited_weblink_set,
+	vector<string>& webpages_explored, 
+	string curr_weblink) {
+
+	//Mark vertex/current weblink as visited
+	if(checkValidFile(curr_weblink)) {
+		visited_weblink_set.insert(curr_weblink);
+
+		//Process the webpage and get all the mdlinks in the page
+		vector<string> mdlink_vec;
+		tokenize(curr_weblink, mdlink_vec);
+		webpages_explored.push_back(curr_weblink);
+
+		//Visit neighbours
+		vector<string>::iterator vec_itr;
+		//Weblinks in predecessor_weblinks are the neighbouring vertices
+		for(vec_itr = mdlink_vec.begin();
+			vec_itr != mdlink_vec.end();
+			vec_itr++;
+			) {
+			if(visited_weblink_set.find(*vec_itr) == visited_weblink_set.end()) {
+				DFScrawl(visited_weblink_set, webpages_explored, *vec_itr);
+			}
+		}
+	}
+}
+
+//Checks if the link provided is valid
+bool Crawl::checkValidFile(string& weblink) {
+	ifstream webpage_file(weblink.c_str()); //why must put c_str()???
+    if(!webpage_file) {
+    	cerr << "Web Page file could not be open." << endl;
+    	return false;
+    } else {
+    	return true;
+    }
+}
+
 //to parse all the words in the text to valid string tokens in word_map
-void Parse::tokenize(
-    WebPage* webpage_ptr, 
-    ifstream& webpage_file, 
-    map< string, set<WebPage*> >& word_map,
-    const set< WebPage* >& webpage_set
-    ) {
+void Crawl::tokenize(
+	const string& curr_weblink
+	vector<string>& mdlink_vec) {
+	ifstream webpage_file(curr_weblink.c_str());
     while(webpage_file.peek() != EOF) {
         string token; //To store word tokens
         readWord(webpage_file, token); //Updated token with a word
-        updateWordMap(webpage_ptr, word_map, token); //Update word map with new word
-        checkSpecChar(webpage_ptr, word_map, webpage_file, webpage_set); //Check what the special char is
+        checkSpecChar(webpage_file, mdlink_vec); //Check what the special char is
     }
 }
 
 //Store all alphanum into token until special char
-void Parse::readWord(
+void Crawl::readWord(
     ifstream& webpage_file, 
     string& token
     ) {
@@ -94,91 +116,8 @@ void Parse::readWord(
     }
 }
 
-//Inserts token into word_map
-void Parse::updateWordMap(
-    WebPage* webpage_ptr, 
-    map< string, set<WebPage*> >& word_map,
-    const string& token
-    ) {
-    if(int(token.length()) == 0) return; //check if token is empty
-    //Iterator to go through word_map
-    map< string, set<WebPage*> >::iterator word_map_itr = word_map.find(token);
-    //If the word exists in the map:
-    if(word_map_itr != word_map.end()) {
-        (word_map_itr->second).insert(webpage_ptr);
-    }
-    //If the word doesnt exist in map: 
-    else {
-        set<WebPage*> newWebPage_set; //Create new set with pointer to WebPage obj
-        newWebPage_set.insert(webpage_ptr);
-        word_map.insert(word_map_itr, make_pair(token, newWebPage_set));
-    }
-}
-
-//Remove special chars from ifstream obj & checks for
-//MD Links 
-void Parse::checkSpecChar(
-    WebPage* webpage_ptr, 
-    map< string, set<WebPage*> >& word_map,
-    ifstream& webpage_file,
-    const set< WebPage* >& webpage_set
-    ) {
-    while(webpage_file.peek() != EOF && 
-        !isalnum(webpage_file.peek())
-        ) {
-        char special_char;
-        webpage_file.get(special_char); //Extract the special char from ifstream obj
-        if(isOpenParen(string(1, special_char))) {
-            createMdLink(webpage_ptr, webpage_file, webpage_set);
-        }
-        else if(isOpenBrack(string(1, special_char))) {
-            createAnchortext(webpage_ptr, word_map, webpage_file, special_char);
-        }
-    }
-}
-
-//to store and create the link in parentheses to incominglink/outgoinglinkvec in webpage class
-void Parse::createMdLink(
-    WebPage* webpage_ptr, 
-    ifstream& webpage_file,
-    const set< WebPage* >& webpage_set
-    ) {
-    string mdlink;
-    readLink(webpage_file, mdlink);
-    //Find the WebPage obj that mdlink directs to
-    //If the WebPage obj is not found, only the outgoing link 
-    //for current webpage is added
-    for(set< WebPage* >::iterator webpage_itr = webpage_set.begin(); 
-        webpage_itr != webpage_set.end(); 
-        webpage_itr++) {
-        if(((*webpage_itr)->getWebLink()) == mdlink) {
-            (*webpage_itr)->addIncomingLink(webpage_ptr->getWebLink()); //Add incoming link for target webpage
-            break;
-        }
-    }
-    webpage_ptr->addOutgoingLink(mdlink); //Adding outgoing link for current webpage
-    char openParen;
-    webpage_file.get(openParen); //Remove the closing paren in the ifstream obj
-}
-
-//Handles anchortext, when '[' is seen from checkSpecChar()
-void Parse::createAnchortext(
-    WebPage* webpage_ptr, 
-    map< string, set<WebPage*> >& word_map,
-    ifstream& webpage_file,
-    char special_char
-    ) {
-    //while loop is used to ensure cases like [word1 word2 word3] are read well
-    while(!isCloseBrack(string(1, special_char))) {
-        string anchortext;
-        readWord(webpage_file, anchortext);
-        updateWordMap(webpage_ptr, word_map, anchortext);
-        webpage_file.get(special_char); //Extract closing bracket
-    }
-}
-
 //to get the link after anchor text in parentheses
-void Parse::readLink(
+void Crawl::readLink(
     ifstream& webpage_file, 
     string& token
     ) {
@@ -188,5 +127,50 @@ void Parse::readLink(
         char curr_char;
         webpage_file.get(curr_char);
         token.append(string(1, curr_char)); //Store original version of link
+    }
+}
+
+//Remove special chars from ifstream obj & checks for
+//MD Links 
+void Crawl::checkSpecChar(
+    ifstream& webpage_file,
+    vector<string>& mdlink_vec
+    ) {
+    while(webpage_file.peek() != EOF && 
+        !isalnum(webpage_file.peek())
+        ) {
+        char special_char;
+        webpage_file.get(special_char); //Extract the special char from ifstream obj
+        if(isOpenParen(string(1, special_char))) {
+            createMdLink(webpage_file, mdlink_vec);
+        }
+        else if(isOpenBrack(string(1, special_char))) {
+            createAnchortext(webpage_file, special_char);
+        }
+    }
+}
+
+//to store mdlinks 
+void Crawl::createMdLink(
+    ifstream& webpage_file,
+    vector<string>& mdlink_vec
+    ) {
+    string mdlink;
+    readLink(webpage_file, mdlink);
+    mdlink_vec.push_back(mdlink); //Store the mdlink in mdlink_vec
+    char openParen;
+    webpage_file.get(openParen); //Remove the closing paren in the ifstream obj
+}
+
+//Handles anchortext, when '[' is seen from checkSpecChar()
+void Crawl::createAnchortext(
+    ifstream& webpage_file,
+    char special_char
+    ) {
+    //while loop is used to ensure cases like [word1 word2 word3] are read well
+    while(!isCloseBrack(string(1, special_char))) {
+        string anchortext;
+        readWord(webpage_file, anchortext);
+        webpage_file.get(special_char); //Extract closing bracket
     }
 }
