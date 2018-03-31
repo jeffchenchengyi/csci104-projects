@@ -16,7 +16,7 @@ Crawl::Crawl(ifstream& input, ofstream& output) {
 	//Start of crawling using DFS algo
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
-    		DFScrawl(visited_weblink_set, webpages_explored, weblink);
+    		DFScrawl(webpages_explored, weblink);
     	}
     }
     
@@ -50,27 +50,27 @@ bool Crawl::isOpenBrack(string x) {
 
 //DFS algorthm to explore links to new webpages
 void Crawl::DFScrawl(
-	set<string>& visited_weblink_set,
 	vector<string>& webpages_explored, 
 	string curr_weblink) {
+	//Check if this curr_weblink has already been visited
+	if(!inVec(webpages_explored, curr_weblink)) {
+		//Mark vertex/current weblink as visited
+		if(checkValidFile(curr_weblink)) {
+			//Process the webpage and get all the mdlinks in the page
+			vector<string> mdlink_vec;
+			tokenize(curr_weblink, mdlink_vec);
+			webpages_explored.push_back(curr_weblink);
 
-	//Mark vertex/current weblink as visited
-	if(checkValidFile(curr_weblink)) {
-		visited_weblink_set.insert(curr_weblink);
-
-		//Process the webpage and get all the mdlinks in the page
-		vector<string> mdlink_vec;
-		tokenize(curr_weblink, mdlink_vec);
-		webpages_explored.push_back(curr_weblink);
-
-		//Visit neighbours
-		vector<string>::iterator vec_itr;
-		//Weblinks in predecessor_weblinks are the neighbouring vertices
-		for(vec_itr = mdlink_vec.begin();
-			vec_itr != mdlink_vec.end();
-			vec_itr++) {
-			if(visited_weblink_set.find(*vec_itr) == visited_weblink_set.end()) {
-				DFScrawl(visited_weblink_set, webpages_explored, *vec_itr);
+			//Visit neighbours
+			vector<string>::iterator vec_itr;
+			//Weblinks in predecessor_weblinks are the neighbouring vertices
+			for(vec_itr = mdlink_vec.begin();
+				vec_itr != mdlink_vec.end();
+				vec_itr++) {
+				//If not visited
+				if(!inVec(webpages_explored, *vec_itr)) {
+					DFScrawl(webpages_explored, *vec_itr);
+				}
 			}
 		}
 	}
@@ -80,7 +80,7 @@ void Crawl::DFScrawl(
 bool Crawl::checkValidFile(string& weblink) {
 	ifstream webpage_file(weblink.c_str()); //why must put c_str()???
     if(!webpage_file) {
-    	cerr << "Web Page file could not be open." << endl;
+    	cerr << weblink << " could not be open." << endl;
     	return false;
     } else {
     	return true;
@@ -150,7 +150,9 @@ void Crawl::createMdLink(
     vector<string>& mdlink_vec) {
     string mdlink;
     readLink(webpage_file, mdlink);
-    mdlink_vec.push_back(mdlink); //Store the mdlink in mdlink_vec
+    if(!inVec(mdlink_vec, mdlink)) {
+    	mdlink_vec.push_back(mdlink); //Store the mdlink in mdlink_vec
+	}
     char openParen;
     webpage_file.get(openParen); //Remove the closing paren in the ifstream obj
 }
@@ -165,4 +167,16 @@ void Crawl::createAnchortext(
         readWord(webpage_file, anchortext);
         webpage_file.get(special_char); //Extract closing bracket
     }
+}
+
+//Linear search to check if a string is in the vector 
+bool Crawl::inVec(
+    const std::vector<std::string>& vec, 
+    std::string target) {
+	for(int i = 0; i < int(vec.size()); i++) {
+		if(vec.at(i) == target) {
+			return true;
+		}
+	}
+    return false;
 }

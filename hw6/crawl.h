@@ -16,7 +16,6 @@ class Crawl {
     
     private:
         //Member variables
-        std::set<std::string> visited_weblink_set; //Contains all the visited weblinks for O(lgn) search
         std::vector<std::string> webpages_explored; //Contains vector of weblink strings to be used to print out to output
 
         //Member functions
@@ -24,8 +23,10 @@ class Crawl {
         bool isOpenParen(std::string x);
         bool isCloseBrack(std::string x);
         bool isOpenBrack(std::string x);
+        bool inVec(
+            const std::vector<std::string>& vec, 
+            std::string target);
         void DFScrawl(
-        	std::set<std::string>& visited_weblink_set,
 			std::vector<std::string>& webpages_explored, 
 			std::string curr_weblink);
         bool checkValidFile(std::string& weblink);
