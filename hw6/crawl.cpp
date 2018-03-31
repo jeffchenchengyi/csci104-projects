@@ -12,9 +12,7 @@ using namespace std;
 //Constructor for crawler.cpp, input is the seed file, output is the new index file
 Crawl::Crawl(ifstream& input, ofstream& output) {
 	string weblink; //"data/webpg1.txt", "data/webpg2.txt", "data/webpg3.txt"
-	set<string> visited_weblink_set;
-	vector<string> webpages_explored;
-
+	
 	//Start of crawling using DFS algo
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
@@ -70,8 +68,7 @@ void Crawl::DFScrawl(
 		//Weblinks in predecessor_weblinks are the neighbouring vertices
 		for(vec_itr = mdlink_vec.begin();
 			vec_itr != mdlink_vec.end();
-			vec_itr++;
-			) {
+			vec_itr++) {
 			if(visited_weblink_set.find(*vec_itr) == visited_weblink_set.end()) {
 				DFScrawl(visited_weblink_set, webpages_explored, *vec_itr);
 			}
@@ -92,7 +89,7 @@ bool Crawl::checkValidFile(string& weblink) {
 
 //to parse all the words in the text to valid string tokens in word_map
 void Crawl::tokenize(
-	const string& curr_weblink
+	const string& curr_weblink,
 	vector<string>& mdlink_vec) {
 	ifstream webpage_file(curr_weblink.c_str());
     while(webpage_file.peek() != EOF) {
@@ -105,8 +102,7 @@ void Crawl::tokenize(
 //Store all alphanum into token until special char
 void Crawl::readWord(
     ifstream& webpage_file, 
-    string& token
-    ) {
+    string& token) {
     while(webpage_file.peek() != EOF && 
         isalnum(webpage_file.peek())
         ) {
@@ -119,8 +115,7 @@ void Crawl::readWord(
 //to get the link after anchor text in parentheses
 void Crawl::readLink(
     ifstream& webpage_file, 
-    string& token
-    ) {
+    string& token) {
     while(webpage_file.peek() != EOF && 
         !isCloseParen(string(1, webpage_file.peek()))
         ) {
@@ -134,8 +129,7 @@ void Crawl::readLink(
 //MD Links 
 void Crawl::checkSpecChar(
     ifstream& webpage_file,
-    vector<string>& mdlink_vec
-    ) {
+    vector<string>& mdlink_vec) {
     while(webpage_file.peek() != EOF && 
         !isalnum(webpage_file.peek())
         ) {
@@ -153,8 +147,7 @@ void Crawl::checkSpecChar(
 //to store mdlinks 
 void Crawl::createMdLink(
     ifstream& webpage_file,
-    vector<string>& mdlink_vec
-    ) {
+    vector<string>& mdlink_vec) {
     string mdlink;
     readLink(webpage_file, mdlink);
     mdlink_vec.push_back(mdlink); //Store the mdlink in mdlink_vec
@@ -165,8 +158,7 @@ void Crawl::createMdLink(
 //Handles anchortext, when '[' is seen from checkSpecChar()
 void Crawl::createAnchortext(
     ifstream& webpage_file,
-    char special_char
-    ) {
+    char special_char) {
     //while loop is used to ensure cases like [word1 word2 word3] are read well
     while(!isCloseBrack(string(1, special_char))) {
         string anchortext;

@@ -31,8 +31,8 @@ int main(int argc, char* argv[]) {
 	var_map.insert(make_pair("OUTPUT_FILE", ""));
 	ConfigVarExtractor(config, var_map);
 
-    ifstream input(var_map[INDEX_FILE]);
-    ofstream output(var_map[OUTPUT_FILE]);
+    ifstream input(var_map["INDEX_FILE"].c_str());
+    ofstream output(var_map["OUTPUT_FILE"].c_str());
 
     //If the input file given could not be found or could not be open
     if(input.fail()) {

@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include "configvarextractor.h"
 using namespace std;
 
 ConfigVarExtractor::ConfigVarExtractor(
