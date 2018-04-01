@@ -13,7 +13,11 @@
 
 class Parse {
     public:
-        Parse(std::ifstream& input, std::ifstream& query, std::ofstream& output); //For search.cpp
+        Parse(std::ifstream& input, 
+            std::ifstream& query, 
+            std::ofstream& output, 
+            double RESTART_PROBABILITY, 
+            int STEP_NUMBER); //For search.cpp
         virtual ~Parse();
         void tokenize(
             WebPage* webpage_ptr, 

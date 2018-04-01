@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <algorithm>
 #include "webpage.h"
 #include "queryhandler.h"
 #include "setutility.h"
@@ -15,8 +16,9 @@ QueryHandler::QueryHandler(
 	ifstream& query,
 	const set< WebPage* >& webpage_set, 
 	map< string, set<WebPage*> >& word_map,
-	ofstream& output
-	) {
+	ofstream& output,
+	double E, 
+	int t) : RESTART_PROBABILITY(E), STEP_NUMBER(t) {
 	/*------------- START QUERY HANDLING-------------*/
 	string query_command;
 	while(getline(query, query_command)) {
@@ -73,13 +75,13 @@ void QueryHandler::analyzeQuery(
 				if(command_vec[0] == "AND") {
 					results = intersectT(command_vec, word_map);
 					if(results.first.size() > 0) {
-						addToCandidateSet(results.first, webpage_set);
+						results.first = addToCandidateSet(results.first, webpage_set);
 					}
 				} 
 				else if(command_vec[0] == "OR") {
 					results = unionT(command_vec, word_map);
 					if(results.first.size() > 0) {
-						addToCandidateSet(results.first, webpage_set);
+						results.first = addToCandidateSet(results.first, webpage_set);
 					}
 				} 
 				else if(command_vec[0] == "INCOMING") {
@@ -107,7 +109,7 @@ void QueryHandler::analyzeQuery(
 		} else {
 			weblink_vec = search(command_vec[0], word_map);
 			if(weblink_vec.size() > 0) {
-				addToCandidateSet(weblink_vec, webpage_set);
+				weblink_vec = addToCandidateSet(weblink_vec, webpage_set);
 			}
 			outputResults(weblink_vec, output);
 		}
@@ -146,12 +148,14 @@ void QueryHandler::displayWebPage(string weblink, ofstream& output) {
     output << endl;
 }
 
-void QueryHandler::addToCandidateSet(
-	vector<string>& results_vec, 
-	const set<WebPage*>& webpage_set) {
+//Step 4. Expands candidate set and calls calculatePageRank
+vector<string> QueryHandler::addToCandidateSet(
+	const vector<string>& results_vec, 
+	const set< WebPage* >& webpage_set) {
+	vector<string> results_vec_copy;
 	//Traverse results vector and for each weblink string get 
 	//its incoming and outgoing links through WebPage*
-	vector<string>::iterator results_vec_itr;
+	vector<string>::const_iterator results_vec_itr;
 	for(results_vec_itr = results_vec.begin();
 		results_vec_itr != results_vec.end();
 		results_vec_itr++) {
@@ -162,10 +166,95 @@ void QueryHandler::addToCandidateSet(
 			if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
 				vector<string> outgoinglinks_vec = (*webpage_set_itr)->getOutgoingLinkVec();
 				vector<string> incominglinks_vec = (*webpage_set_itr)->getIncomingLinkVec();
-				results_vec.insert(results_vec.end(), outgoinglinks_vec.begin(), outgoinglinks_vec.end());
-				results_vec.insert(results_vec.end(), incominglinks_vec.begin(), incominglinks_vec.end());
+				results_vec_copy = results_vec;
+				results_vec_copy.insert(results_vec_copy.end(), outgoinglinks_vec.begin(), outgoinglinks_vec.end());
+				results_vec_copy.insert(results_vec_copy.end(), incominglinks_vec.begin(), incominglinks_vec.end());
 			}
 		}
 	}
+
+	//Remove duplicates from results_vec_copy
+	!!!!!!!!
+
+	//Map that stores the key: weblink value: pair< vector<string>&, vector<string>& >
+	map< string, pair<int, double> > pagerank_map;
+	//# of vertices in webpages graph
+	double n = double(results_vec.size());
+
+	//Create the pagerank map 
+	for(results_vec_itr = results_vec.begin();
+		results_vec_itr != results_vec.end();
+		results_vec_itr++) {
+		set< WebPage* >::iterator webpage_set_itr;
+		for(webpage_set_itr = webpage_set.begin();
+			webpage_set_itr != webpage_set.end();
+			webpage_set_itr++) {
+			if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
+				vector<string> outgoinglinks_vec = ((*webpage_set_itr)->getOutgoingLinkVec());
+				vector<string>* outgoinglinks_vec_ptr = &outgoinglinks_vec;
+				double rank = 1 / n;
+				pagerank_map.insert(
+					make_pair(
+						*results_vec_itr, 
+						make_pair(
+							int((*outgoinglinks_vec_ptr).size()),
+							rank
+						)
+					)
+				);
+			}
+		}
+	}
+
+	//Calculates pagerank
+	calculatePageRank(results_vec_copy, pagerank_map);
+	return results_vec_copy;
+}
+
+//Step 5. Calculates page rank and sorts the results_vec accordingly
+void QueryHandler::calculatePageRank(
+	vector<string>& results_vec, 
+	map< string, pair<int, double> >& pagerank_map
+	) {
+	map< string, pair<int, double> >::iterator pagerank_map_itr;
+	for(int i = 0; i < STEP_NUMBER; i++) {
+		double probability_sum = calculateProbabilitySum(pagerank_map);
+		for(pagerank_map_itr = pagerank_map.begin();
+			pagerank_map_itr != pagerank_map.end();
+			pagerank_map_itr++) {
+			double pagerank = ((1 - RESTART_PROBABILITY) * probability_sum) + (RESTART_PROBABILITY / int(pagerank_map.size()));
+			//Update the old_rank with new_rank for each
+			(pagerank_map_itr->second).second = pagerank;
+		}
+	}
+	//Creates new set that is sorted by new rank
+	set< pair<string, double>, PageRankComp > result_pagerank_set;
+	for(pagerank_map_itr = pagerank_map.begin();
+		pagerank_map_itr != pagerank_map.end();
+		pagerank_map_itr++) {
+		result_pagerank_set.insert(make_pair(pagerank_map_itr->first, (pagerank_map_itr->second).second));
+	}
+
+	//Iterate over the sorted set and push back each weblink into the result_vec
+	set< pair<string, double>, PageRankComp >::iterator set_itr;
+	for(set_itr = result_pagerank_set.begin();
+		set_itr != result_pagerank_set.end();
+		set_itr++) {
+		results_vec.push_back(set_itr->first);
+	}
+}
+
+//Calculates the sum of probabilities of each webpage / # of outgoing links
+double QueryHandler::calculateProbabilitySum(
+	map< string, pair<int, double> >& pagerank_map) {
+	double probability_sum = 0.00;
+	map< string, pair<int, double> >::iterator pagerank_map_itr;
+	//Traverses map and sums all the (old webpage rank / # of outgoing vertices)
+	for(pagerank_map_itr = pagerank_map.begin();
+		pagerank_map_itr != pagerank_map.end();
+		pagerank_map_itr++) {
+		probability_sum += ((pagerank_map_itr->second).second) / ((pagerank_map_itr->second).first);
+	}
+	return probability_sum;
 }
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/

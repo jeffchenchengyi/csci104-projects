@@ -13,7 +13,12 @@ using namespace std;
 
 /*------------- START ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 //Constructor for search.cpp, query is the file with commands on what to search, output is result
-Parse::Parse(ifstream& input, ifstream& query, ofstream& output) {
+Parse::Parse(
+	ifstream& input, 
+	ifstream& query, 
+	ofstream& output, 
+	double RESTART_PROBABILITY, 
+	int STEP_NUMBER) {
 	string weblink; //"data/webpg1.txt", "data/webpg2.txt", "data/webpg3.txt"
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
@@ -36,7 +41,7 @@ Parse::Parse(ifstream& input, ifstream& query, ofstream& output) {
 	/*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
 
 	//Handles all queries in query file
-	QueryHandler(query, webpage_set, word_map, output);
+	QueryHandler(query, webpage_set, word_map, output, RESTART_PROBABILITY, STEP_NUMBER);
 }
 /*------------- END ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 

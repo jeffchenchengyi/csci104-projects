@@ -12,7 +12,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-/*
+
     //To check if the config file was also included as a command line parameter
     ifstream config;
     if(argc < 2) {
@@ -36,20 +36,11 @@ int main(int argc, char* argv[]) {
     var_map.insert(make_pair("STEP_NUMBER", ""));
 	ConfigVarExtractor(config, var_map);
 
-    ifstream input(var_map[INDEX_FILE]);
-    ifstream query(var_map[QUERY_FILE]);
-    ofstream output(var_map[OUTPUT_FILE]);
-    double 
-    */
-
-    if (argc < 4) {
-       cerr << "Please provide input, query, and output file" << endl;
-       return -1;
-    }
-
-    ifstream input(argv[1]);
-    ifstream query(argv[2]);
-    ofstream output(argv[3]);
+    ifstream input((var_map["INDEX_FILE"]).c_str());
+    ifstream query((var_map["QUERY_FILE"]).c_str());
+    ofstream output((var_map["OUTPUT_FILE"]).c_str());
+    double RESTART_PROBABILITY = atof((var_map["RESTART_PROBABILITY"]).c_str());
+    int STEP_NUMBER = atoi((var_map["STEP_NUMBER"]).c_str());
 
     //If the input file given could not be found or could not be open
     if(input.fail()) {
@@ -70,7 +61,7 @@ int main(int argc, char* argv[]) {
     }
 
     //Handles parsing and querying in Parser class
-    Parse(input, query, output);
+    Parse(input, query, output, RESTART_PROBABILITY, STEP_NUMBER);
 
     return 0;
 }
