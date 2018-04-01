@@ -72,9 +72,15 @@ void QueryHandler::analyzeQuery(
 				pair< vector<string>, bool > results = make_pair(weblink_vec, false); 
 				if(command_vec[0] == "AND") {
 					results = intersectT(command_vec, word_map);
+					if(results.first.size() > 0) {
+						addToCandidateSet(results.first, webpage_set);
+					}
 				} 
 				else if(command_vec[0] == "OR") {
 					results = unionT(command_vec, word_map);
+					if(results.first.size() > 0) {
+						addToCandidateSet(results.first, webpage_set);
+					}
 				} 
 				else if(command_vec[0] == "INCOMING") {
 					//Must only have 1 argument after INCOMING
@@ -100,6 +106,9 @@ void QueryHandler::analyzeQuery(
 			}
 		} else {
 			weblink_vec = search(command_vec[0], word_map);
+			if(weblink_vec.size() > 0) {
+				addToCandidateSet(weblink_vec, webpage_set);
+			}
 			outputResults(weblink_vec, output);
 		}
 	} else {
@@ -135,5 +144,28 @@ void QueryHandler::displayWebPage(string weblink, ofstream& output) {
     	}
     }
     output << endl;
+}
+
+void QueryHandler::addToCandidateSet(
+	vector<string>& results_vec, 
+	const set<WebPage*>& webpage_set) {
+	//Traverse results vector and for each weblink string get 
+	//its incoming and outgoing links through WebPage*
+	vector<string>::iterator results_vec_itr;
+	for(results_vec_itr = results_vec.begin();
+		results_vec_itr != results_vec.end();
+		results_vec_itr++) {
+		set< WebPage* >::iterator webpage_set_itr;
+		for(webpage_set_itr = webpage_set.begin();
+			webpage_set_itr != webpage_set.end();
+			webpage_set_itr++) {
+			if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
+				vector<string> outgoinglinks_vec = (*webpage_set_itr)->getOutgoingLinkVec();
+				vector<string> incominglinks_vec = (*webpage_set_itr)->getIncomingLinkVec();
+				results_vec.insert(results_vec.end(), outgoinglinks_vec.begin(), outgoinglinks_vec.end());
+				results_vec.insert(results_vec.end(), incominglinks_vec.begin(), incominglinks_vec.end());
+			}
+		}
+	}
 }
 /*------------- END QUERY HANDLING FUNCTIONS -------------*/

@@ -32,11 +32,15 @@ int main(int argc, char* argv[]) {
 	var_map.insert(make_pair("INDEX_FILE", ""));
 	var_map.insert(make_pair("QUERY_FILE", ""));
 	var_map.insert(make_pair("OUTPUT_FILE", ""));
+    var_map.insert(make_pair("RESTART_PROBABILITY", ""));
+    var_map.insert(make_pair("STEP_NUMBER", ""));
 	ConfigVarExtractor(config, var_map);
 
     ifstream input(var_map[INDEX_FILE]);
     ifstream query(var_map[QUERY_FILE]);
-    ofstream output(var_map[OUTPUT_FILE]);*/
+    ofstream output(var_map[OUTPUT_FILE]);
+    double 
+    */
 
     if (argc < 4) {
        cerr << "Please provide input, query, and output file" << endl;

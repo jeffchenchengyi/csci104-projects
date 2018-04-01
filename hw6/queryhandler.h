@@ -29,9 +29,13 @@ class QueryHandler {
 			std::string query_command, 
 			const std::set< WebPage* >& webpage_set, 
 			std::map< std::string, std::set<WebPage*> >& word_map,
-			std::ofstream& output
-			);
-	    void displayWebPage(std::string weblink, std::ofstream& output);
+			std::ofstream& output);
+	    void displayWebPage(
+	    	std::string weblink, 
+	    	std::ofstream& output);
+	    void addToCandidateSet(
+			std::vector<std::string>& results_vec, 
+			const std::set< WebPage* >& webpage_set);
 };
 
 #endif

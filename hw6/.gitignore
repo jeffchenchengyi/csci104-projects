@@ -1,3 +1,8 @@
 # The following lines are ignoring all the unrequired files
 data
+data_original
 search_copy.cpp
+crawler_data
+crawler_output.txt
+output.txt
+pagerank_iterations.txt
