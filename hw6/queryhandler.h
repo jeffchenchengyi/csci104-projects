@@ -15,7 +15,7 @@ class QueryHandler {
 	public:
 	    QueryHandler(
 	    	std::ifstream& query,
-			const std::set< WebPage* >& webpage_set, 
+			const std::map< std::string, WebPage* >& webpage_map, 
 			std::map< std::string, std::set<WebPage*> >& word_map,
 			std::ofstream& output,
 			double E, 
@@ -36,11 +36,19 @@ class QueryHandler {
 				return lhs.second > rhs.second; 
 			}
 		};
+		//Struct to store data for Page rank algorithm
+		struct PageRankData {
+			double pagerank;
+			int num_outgoingWebPages; //|deg+(v)|
+			std::set<PageRankData*> incomingWebPages; //deg-(v)
+		};
+		//Map to store all the candidate set details
+		std::map<std::string, PageRankData> search_result_webpages;
 
 	    //Member functions
 	    void analyzeQuery(
 			std::string query_command, 
-			const std::set< WebPage* >& webpage_set, 
+			const std::map< std::string, WebPage* >& webpage_map, 
 			std::map< std::string, std::set<WebPage*> >& word_map,
 			std::ofstream& output);
 	    void displayWebPage(
@@ -48,9 +56,9 @@ class QueryHandler {
 	    	std::ofstream& output);
 	    std::vector<std::string> addToCandidateSet(
 			const std::vector<std::string>& results_vec, 
-			const std::set< WebPage* >& webpage_set);
+			const std::map< std::string, WebPage* >& webpage_map);
 	    void calculatePageRank(
-			std::vector<std::string>& results_vec, 
+	    	std::vector<std::string>& results_vec, 
 			std::map< std::string, std::pair<int, double> >& pagerank_map);
 	    double calculateProbabilitySum(
 			std::map< std::string, std::pair<int, double> >& pagerank_map);

@@ -14,7 +14,7 @@ using namespace std;
 
 QueryHandler::QueryHandler(
 	ifstream& query,
-	const set< WebPage* >& webpage_set, 
+	const map< string, WebPage* >& webpage_map, 
 	map< string, set<WebPage*> >& word_map,
 	ofstream& output,
 	double E, 
@@ -23,7 +23,7 @@ QueryHandler::QueryHandler(
 	string query_command;
 	while(getline(query, query_command)) {
     	if(!query_command.empty()) {
-    		analyzeQuery(query_command, webpage_set, word_map, output);
+    		analyzeQuery(query_command, webpage_map, word_map, output);
     	} else {
     		output << "Invalid query" << endl;
     	}
@@ -46,7 +46,7 @@ bool QueryHandler::isOpenParen(string x) {
 //to identitfy what the command wants to be done
 void QueryHandler::analyzeQuery(
 	string query_command, 
-	const set< WebPage* >& webpage_set, 
+	const map< string, WebPage* >& webpage_map, 
 	map< string, set<WebPage*> >& word_map,
 	ofstream& output
 	) {
@@ -75,25 +75,25 @@ void QueryHandler::analyzeQuery(
 				if(command_vec[0] == "AND") {
 					results = intersectT(command_vec, word_map);
 					if(results.first.size() > 0) {
-						results.first = addToCandidateSet(results.first, webpage_set);
+						results.first = addToCandidateSet(results.first, webpage_map);
 					}
 				} 
 				else if(command_vec[0] == "OR") {
 					results = unionT(command_vec, word_map);
 					if(results.first.size() > 0) {
-						results.first = addToCandidateSet(results.first, webpage_set);
+						results.first = addToCandidateSet(results.first, webpage_map);
 					}
 				} 
 				else if(command_vec[0] == "INCOMING") {
 					//Must only have 1 argument after INCOMING
 					if(command_vec.size() == 2) {
-						results = getIncomingLinks(command_vec, webpage_set);
+						results = getIncomingLinks(command_vec, webpage_map);
 					}
 				} 
 				else if(command_vec[0] == "OUTGOING") {
 					//Must only have 1 argument after OUTGOING
 					if(command_vec.size() == 2) {
-						results = getOutgoingLinks(command_vec, webpage_set);
+						results = getOutgoingLinks(command_vec, webpage_map);
 					}
 				} 
 				else {
@@ -109,7 +109,7 @@ void QueryHandler::analyzeQuery(
 		} else {
 			weblink_vec = search(command_vec[0], word_map);
 			if(weblink_vec.size() > 0) {
-				weblink_vec = addToCandidateSet(weblink_vec, webpage_set);
+				weblink_vec = addToCandidateSet(weblink_vec, webpage_map);
 			}
 			outputResults(weblink_vec, output);
 		}
@@ -151,77 +151,72 @@ void QueryHandler::displayWebPage(string weblink, ofstream& output) {
 //Step 4. Expands candidate set and calls calculatePageRank
 vector<string> QueryHandler::addToCandidateSet(
 	const vector<string>& results_vec, 
-	const set< WebPage* >& webpage_set) {
-	vector<string> results_vec_copy;
+	const map<string, WebPage*>& webpage_map) {
+
 	//Traverse results vector and for each weblink string get 
 	//its incoming and outgoing links through WebPage*
+	vector<string> results_vec_copy;
 	vector<string>::const_iterator results_vec_itr;
 	for(results_vec_itr = results_vec.begin();
 		results_vec_itr != results_vec.end();
 		results_vec_itr++) {
 		set< WebPage* >::iterator webpage_set_itr;
-		for(webpage_set_itr = webpage_set.begin();
-			webpage_set_itr != webpage_set.end();
-			webpage_set_itr++) {
-			if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
-				vector<string> outgoinglinks_vec = (*webpage_set_itr)->getOutgoingLinkVec();
-				vector<string> incominglinks_vec = (*webpage_set_itr)->getIncomingLinkVec();
-				results_vec_copy = results_vec;
-				results_vec_copy.insert(results_vec_copy.end(), outgoinglinks_vec.begin(), outgoinglinks_vec.end());
-				results_vec_copy.insert(results_vec_copy.end(), incominglinks_vec.begin(), incominglinks_vec.end());
-			}
+		if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
+			vector<string> outgoinglinks_vec = (*webpage_set_itr)->getOutgoingLinkVec();
+			vector<string> incominglinks_vec = (*webpage_set_itr)->getIncomingLinkVec();
 		}
 	}
 
-	//Remove duplicates from results_vec_copy
-	!!!!!!!!
+	//Remove duplicates from results_vec_copy, store everything in set
+	set<string> results_set;
+	vector<string>::iterator results_vec_copy_itr;
+	for(results_vec_copy_itr = results_vec_copy.begin();
+		results_vec_copy_itr != results_vec_copy.end();
+		results_vec_copy_itr++) {
+		results_set.insert(*results_vec_copy_itr);
+	}
 
 	//Map that stores the key: weblink value: pair< vector<string>&, vector<string>& >
 	map< string, pair<int, double> > pagerank_map;
 	//# of vertices in webpages graph
-	double n = double(results_vec.size());
+	double n = double(results_set.size());
 
 	//Create the pagerank map 
-	for(results_vec_itr = results_vec.begin();
-		results_vec_itr != results_vec.end();
-		results_vec_itr++) {
-		set< WebPage* >::iterator webpage_set_itr;
-		for(webpage_set_itr = webpage_set.begin();
-			webpage_set_itr != webpage_set.end();
-			webpage_set_itr++) {
-			if((*webpage_set_itr)->getWebLink() == *results_vec_itr) {
-				vector<string> outgoinglinks_vec = ((*webpage_set_itr)->getOutgoingLinkVec());
-				vector<string>* outgoinglinks_vec_ptr = &outgoinglinks_vec;
-				double rank = 1 / n;
-				pagerank_map.insert(
+	set< WebPage* >::iterator webpage_set_itr;
+	for(webpage_set_itr = webpage_set.begin();
+		webpage_set_itr != webpage_set.end();
+		webpage_set_itr++) {
+		if(results_set.find((*webpage_set_itr)->getWebLink()) != results_set.end()) {
+			double rank = 1 / n;
+			//cout << (*webpage_set_itr)->getWebLink() <<((*webpage_set_itr)->getIncomingLinkVec()).size() << endl;
+			pagerank_map.insert(
+				make_pair(
+					(*webpage_set_itr)->getWebLink(), 
 					make_pair(
-						*results_vec_itr, 
-						make_pair(
-							int((*outgoinglinks_vec_ptr).size()),
-							rank
-						)
+						int(((*webpage_set_itr)->getIncomingLinkVec()).size()),
+						rank
 					)
-				);
-			}
+				)
+			);
 		}
 	}
 
 	//Calculates pagerank
-	calculatePageRank(results_vec_copy, pagerank_map);
-	return results_vec_copy;
+	vector<string> final_vec;
+	//calculatePageRank(final_vec, pagerank_map);
+	return final_vec;
 }
 
 //Step 5. Calculates page rank and sorts the results_vec accordingly
 void QueryHandler::calculatePageRank(
-	vector<string>& results_vec, 
-	map< string, pair<int, double> >& pagerank_map
-	) {
+	vector<string>& results_vec,
+	map< string, pair<int, double> >& pagerank_map) {
 	map< string, pair<int, double> >::iterator pagerank_map_itr;
 	for(int i = 0; i < STEP_NUMBER; i++) {
-		double probability_sum = calculateProbabilitySum(pagerank_map);
 		for(pagerank_map_itr = pagerank_map.begin();
 			pagerank_map_itr != pagerank_map.end();
 			pagerank_map_itr++) {
+			double probability_sum = 0.0;// = calculateProbabilitySum(pagerank_map_itr);
 			double pagerank = ((1 - RESTART_PROBABILITY) * probability_sum) + (RESTART_PROBABILITY / int(pagerank_map.size()));
 			//Update the old_rank with new_rank for each
 			(pagerank_map_itr->second).second = pagerank;
@@ -244,16 +239,18 @@ void QueryHandler::calculatePageRank(
 	}
 }
 
-//Calculates the sum of probabilities of each webpage / # of outgoing links
+//Calculates the sum of probabilities of each webpage / # of incoming links
 double QueryHandler::calculateProbabilitySum(
 	map< string, pair<int, double> >& pagerank_map) {
 	double probability_sum = 0.00;
 	map< string, pair<int, double> >::iterator pagerank_map_itr;
-	//Traverses map and sums all the (old webpage rank / # of outgoing vertices)
+	//Traverses map and sums all the (old webpage rank / # of incoming vertices)
 	for(pagerank_map_itr = pagerank_map.begin();
 		pagerank_map_itr != pagerank_map.end();
 		pagerank_map_itr++) {
 		probability_sum += ((pagerank_map_itr->second).second) / ((pagerank_map_itr->second).first);
+		cout << pagerank_map_itr->first << ": ";
+		cout << ((pagerank_map_itr->second).second) << " / " << ((pagerank_map_itr->second).first) << endl;
 	}
 	return probability_sum;
 }

@@ -184,47 +184,37 @@ const typename std::pair< std::vector<std::string>, bool > unionT(
 }
 
 //for INCOMING command
-template <class T1, class T2>
-const typename std::pair<std::vector<T1>, bool> getIncomingLinks(
-	std::vector<T1>& command_vec,
-	const std::set<T2>& T2_set
+template <class T2>
+const typename std::pair<std::vector<std::string>, bool> getIncomingLinks(
+	std::vector<std::string>& command_vec,
+	const std::map<std::string, T2>& T2_map
 	) {
-	typename std::set<T2>::iterator T2_set_itr;
+	typename std::map<std::string, T2>::const_iterator T2_map_itr = T2_map.find(command_vec[1]);
 	bool isFound = false;
-	for(T2_set_itr = T2_set.begin(); 
-		T2_set_itr != T2_set.end(); 
-		T2_set_itr++
-		) {
-		if((*T2_set_itr)->getWebLink() == command_vec[1]) {
-			isFound = true;
-			return make_pair((*T2_set_itr)->getIncomingLinkVec(), isFound);
-		}
+	if(T2_map_itr != T2_map.end()) {
+		isFound = true;
+		return make_pair((T2_map_itr->second)->getIncomingLinkVec(), isFound);
 	}
 	if(!isFound) {
-		typename std::vector<T1> outgoingLinkVec;
-		return make_pair(outgoingLinkVec, isFound);
+		typename std::vector<std::string> incomingLinkVec;
+		return make_pair(incomingLinkVec, isFound);
 	}
 }
 
 //for OUTGOING COMMAND
-template <class T1, class T2>
-const typename std::pair<std::vector<T1>, bool> getOutgoingLinks(
-	std::vector<T1>& command_vec,
-	const std::set<T2>& T2_set
+template <class T2>
+const typename std::pair<std::vector<std::string>, bool> getOutgoingLinks(
+	std::vector<std::string>& command_vec,
+	const std::map<std::string, T2>& T2_map
 	) {
-	typename std::set<T2>::iterator T2_set_itr;
+	typename std::map<std::string, T2>::const_iterator T2_map_itr = T2_map.find(command_vec[1]);
 	bool isFound = false;
-	for(T2_set_itr = T2_set.begin(); 
-		T2_set_itr != T2_set.end(); 
-		T2_set_itr++
-		) {
-		if((*T2_set_itr)->getWebLink() == command_vec[1]) {
-			isFound = true;
-			return make_pair((*T2_set_itr)->getOutgoingLinkVec(), isFound);
-		}
+	if(T2_map_itr != T2_map.end()) {
+		isFound = true;
+		return make_pair((T2_map_itr->second)->getOutgoingLinkVec(), isFound);
 	}
 	if(!isFound) {
-		typename std::vector<T1> outgoingLinkVec;
+		typename std::vector<std::string> outgoingLinkVec;
 		return make_pair(outgoingLinkVec, isFound);
 	}
 }

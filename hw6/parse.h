@@ -23,7 +23,7 @@ class Parse {
             WebPage* webpage_ptr, 
             std::ifstream& webpage_file, 
             std::map< std::string, std::set<WebPage*> >& word_map,
-            const std::set< WebPage* >& webpage_set
+            const std::map< std::string, WebPage* >& webpage_map
             );
         bool isCloseParen(std::string x);
         bool isOpenParen(std::string x);
@@ -32,8 +32,10 @@ class Parse {
     
     private:
         //Member variables
-        std::set< WebPage* > webpage_set; //{webpg1obj_ptr, webpg2obj_ptr, webpg3obj_ptr} 
-        std::map< std::string, std::set<WebPage*> > word_map; //{"yo"=> {webpg1obj_ptr, webpg2obj_ptr, webpg3obj_ptr}}
+        //{"data/text1.txt" => webpg1obj_ptr, "data/text2.txt" => webpg2obj_ptr, "data/text3.txt" => webpg3obj_ptr}
+        std::map< std::string, WebPage* > webpage_map;  
+        //{"yo"=> {webpg1obj_ptr, webpg2obj_ptr, webpg3obj_ptr}}
+        std::map< std::string, std::set<WebPage*> > word_map; 
 
         //Member functions
         void readWord(
@@ -49,12 +51,12 @@ class Parse {
             WebPage* webpage_ptr, 
             std::map< std::string, std::set<WebPage*> >& word_map,
             std::ifstream& webpage_file,
-            const std::set< WebPage* >& webpage_set
+            const std::map< std::string, WebPage* >& webpage_map
             );
         void createMdLink(
             WebPage* webpage_ptr, 
             std::ifstream& webpage_file,
-            const std::set< WebPage* >& webpage_set
+            const std::map< std::string, WebPage* >& webpage_map
             );
         void createAnchortext(
             WebPage* webpage_ptr, 

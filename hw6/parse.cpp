@@ -23,35 +23,35 @@ Parse::Parse(
     while(getline(input, weblink)) {
     	if(!weblink.empty()) {
     		WebPage* webpage_ptr = new WebPage(weblink);
-    		webpage_set.insert(webpage_ptr);
+    		webpage_map.insert(make_pair(weblink, webpage_ptr));
     	}
     }
     /*------------- START TOKENIZATION/PARSING OF WEBPAGES-------------*/
-    set< WebPage* >::iterator webpage_itr;
-    for(webpage_itr = webpage_set.begin(); 
-    	webpage_itr != webpage_set.end(); 
+    map< string, WebPage* >::iterator webpage_itr;
+    for(webpage_itr = webpage_map.begin(); 
+    	webpage_itr != webpage_map.end(); 
     	webpage_itr++) {
-    	ifstream webpage_file(((*webpage_itr)->getWebLink()).c_str()); //why must put c_str()???
+    	ifstream webpage_file((webpage_itr->first).c_str()); //why must put c_str()???
     	if(!webpage_file) {
     		cerr << "Web Page file could not be open." << endl;
     	} else {
-    		tokenize(*(webpage_itr), webpage_file, word_map, webpage_set);
+    		tokenize((webpage_itr->second), webpage_file, word_map, webpage_map);
     	}
 	}
 	/*------------- END TOKENIZATION/PARSING OF WEBPAGES-------------*/
 
 	//Handles all queries in query file
-	QueryHandler(query, webpage_set, word_map, output, RESTART_PROBABILITY, STEP_NUMBER);
+	QueryHandler(query, webpage_map, word_map, output, RESTART_PROBABILITY, STEP_NUMBER);
 }
 /*------------- END ALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 
 /*------------- START DEALLOCATE WEBPAGE DYNAMIC MEM -------------*/
 Parse::~Parse() {
-	set< WebPage* >::iterator webpage_itr;
-	for(webpage_itr = webpage_set.begin(); 
-    	webpage_itr != webpage_set.end(); 
+	map< string, WebPage* >::iterator webpage_itr;
+	for(webpage_itr = webpage_map.begin(); 
+    	webpage_itr != webpage_map.end(); 
     	webpage_itr++) {
-    	delete (*webpage_itr);
+    	delete webpage_itr->second;
 	}
 }
 /*------------- END DEALLOCATE WEBPAGE DYNAMIC MEM -------------*/
@@ -78,13 +78,13 @@ void Parse::tokenize(
 	WebPage* webpage_ptr, 
 	ifstream& webpage_file, 
 	map< string, set<WebPage*> >& word_map,
-	const set< WebPage* >& webpage_set
+	const map< string, WebPage* >& webpage_map
 	) {
 	while(webpage_file.peek() != EOF) {
 		string token; //To store word tokens
 		readWord(webpage_file, token); //Updated token with a word
 		updateWordMap(webpage_ptr, word_map, token); //Update word map with new word
-		checkSpecChar(webpage_ptr, word_map, webpage_file, webpage_set); //Check what the special char is
+		checkSpecChar(webpage_ptr, word_map, webpage_file, webpage_map); //Check what the special char is
 	}
 }
 
@@ -129,7 +129,7 @@ void Parse::checkSpecChar(
 	WebPage* webpage_ptr, 
 	map< string, set<WebPage*> >& word_map,
 	ifstream& webpage_file,
-	const set< WebPage* >& webpage_set
+	const map< string, WebPage* >& webpage_map
 	) {
 	while(webpage_file.peek() != EOF && 
 		!isalnum(webpage_file.peek())
@@ -137,7 +137,7 @@ void Parse::checkSpecChar(
 		char special_char;
 		webpage_file.get(special_char); //Extract the special char from ifstream obj
 		if(isOpenParen(string(1, special_char))) {
-			createMdLink(webpage_ptr, webpage_file, webpage_set);
+			createMdLink(webpage_ptr, webpage_file, webpage_map);
 		}
 		else if(isOpenBrack(string(1, special_char))) {
 			createAnchortext(webpage_ptr, word_map, webpage_file, special_char);
@@ -149,20 +149,16 @@ void Parse::checkSpecChar(
 void Parse::createMdLink(
 	WebPage* webpage_ptr, 
 	ifstream& webpage_file,
-	const set< WebPage* >& webpage_set
+	const map< string, WebPage* >& webpage_map
 	) {
 	string mdlink;
 	readLink(webpage_file, mdlink);
 	//Find the WebPage obj that mdlink directs to
 	//If the WebPage obj is not found, only the outgoing link 
 	//for current webpage is added
-	for(set< WebPage* >::iterator webpage_itr = webpage_set.begin(); 
-	    webpage_itr != webpage_set.end(); 
-	    webpage_itr++) {
-		if(((*webpage_itr)->getWebLink()) == mdlink) {
-			(*webpage_itr)->addIncomingLink(webpage_ptr->getWebLink()); //Add incoming link for target webpage
-			break;
-		}
+	map< string, WebPage* >::const_iterator webpage_itr = webpage_map.find(mdlink);
+	if(webpage_itr != webpage_map.end()) {
+		(webpage_itr->second)->addIncomingLink(webpage_ptr->getWebLink()); //Add incoming link for target webpage
 	}
 	webpage_ptr->addOutgoingLink(mdlink); //Adding outgoing link for current webpage
 	char openParen;
