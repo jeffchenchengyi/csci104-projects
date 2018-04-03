@@ -17,7 +17,7 @@ QueryHandler::QueryHandler(
 	const map< string, WebPage* >& webpage_map, 
 	map< string, set<WebPage*> >& word_map,
 	ofstream& output,
-	double E, 
+	float E, 
 	int t) : RESTART_PROBABILITY(E), STEP_NUMBER(t) {
 	/*------------- START QUERY HANDLING-------------*/
 	string query_command;
@@ -181,7 +181,7 @@ vector<string> QueryHandler::addToCandidateSet(
 	//value: pointer to PageRankData struct / vertices in search results graph
 	map<string, PageRankData*> pagerank_map;
 	//# of vertices in webpages graph
-	double n = double(results_set.size());
+	float n = float(results_set.size());
 
 	//Creates all the PageRankData structs for the search result candidate set
 	set<string>::iterator results_set_itr;
@@ -256,8 +256,8 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 		for(search_result_webpages_itr = search_result_webpages.begin();
 			search_result_webpages_itr != search_result_webpages.end();
 			search_result_webpages_itr++) {
-			double probability_sum = calculateProbabilitySum(search_result_webpages_itr->second);
-			double currpagerank = ((1 - RESTART_PROBABILITY) * probability_sum) + (RESTART_PROBABILITY / int(search_result_webpages.size()));
+			float probability_sum = calculateProbabilitySum(search_result_webpages_itr->second);
+			float currpagerank = ((1 - RESTART_PROBABILITY) * probability_sum) + (RESTART_PROBABILITY / int(search_result_webpages.size()));
 			//Update the old_rank with new_rank for each 
 			(search_result_webpages_itr->second)->newpagerank = currpagerank;
 		}
@@ -270,7 +270,7 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 	}
 
 	//Creates new set that is sorted by new rank
-	set< pair<string, double>, PageRankComp > result_pagerank_set;
+	set< pair<string, float>, PageRankComp > result_pagerank_set;
 	for(search_result_webpages_itr = search_result_webpages.begin();
 		search_result_webpages_itr != search_result_webpages.end();
 		search_result_webpages_itr++) {
@@ -283,7 +283,7 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 	}
 
 	//Iterate over the sorted set and push back each weblink into the result_vec
-	set< pair<string, double>, PageRankComp >::iterator set_itr;
+	set< pair<string, float>, PageRankComp >::iterator set_itr;
 	for(set_itr = result_pagerank_set.begin();
 		set_itr != result_pagerank_set.end();
 		set_itr++) {
@@ -292,8 +292,8 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 }
 
 //Calculates the sum of probabilities of each webpage / # of incoming links
-double QueryHandler::calculateProbabilitySum(PageRankData* curr_webpage_ptr) {
-	double probability_sum = 0.00;
+float QueryHandler::calculateProbabilitySum(PageRankData* curr_webpage_ptr) {
+	float probability_sum = 0.00;
 	//Traverses map and sums all the (old webpage rank / # of incoming vertices)
 	set<PageRankData*>::iterator pagerankdata_ptr_set_itr;
 	for(pagerankdata_ptr_set_itr = (curr_webpage_ptr->incomingWebPages).begin();

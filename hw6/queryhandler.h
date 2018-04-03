@@ -18,7 +18,7 @@ class QueryHandler {
 			const std::map< std::string, WebPage* >& webpage_map, 
 			std::map< std::string, std::set<WebPage*> >& word_map,
 			std::ofstream& output,
-			double E, 
+			float E, 
 			int t);
 	    virtual ~QueryHandler();
 	    bool isCloseParen(std::string x);
@@ -26,21 +26,21 @@ class QueryHandler {
 
  	private:
  		//Member variables
- 		double RESTART_PROBABILITY;
+ 		float RESTART_PROBABILITY;
 		int STEP_NUMBER;
 		//Comparator for key comparison of pagerank map
 		struct PageRankComp {
 			bool operator()(
-				const std::pair<std::string, double>& lhs, 
-				const std::pair<std::string, double>& rhs) { 
+				const std::pair<std::string, float>& lhs, 
+				const std::pair<std::string, float>& rhs) { 
 				return lhs.second > rhs.second; 
 			}
 		};
 		//Struct to store data for Page rank algorithm
 		struct PageRankData {
 			std::string weblink;
-			double oldpagerank;
-			double newpagerank;
+			float oldpagerank;
+			float newpagerank;
 			int num_outgoingWebPages; //|deg+(v)|
 			std::set<PageRankData*> incomingWebPages; //deg-(v)
 		};
@@ -63,7 +63,7 @@ class QueryHandler {
 			std::set<std::string>& results_set,
 			const std::vector<std::string>& vec_tobestored);
 	    void calculatePageRank(std::vector<std::string>& final_vec);
-	    double calculateProbabilitySum(PageRankData*);
+	    float calculateProbabilitySum(PageRankData*);
 };
 
 #endif

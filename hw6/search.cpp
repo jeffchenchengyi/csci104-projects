@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     ifstream input((var_map["INDEX_FILE"]).c_str());
     ifstream query((var_map["QUERY_FILE"]).c_str());
     ofstream output((var_map["OUTPUT_FILE"]).c_str());
-    double RESTART_PROBABILITY = atof((var_map["RESTART_PROBABILITY"]).c_str());
+    float RESTART_PROBABILITY = atof((var_map["RESTART_PROBABILITY"]).c_str());
     int STEP_NUMBER = atoi((var_map["STEP_NUMBER"]).c_str());
 
     //If the input file given could not be found or could not be open
