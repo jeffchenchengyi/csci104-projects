@@ -286,7 +286,7 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 	set< pair<string, float>, PageRankComp >::iterator set_itr;
 	for(set_itr = result_pagerank_set.begin();
 		set_itr != result_pagerank_set.end();
-		set_itr++) {
+		set_itr++) { 
 		final_vec.push_back(set_itr->first);
 	}
 }

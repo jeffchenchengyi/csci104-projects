@@ -33,7 +33,7 @@ class QueryHandler {
 			bool operator()(
 				const std::pair<std::string, float>& lhs, 
 				const std::pair<std::string, float>& rhs) { 
-				return lhs.second > rhs.second; 
+				return lhs.second >= rhs.second; 
 			}
 		};
 		//Struct to store data for Page rank algorithm
