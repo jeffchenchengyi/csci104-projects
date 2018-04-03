@@ -38,12 +38,14 @@ class QueryHandler {
 		};
 		//Struct to store data for Page rank algorithm
 		struct PageRankData {
-			double pagerank;
+			std::string weblink;
+			double oldpagerank;
+			double newpagerank;
 			int num_outgoingWebPages; //|deg+(v)|
 			std::set<PageRankData*> incomingWebPages; //deg-(v)
 		};
 		//Map to store all the candidate set details
-		std::map<std::string, PageRankData> search_result_webpages;
+		std::map<std::string, PageRankData*> search_result_webpages;
 
 	    //Member functions
 	    void analyzeQuery(
@@ -57,11 +59,11 @@ class QueryHandler {
 	    std::vector<std::string> addToCandidateSet(
 			const std::vector<std::string>& results_vec, 
 			const std::map< std::string, WebPage* >& webpage_map);
-	    void calculatePageRank(
-	    	std::vector<std::string>& results_vec, 
-			std::map< std::string, std::pair<int, double> >& pagerank_map);
-	    double calculateProbabilitySum(
-			std::map< std::string, std::pair<int, double> >& pagerank_map);
+	    void storeInSet(
+			std::set<std::string>& results_set,
+			const std::vector<std::string>& vec_tobestored);
+	    void calculatePageRank(std::vector<std::string>& final_vec);
+	    double calculateProbabilitySum(PageRankData*);
 };
 
 #endif
