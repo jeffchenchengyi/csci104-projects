@@ -154,71 +154,84 @@ vector<string> QueryHandler::addToCandidateSet(
 	const map<string, WebPage*>& webpage_map) {
 
 	/*--------- Start Expanding candidate set ---------*/
-	//Traverse results_vec and for each weblink string get 
-	//its incoming and outgoing links through WebPage*, storing
-	//them in a results_set to be used for calculation of pagerank
-	set<string> results_set;
-	vector<string>::const_iterator results_vec_itr;
-	for(results_vec_itr = results_vec.begin();
-		results_vec_itr != results_vec.end();
-		results_vec_itr++) {
-		map<string, WebPage*>::const_iterator webpage_map_itr = webpage_map.find(*results_vec_itr);
-		if(webpage_map_itr != webpage_map.end()) {
-			vector<string> outgoinglinks_vec = (webpage_map_itr->second)->getOutgoingLinkVec();
-			vector<string> incominglinks_vec = (webpage_map_itr->second)->getIncomingLinkVec();
-			//Store the candidate set of a specific webpage in the results_set
-			storeInSet(results_set, results_vec);
-			storeInSet(results_set, outgoinglinks_vec);
-			storeInSet(results_set, incominglinks_vec);
-		} else {
-			cerr << *results_vec_itr << " is not in the network of webpages..." << endl;
+		//Traverse results_vec and for each weblink string get 
+		//its incoming and outgoing links through WebPage*, storing
+		//them in a results_set to be used for calculation of pagerank
+		set<string> results_set;
+		vector<string>::const_iterator results_vec_itr;
+		for(results_vec_itr = results_vec.begin();
+			results_vec_itr != results_vec.end();
+			results_vec_itr++) {
+			map<string, WebPage*>::const_iterator webpage_map_itr = webpage_map.find(*results_vec_itr);
+			if(webpage_map_itr != webpage_map.end()) {
+				vector<string> outgoinglinks_vec = (webpage_map_itr->second)->getOutgoingLinkVec();
+				vector<string> incominglinks_vec = (webpage_map_itr->second)->getIncomingLinkVec();
+				//Store the candidate set of a specific webpage in the results_set
+				storeInSet(results_set, results_vec);
+				storeInSet(results_set, outgoinglinks_vec);
+				storeInSet(results_set, incominglinks_vec);
+			} else {
+				cerr << *results_vec_itr << " is not in the network of webpages..." << endl;
+			}
 		}
-	}
 	/*--------- End Expanding candidate set ---------*/
 
 	/*--------- Start Dynamically allocating memory for PageRankData structs ---------*/
-	//Map that stores the key: weblink, 
-	//value: pointer to PageRankData struct / vertices in search results graph
-	map<string, PageRankData*> pagerank_map;
-	//# of vertices in webpages graph
-	float n = float(results_set.size());
+		//Map that stores the key: weblink, 
+		//value: pointer to PageRankData struct / vertices in search results graph
+		map<string, PageRankData*> pagerank_map;
+		//# of vertices in webpages graph
+		float n = float(results_set.size());
 
-	//Creates all the PageRankData structs for the search result candidate set
-	set<string>::iterator results_set_itr;
-	for(results_set_itr = results_set.begin();
-		results_set_itr != results_set.end();
-		results_set_itr++) {
-		PageRankData* webpage_ptr = new PageRankData;
-		webpage_ptr->weblink = *results_set_itr;
-		webpage_ptr->oldpagerank = 1 / n;
-		webpage_ptr->newpagerank = 1 / n;
-		//Add 1 to num_outgoingWebPages to account for a self-loop
-		webpage_ptr->num_outgoingWebPages 
-			= int((((webpage_map.find(*results_set_itr))->second)->getOutgoingLinkVec()).size()) + 1;
-		search_result_webpages.insert(make_pair(*results_set_itr, webpage_ptr));
-	}
+		//Creates all the PageRankData structs for the search result candidate set
+		set<string>::iterator results_set_itr;
+		for(results_set_itr = results_set.begin();
+			results_set_itr != results_set.end();
+			results_set_itr++) {
+			PageRankData* webpage_ptr = new PageRankData;
+			webpage_ptr->weblink = *results_set_itr;
+			webpage_ptr->oldpagerank = 1 / n;
+			webpage_ptr->newpagerank = 1 / n;
+			//Check if the outgoinglinks from results_set_itr are all inside the candidate set
+			int num_outgoingWebPages_inCandidateSet = 0;
+			vector<string> candidateset_outgoinglinks_vec 
+				= (((webpage_map.find(*results_set_itr))->second)->getOutgoingLinkVec());
+			vector<string>::iterator vec_itr;
+			for(vec_itr = candidateset_outgoinglinks_vec.begin();
+				vec_itr != candidateset_outgoinglinks_vec.end();
+				vec_itr++) {
+				if(results_set.find(*vec_itr) != results_set.end()) {
+					num_outgoingWebPages_inCandidateSet++;
+				}
+			}
+			//Add 1 to num_outgoingWebPages to account for a self-loop
+			webpage_ptr->num_outgoingWebPages 
+				= num_outgoingWebPages_inCandidateSet + 1;
+			search_result_webpages.insert(make_pair(*results_set_itr, webpage_ptr));
+		}
 
-	//Inserts all the incoming edges to the PageRankData structs, creates Webpages digraph
-	map<string, PageRankData*>::iterator search_result_webpages_itr;
-	for(search_result_webpages_itr = search_result_webpages.begin();
-		search_result_webpages_itr != search_result_webpages.end();
-		search_result_webpages_itr++) {
-		vector<string> incominglinks_vec
-			= (((webpage_map.find(search_result_webpages_itr->first))->second)->getIncomingLinkVec());
-		vector<string>::iterator incominglinks_vec_itr;
-		for(incominglinks_vec_itr = incominglinks_vec.begin();
-			incominglinks_vec_itr != incominglinks_vec.end();
-			incominglinks_vec_itr++) {
-			map<string, PageRankData*>::iterator search_result_map_itr 
-				= search_result_webpages.find(*incominglinks_vec_itr);
-			if(search_result_map_itr != search_result_webpages.end()) {
-				((search_result_webpages_itr->second)->incomingWebPages)
-					.insert(search_result_map_itr->second);
-			} else {
-				cerr << *incominglinks_vec_itr << " is not a weblink in the search result candidate set digraph..." << endl;
+		//Inserts all the incoming edges to the PageRankData structs, creates Webpages digraph
+		map<string, PageRankData*>::iterator search_result_webpages_itr;
+		for(search_result_webpages_itr = search_result_webpages.begin();
+			search_result_webpages_itr != search_result_webpages.end();
+			search_result_webpages_itr++) {
+			vector<string> incominglinks_vec
+				= (((webpage_map.find(search_result_webpages_itr->first))->second)->getIncomingLinkVec());
+			vector<string>::iterator incominglinks_vec_itr;
+			for(incominglinks_vec_itr = incominglinks_vec.begin();
+				incominglinks_vec_itr != incominglinks_vec.end();
+				incominglinks_vec_itr++) {
+				map<string, PageRankData*>::iterator search_result_map_itr 
+					= search_result_webpages.find(*incominglinks_vec_itr);
+				if(search_result_map_itr != search_result_webpages.end()) {
+					((search_result_webpages_itr->second)->incomingWebPages)
+						.insert(search_result_map_itr->second);
+				} else {
+					//We ignore all incoming links that are not in the candidate set
+					//cerr << *incominglinks_vec_itr << " is not a weblink in the search result candidate set digraph..." << endl;
+				}
 			}
 		}
-	}
 	/*--------- End Dynamically allocating memory for PageRankData structs ---------*/
 
 	//Calculates pagerank
@@ -226,11 +239,11 @@ vector<string> QueryHandler::addToCandidateSet(
 	calculatePageRank(final_vec);
 
 	/*--------- Start Dynamically allocating memory for PageRankData structs ---------*/
-	for(search_result_webpages_itr = search_result_webpages.begin();
-		search_result_webpages_itr != search_result_webpages.end();
-		search_result_webpages_itr++) {
-		delete search_result_webpages_itr->second;
-	}
+		for(search_result_webpages_itr = search_result_webpages.begin();
+			search_result_webpages_itr != search_result_webpages.end();
+			search_result_webpages_itr++) {
+			delete search_result_webpages_itr->second;
+		}
 	/*--------- End Dynamically allocating memory for PageRankData structs ---------*/
 
 	return final_vec;
@@ -286,7 +299,7 @@ void QueryHandler::calculatePageRank(vector<string>& final_vec) {
 	set< pair<string, float>, PageRankComp >::iterator set_itr;
 	for(set_itr = result_pagerank_set.begin();
 		set_itr != result_pagerank_set.end();
-		set_itr++) { 
+		set_itr++) { //cout << set_itr->first << " : " << set_itr->second << endl;
 		final_vec.push_back(set_itr->first);
 	}
 }
