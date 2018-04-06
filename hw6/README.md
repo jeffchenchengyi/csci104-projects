@@ -24,6 +24,13 @@
 ## [Step 4 (Expand the Set of candidate search results, 10%): ](queryhandler.cpp)
 ### [Header file for QueryHandler class](queryhandler.h)
 
+> [search.cpp](search.cpp) is first used to analyze the config file via the 
+[ConfigVarExtractor class](configvarextractor.cpp) for the required data and information 
+is passed into [Parse class](parse.cpp), which is used to filter all the words from the 
+webpage into tokens and stored inside a word map, with keys as the 
+word and the values as the sets of all the webpages with the specified word
+
+
 > Expand candidate search results inside 
 **`vector<string> QueryHandler::addToCandidateSet(
 		const vector<string>& results_vec, 

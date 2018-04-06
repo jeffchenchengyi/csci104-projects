@@ -1,6 +1,2 @@
 # The following lines are ignoring all the unrequired files
 aprtf
-crawler_output.txt
-output.txt
-pagerank_iterations.txt
-search_copy.cpp
