@@ -213,7 +213,7 @@ class BinarySearchTree
 {
 	public:
 		BinarySearchTree(); //TODO
-		~BinarySearchTree(); //TODO
+		virtual ~BinarySearchTree(); //TODO
 		int height(); //TODO 
 		bool isBalanced(); //TODO 
 		virtual void insert(const std::pair<const Key, Value>& keyValuePair); //TODO
