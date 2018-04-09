@@ -590,7 +590,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value>& key
 	// TODO
 	if(internalFind(keyValuePair.first) == nullptr) // Check if the key already exists in the BST
 	{
-		mRoot = insertHelper(keyValuePair, mRoot, nullptr); // Step 3. O(h), traversing down half a subtree at a time, 
+		insertHelper(keyValuePair, mRoot, nullptr); // Step 3. O(h), traversing down half a subtree at a time, 
 			//at most visit log2(n) OR h nodes, then updating ancestor heights in insertHelper also worst case O(h)
 	}
 }
@@ -600,15 +600,22 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value>& key
 * The tree will not remain balanced when inserting.
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::insertHelper(const std::pair<const Key, Value>& keyValuePair,
+void BinarySearchTree<Key, Value>::insertHelper(const std::pair<const Key, Value>& keyValuePair,
 	Node<Key, Value>* curr_node_ptr,
 	Node<Key, Value>* parent_ptr)
 {
 	if(curr_node_ptr == nullptr) // If the node we are at is empty, we can insert the new node
 	{
 		curr_node_ptr = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, parent_ptr);
+		if(parent_ptr == nullptr) // THIS IS THE ROOT NODE
+		{
+			mRoot = curr_node_ptr;
+		} 
+		else 
+		{
+			changeChild(curr_node_ptr, curr_node_ptr);
+		}
 		updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
-		return curr_node_ptr; [THIS DOESNT WORK WE NEED TO GET curr_node_ptr TO ACTUALLY CHANGE]
 	}
 	else 
 	{
@@ -649,8 +656,16 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 		if(curr_node_ptr->getLeft() == nullptr 
 			&& curr_node_ptr->getRight() == nullptr) // Case 1: Both left and right children are null, hence leaf node or single root node
 		{
-			changeChild(curr_node_ptr, nullptr); // Updates the child for the parent of current node
-			delete curr_node_ptr;
+			if(curr_node_ptr->getParent() == nullptr) // THIS IS THE ROOT NODE
+			{
+				delete mRoot;
+				mRoot = nullptr;
+			}
+			else
+			{
+				changeChild(curr_node_ptr, nullptr); // Updates the child for the parent of current node
+				delete curr_node_ptr;
+			}
 			curr_node_ptr = nullptr;
 		}
 		else if(curr_node_ptr->getLeft() != nullptr 
@@ -690,7 +705,15 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			delete temp_ptr;
 			temp_ptr = nullptr;
 		}
-		updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+		if(curr_node_ptr->getParent() == nullptr) // THIS IS THE ROOT NODE
+		{
+			mRoot = curr_node_ptr;
+			updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
+		}
+		else
+		{
+			updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+		}
 	}
 }
 
