@@ -259,10 +259,19 @@ class BinarySearchTree
 
 	private:
 		bool isBalancedHelper(const Node<Key, Value>* curr_node_ptr) const;
-		Node<Key, Value>* internalFindHelper(const Key& key, const Node<Key, Value>* curr_node_ptr) const; 
+		void updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
 		void insertHelper(const std::pair<const Key, Value>& keyValuePair,
 			Node<Key, Value>* curr_node_ptr,
 			Node<Key, Value>* parent_ptr);
+		void removeHelper(const Key& key, Node<Key, Value>* curr_node_ptr);
+		void changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr);
+		Node<Key, Value>* findPredecessor(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* getSubTreeMax(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* firstLeftAncestor(Node<Key, Value>* curr_node_ptr);
+		void postOrderRemoval(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* getSubTreeMin(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* internalFindHelper(const Key& key, 
+			const Node<Key, Value>* curr_node_ptr) const 
 };
 
 /*
