@@ -258,19 +258,35 @@ class BinarySearchTree
 		Node<Key, Value>* mRoot;
 
 	private:
+		// HEIGHT HELPER FUNCTIONS
 		bool isBalancedHelper(Node<Key, Value>* curr_node_ptr) const;
-		void updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
-		void insertHelper(const std::pair<const Key, Value>& keyValuePair,
+		void rec_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
+		void it_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
+
+		// INSERTION HELPER FUNCTIONS
+		void rec_insertHelper(const std::pair<const Key, Value>& keyValuePair,
 			Node<Key, Value>* curr_node_ptr,
 			Node<Key, Value>* parent_ptr);
+		void it_insertHelper(const std::pair<const Key, Value>& keyValuePair,
+			Node<Key, Value>* curr_node_ptr,
+			Node<Key, Value>* parent_ptr);
+
+		// REMOVAL HELPER FUNCTIONS
 		void removeHelper(const Key& key, Node<Key, Value>* curr_node_ptr);
 		void changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr);
-		Node<Key, Value>* findPredecessor(Node<Key, Value>* curr_node_ptr);
-		Node<Key, Value>* getSubTreeMax(Node<Key, Value>* curr_node_ptr) const;
-		Node<Key, Value>* firstLeftAncestor(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* it_findPredecessor(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* rec_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const;
+		Node<Key, Value>* it_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const;
+		Node<Key, Value>* rec_firstLeftAncestor(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* it_firstLeftAncestor(Node<Key, Value>* curr_node_ptr);
 		void postOrderRemoval(Node<Key, Value>* curr_node_ptr);
-		Node<Key, Value>* getSubTreeMin(Node<Key, Value>* curr_node_ptr) const;
-		Node<Key, Value>* internalFindHelper(const Key& key, 
+		Node<Key, Value>* rec_getSubTreeMin(Node<Key, Value>* curr_node_ptr) const;
+		Node<Key, Value>* it_getSubTreeMin(Node<Key, Value>* curr_node_ptr) const;
+
+		// GENERAL HELPER FUNCTIONS
+		Node<Key, Value>* rec_internalFindHelper(const Key& key, 
+			Node<Key, Value>* curr_node_ptr) const; 
+		Node<Key, Value>* it_internalFindHelper(const Key& key, 
 			Node<Key, Value>* curr_node_ptr) const; 
 };
 
@@ -538,10 +554,10 @@ bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value>* curr_node_
 */
 
 /**
-* A method to recursively checks if the heights need to be adjusted after insertion and removal
+* A recursive method to recursively checks if the heights need to be adjusted after insertion and removal
 */
 template<typename Key, typename Value>
-void BinarySearchTree<Key, Value>::updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr)
+void BinarySearchTree<Key, Value>::rec_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr)
 {
 	if(curr_node_ptr != nullptr) // Ensure current node exist
 	{
@@ -585,6 +601,53 @@ void BinarySearchTree<Key, Value>::updateAncestorChainHeights(Node<Key, Value>* 
 }
 
 /**
+* An iterative method to recursively checks if the heights need to be adjusted after insertion and removal
+*/
+template<typename Key, typename Value>
+void BinarySearchTree<Key, Value>::it_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr)
+{
+	while(curr_node_ptr != nullptr) // Ensure current node exist
+	{
+		if(curr_node_ptr->getLeft() != nullptr 
+			&& curr_node_ptr->getRight() != nullptr) // Case 1: When node has both children sub-trees
+		{
+			if(curr_node_ptr->getLeft()->getHeight() 
+				> curr_node_ptr->getRight()->getHeight()) // Left subtree has greater height
+			{
+				curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+			} 
+			else  // Right subtree has greater or equal height
+			{
+				curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+			}
+		} 
+		else if(curr_node_ptr->getLeft() == nullptr 
+			&& curr_node_ptr->getRight() != nullptr) // Case 2: When node has right-child sub-tree
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+		}
+		else if(curr_node_ptr->getLeft() != nullptr 
+			&& curr_node_ptr->getRight() == nullptr) // Case 3: When node has left-child sub-tree
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+		}
+		else
+		{
+			curr_node_ptr->setHeight(1);
+		}
+
+		if(curr_node_ptr->getParent() != nullptr) 
+		{
+			curr_node_ptr = curr_node_ptr->getParent(); // Recursive call upwards to parent
+		} 
+		else // THIS IS THE ROOT NODE
+		{ 
+			return;
+		}
+	}
+}
+
+/**
 * An insert method to insert into a Binary Search Tree. The tree will not remain balanced when 
 * inserting.
 */
@@ -594,17 +657,17 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value>& key
 	// TODO
 	if(internalFind(keyValuePair.first) == nullptr) // Check if the key already exists in the BST
 	{
-		insertHelper(keyValuePair, mRoot, nullptr); // Step 3. O(h), traversing down half a subtree at a time, 
+		it_insertHelper(keyValuePair, mRoot, nullptr); // Step 3. O(h), traversing down half a subtree at a time, 
 			//at most visit log2(n) OR h nodes, then updating ancestor heights in insertHelper also worst case O(h)
 	}
 }
 
 /**
-* An insert method to insert into a Binary Search Tree. 
+* An recursive insert helper method to insert into a Binary Search Tree. 
 * The tree will not remain balanced when inserting.
 */
 template<typename Key, typename Value>
-void BinarySearchTree<Key, Value>::insertHelper(const std::pair<const Key, Value>& keyValuePair,
+void BinarySearchTree<Key, Value>::rec_insertHelper(const std::pair<const Key, Value>& keyValuePair,
 	Node<Key, Value>* curr_node_ptr,
 	Node<Key, Value>* parent_ptr)
 {
@@ -619,18 +682,54 @@ void BinarySearchTree<Key, Value>::insertHelper(const std::pair<const Key, Value
 		{
 			changeChild(curr_node_ptr, curr_node_ptr);
 		}
-		updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+		rec_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 	}
 	else 
 	{
 		if(keyValuePair.first > curr_node_ptr->getKey()) // Case 1: key is greater than current node key
 		{
-			insertHelper(keyValuePair, curr_node_ptr->getRight(), curr_node_ptr);
+			rec_insertHelper(keyValuePair, curr_node_ptr->getRight(), curr_node_ptr);
 		}
 		else if(keyValuePair.first < curr_node_ptr->getKey()) // Case 2: key is lesser than current node key
 		{
-			insertHelper(keyValuePair, curr_node_ptr->getLeft(), curr_node_ptr);
+			rec_insertHelper(keyValuePair, curr_node_ptr->getLeft(), curr_node_ptr);
 		}
+	}
+}
+
+/**
+* An iterative insert helper method to insert into a Binary Search Tree. 
+* The tree will not remain balanced when inserting.
+*/
+template<typename Key, typename Value>
+void BinarySearchTree<Key, Value>::it_insertHelper(const std::pair<const Key, Value>& keyValuePair,
+	Node<Key, Value>* curr_node_ptr,
+	Node<Key, Value>* parent_ptr)
+{
+	while(curr_node_ptr != nullptr) // If the node we are at is not empty, we continue going deep
+	{
+		parent_ptr = curr_node_ptr; // Remember the current pointer as the parent before going deep
+		if(keyValuePair.first > curr_node_ptr->getKey()) // Case 1: key is greater than current node key
+		{
+			curr_node_ptr = curr_node_ptr->getRight();
+		}
+		else if(keyValuePair.first < curr_node_ptr->getKey()) // Case 2: key is lesser than current node key
+		{
+			curr_node_ptr = curr_node_ptr->getLeft();
+		}
+	}
+	if(curr_node_ptr == nullptr) // We have reached where we can insert the new node
+	{
+		curr_node_ptr = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, parent_ptr);
+		if(parent_ptr == nullptr) // THIS IS THE ROOT NODE
+		{
+			mRoot = curr_node_ptr;
+		} 
+		else 
+		{
+			changeChild(curr_node_ptr, curr_node_ptr);
+		}
+		it_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 	}
 }
 
@@ -668,7 +767,7 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			else
 			{
 				changeChild(curr_node_ptr, nullptr); // Updates the child for the parent of current node
-				updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 				delete curr_node_ptr;
 			}
 			curr_node_ptr = nullptr;
@@ -682,13 +781,13 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			{
 				mRoot = curr_node_ptr;
 				mRoot->setParent(temp_ptr->getParent()); // Set current node's parent to prev current node's parent
-				updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
 			} 
 			else 
 			{
 				curr_node_ptr->setParent(temp_ptr->getParent()); // Set current node's parent to prev current node's parent
 				changeChild(temp_ptr, curr_node_ptr); // Updates the child for the parent of current node
-				updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 			}
 			delete temp_ptr;
 			temp_ptr = nullptr;
@@ -702,13 +801,13 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			{
 				mRoot = curr_node_ptr;
 				mRoot->setParent(temp_ptr->getParent()); // Set current node's parent to prev current node's parent
-				updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
 			} 
 			else 
 			{
 				curr_node_ptr->setParent(temp_ptr->getParent()); // Set current node's parent to prev current node's parent
 				changeChild(temp_ptr, curr_node_ptr); // Updates the child for the parent of current node
-				updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 			}
 			delete temp_ptr;
 			temp_ptr = nullptr;
@@ -716,12 +815,12 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 		else if(curr_node_ptr->getLeft() != nullptr 
 			&& curr_node_ptr->getRight() != nullptr) // Complex Case 4: Both children exist, we need to replace current node with its predecessor
 		{
-			Node<Key, Value>* pred_node_ptr = findPredecessor(curr_node_ptr); // Get the predecessor of the node
+			Node<Key, Value>* pred_node_ptr = it_findPredecessor(curr_node_ptr); // Get the predecessor of the node
 			if(pred_node_ptr != nullptr) // pred_node_ptr == nullptr IS IMPOSSIBLE, BUT LETS JUST LEAVE IT
 			{
 				Node<Key, Value>* temp_ptr = curr_node_ptr; // Keep copy of node ptr for deleting
 				changeChild(pred_node_ptr, nullptr); // Update the parent node that the child will be deleted
-				updateAncestorChainHeights(pred_node_ptr->getParent()); // Updates all the heights in the ancestor chain
+				it_updateAncestorChainHeights(pred_node_ptr->getParent()); // Updates all the heights in the ancestor chain
 				if(temp_ptr->getParent() == nullptr) // THIS IS THE ROOT NODE
 				{
 					mRoot = pred_node_ptr; // Make mRoot point to the predecessor which is the current node
@@ -732,7 +831,7 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 					// UPDATE SURROUNDING NODES OF CURRENT NODE
 					if(mRoot->getLeft() != nullptr) mRoot->getLeft()->setParent(mRoot); // Updates deleted node's left child's parent to the predecessor
 					if(mRoot->getRight() != nullptr) mRoot->getRight()->setParent(mRoot); // Updates deleted node's right child's parent to the predecessor
-					updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
+					it_updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
 				} 
 				else 
 				{
@@ -743,7 +842,7 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 					// UPDATE SURROUNDING NODES OF CURRENT NODE
 					if(temp_ptr->getLeft() != nullptr) temp_ptr->getLeft()->setParent(pred_node_ptr); // Updates current node's left child's parent to the predecessor
 					if(temp_ptr->getRight() != nullptr) temp_ptr->getRight()->setParent(pred_node_ptr); // Updates current node's right child's parent to the predecessor
-					updateAncestorChainHeights(pred_node_ptr); // Updates all the heights in the ancestor chain
+					it_updateAncestorChainHeights(pred_node_ptr); // Updates all the heights in the ancestor chain
 				}
 				delete temp_ptr;
 				temp_ptr = nullptr;
@@ -776,17 +875,17 @@ void BinarySearchTree<Key, Value>::changeChild(Node<Key, Value>* curr_node_ptr, 
 * An iterative method to find the predecessor of the given node
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::findPredecessor(Node<Key, Value>* curr_node_ptr)
+Node<Key, Value>* BinarySearchTree<Key, Value>::it_findPredecessor(Node<Key, Value>* curr_node_ptr)
 {
 	if(curr_node_ptr != nullptr) // Check first that the node received is not empty
 	{
 		if(curr_node_ptr->getLeft() != nullptr) // Case 1: If left subtree exists, find the largest element in left subtree
 		{
-			return getSubTreeMax(curr_node_ptr->getLeft());
+			return it_getSubTreeMax(curr_node_ptr->getLeft());
 		}
 		else // Case 2: Left subtree does not exist, recursively find the first left ancestor
 		{
-			return firstLeftAncestor(curr_node_ptr);
+			return it_firstLeftAncestor(curr_node_ptr);
 		}
 	}
 	else 
@@ -799,13 +898,13 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::findPredecessor(Node<Key, Value>
 * A recursive method to find largest element in subtree
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::getSubTreeMax(Node<Key, Value>* curr_node_ptr) const
+Node<Key, Value>* BinarySearchTree<Key, Value>::rec_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const
 {
 	if(curr_node_ptr != nullptr) // Check first that the node received is not empty
 	{
 		if(curr_node_ptr->getRight() != nullptr) // Case 1: We have not reached the right-most node
 		{
-			return getSubTreeMax(curr_node_ptr->getRight());
+			return rec_getSubTreeMax(curr_node_ptr->getRight());
 		}
 		else // Case 2: We have reached the right-most node, hence max is found
 		{
@@ -819,10 +918,30 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::getSubTreeMax(Node<Key, Value>* 
 }
 
 /**
-* A recursive method to find largest element in subtree
+* An iterative method to find largest element in subtree
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::firstLeftAncestor(Node<Key, Value>* curr_node_ptr)
+Node<Key, Value>* BinarySearchTree<Key, Value>::it_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const
+{
+	while(curr_node_ptr != nullptr) // Check first that the node received is not empty
+	{
+		if(curr_node_ptr->getRight() != nullptr) // Case 1: We have not reached the right-most node
+		{
+			curr_node_ptr = curr_node_ptr->getRight();
+		}
+		else // Case 2: We have reached the right-most node, hence max is found
+		{
+			return curr_node_ptr;
+		}
+	}
+	return nullptr;
+}
+
+/**
+* A recursive method to find the predecessor that is the first left ancestor 
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* BinarySearchTree<Key, Value>::rec_firstLeftAncestor(Node<Key, Value>* curr_node_ptr)
 {
 	if(curr_node_ptr != nullptr && curr_node_ptr->getParent() != nullptr) // Check first that the node received is not empty 
 		//and ensure parent is not empty as well, or else the node is the root node, with no predecessor
@@ -830,7 +949,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::firstLeftAncestor(Node<Key, Valu
 		if(curr_node_ptr->getKey() < curr_node_ptr->getParent()->getKey()) // Case 1: When current node is the left child of parent, 
 			//we have to recurse upwards until we have a current node that is the right child of a parent which will be case 2
 		{
-			return firstLeftAncestor(curr_node_ptr->getParent());
+			return rec_firstLeftAncestor(curr_node_ptr->getParent());
 		}
 		else // if(curr_node_ptr->getKey() > curr_node_ptr->getParent()->getKey()) // Case 2: When current node is the right child of parent
 		{
@@ -841,6 +960,28 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::firstLeftAncestor(Node<Key, Valu
 	{
 		return nullptr;
 	}
+}
+
+/**
+* An iterative method to find the predecessor that is the first left ancestor 
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* BinarySearchTree<Key, Value>::it_firstLeftAncestor(Node<Key, Value>* curr_node_ptr)
+{
+	while(curr_node_ptr != nullptr && curr_node_ptr->getParent() != nullptr) // Check first that the node received is not empty 
+		//and ensure parent is not empty as well, or else the node is the root node, with no predecessor
+	{
+		if(curr_node_ptr->getKey() < curr_node_ptr->getParent()->getKey()) // Case 1: When current node is the left child of parent, 
+			//we have to recurse upwards until we have a current node that is the right child of a parent which will be case 2
+		{
+			curr_node_ptr = curr_node_ptr->getParent();
+		}
+		else // if(curr_node_ptr->getKey() > curr_node_ptr->getParent()->getKey()) // Case 2: When current node is the right child of parent
+		{
+			return curr_node_ptr->getParent();
+		}
+	}
+	return nullptr;
 }
 
 /**
@@ -891,20 +1032,20 @@ template<typename Key, typename Value>
 Node<Key, Value>* BinarySearchTree<Key, Value>::getSmallestNode() const
 {
 	// TODO
-	return getSubTreeMin(mRoot); // Step 7. O(h), recursively go depth of the left subtree to find left most node
+	return it_getSubTreeMin(mRoot); // Step 7. O(h), recursively go depth of the left subtree to find left most node
 }
 
 /**
 * A recursive method to find smallest element in subtree
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::getSubTreeMin(Node<Key, Value>* curr_node_ptr) const
+Node<Key, Value>* BinarySearchTree<Key, Value>::rec_getSubTreeMin(Node<Key, Value>* curr_node_ptr) const
 {
 	if(curr_node_ptr != nullptr) // Check first that the node received is not empty
 	{
 		if(curr_node_ptr->getLeft() != nullptr) // Case 1: We have not reached the left-most node
 		{
-			return getSubTreeMin(curr_node_ptr->getLeft());
+			return rec_getSubTreeMin(curr_node_ptr->getLeft());
 		}
 		else // Case 2: We have reached the left-most node, hence min is found
 		{
@@ -918,6 +1059,26 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::getSubTreeMin(Node<Key, Value>* 
 }
 
 /**
+* An iterative method to find smallest element in subtree
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* BinarySearchTree<Key, Value>::it_getSubTreeMin(Node<Key, Value>* curr_node_ptr) const
+{
+	while(curr_node_ptr != nullptr) // Check first that the node received is not empty
+	{
+		if(curr_node_ptr->getLeft() != nullptr) // Case 1: We have not reached the left-most node
+		{
+			curr_node_ptr = curr_node_ptr->getLeft();
+		}
+		else // Case 2: We have reached the left-most node, hence min is found
+		{
+			return curr_node_ptr;
+		}
+	}
+	return nullptr;
+}
+
+/**
 * Helper function to find a node with given key, k and 
 * return a pointer to it or NULL if no item with that key
 * exists
@@ -926,7 +1087,7 @@ template<typename Key, typename Value>
 Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) const 
 {
 	// TODO
-	return internalFindHelper(key, mRoot); // Step 6. O(h), traverse half a subtree at any time
+	return it_internalFindHelper(key, mRoot); // Step 6. O(h), traverse half a subtree at any time
 }
 
 /**
@@ -935,7 +1096,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) con
 * exists
 */
 template<typename Key, typename Value>
-Node<Key, Value>* BinarySearchTree<Key, Value>::internalFindHelper(const Key& key, 
+Node<Key, Value>* BinarySearchTree<Key, Value>::rec_internalFindHelper(const Key& key, 
 	Node<Key, Value>* curr_node_ptr) const 
 {
 	if(curr_node_ptr == nullptr) // Case 1: The key does not exist in the BST, return nullptr
@@ -946,17 +1107,44 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFindHelper(const Key& ke
 	{
 		if(key > curr_node_ptr->getKey()) // Case 2: The key is greater than the key of our current node
 		{
-			return internalFindHelper(key, curr_node_ptr->getRight()); 
+			return rec_internalFindHelper(key, curr_node_ptr->getRight()); 
 		}
 		else if(key < curr_node_ptr->getKey()) // Case 3: The key is lesser than the key of our current node
 		{
-			return internalFindHelper(key, curr_node_ptr->getLeft());
+			return rec_internalFindHelper(key, curr_node_ptr->getLeft());
 		}
 		else // if(key == curr_node_ptr->getKey()) // Case 4: The key is equal to the key of our current node
 		{
 			return curr_node_ptr;
 		}
 	}
+}
+
+/**
+* Iterative Helper of the Helper function to find a node with given key, k and 
+* return a pointer to it or NULL if no item with that key
+* exists
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* BinarySearchTree<Key, Value>::it_internalFindHelper(const Key& key, 
+	Node<Key, Value>* curr_node_ptr) const 
+{
+	while(curr_node_ptr != nullptr) // Trying to find the key
+	{
+		if(key > curr_node_ptr->getKey()) // Case 2: The key is greater than the key of our current node
+		{
+			curr_node_ptr = curr_node_ptr->getRight(); 
+		}
+		else if(key < curr_node_ptr->getKey()) // Case 3: The key is lesser than the key of our current node
+		{
+			curr_node_ptr = curr_node_ptr->getLeft();
+		}
+		else // if(key == curr_node_ptr->getKey()) // Case 4: The key is equal to the key of our current node
+		{
+			return curr_node_ptr;
+		}
+	}
+	return nullptr; // Case 1: The key does not exist in the BST, return nullptr
 }
 
 /*
