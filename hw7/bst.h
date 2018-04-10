@@ -568,13 +568,17 @@ void BinarySearchTree<Key, Value>::updateAncestorChainHeights(Node<Key, Value>* 
 		{
 			curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
 		}
+		else
+		{
+			curr_node_ptr->setHeight(1);
+		}
 
-		if(curr_node_ptr->getParent() != nullptr) // THIS IS THE ROOT NODE
+		if(curr_node_ptr->getParent() != nullptr) 
 		{
 			updateAncestorChainHeights(curr_node_ptr->getParent()); // Recursive call upwards to parent
 		} 
-		else 
-		{
+		else // THIS IS THE ROOT NODE
+		{ 
 			return;
 		}
 	}
@@ -717,11 +721,12 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			{
 				Node<Key, Value>* temp_ptr = curr_node_ptr; // Keep copy of node ptr for deleting
 				changeChild(pred_node_ptr, nullptr); // Update the parent node that the child will be deleted
-				pred_node_ptr->setParent(nullptr); // Clear parent of the predecessor
+				updateAncestorChainHeights(pred_node_ptr->getParent()); // Updates all the heights in the ancestor chain
 				if(temp_ptr->getParent() == nullptr) // THIS IS THE ROOT NODE
 				{
 					mRoot = pred_node_ptr; // Make mRoot point to the predecessor which is the current node
 					// UPDATE CURRENT NODE
+					mRoot->setParent(nullptr);
 					mRoot->setLeft(temp_ptr->getLeft());
 					mRoot->setRight(temp_ptr->getRight());
 					// UPDATE SURROUNDING NODES OF CURRENT NODE
@@ -848,6 +853,7 @@ void BinarySearchTree<Key, Value>::clear()
 	// TODO
 	// Post-order traversal to remove all nodes from the tree
 	postOrderRemoval(mRoot); // Step 5. O(n), deletes each of n nodes
+	mRoot = nullptr;
 }
 
 /**
