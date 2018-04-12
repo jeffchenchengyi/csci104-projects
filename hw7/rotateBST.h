@@ -5,6 +5,7 @@
 #include <exception>
 #include <cstdlib>
 #include <utility>
+#include <vector>
 #include "bst.h"
 
 /**
@@ -20,6 +21,13 @@ class rotateBST: public BinarySearchTree<Key, Value>
 		bool sameKeys(const rotateBST& t2) const; // TODO
 		void transform(rotateBST& t2) const; // TODO
 	private:
+		bool rec_inOrderTraversal(
+			Node<Key, Value>* curr_node_ptr, 
+			int& pos_intree,
+			std::vector<Key>& checking_vec,
+			bool(*func)(std::vector<Key>&, Key, int));
+		bool addKey(std::vector<Key>& checking_vec, Key the_key, int pos);
+		bool checkKey(std::vector<Key>& checking_vec, Key the_key, int pos);
 		void changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr);
 };
 
@@ -113,7 +121,51 @@ template<typename Key, typename Value>
 bool rotateBST<Key, Value>::sameKeys(const rotateBST& t2) const
 {
 	// TODO
+	std::vector<Key> checking_vec;
+	rec_inOrderTraversal(this->mRoot, 0, checking_vec, addKey);
+	return rec_inOrderTraversal(t2.mRoot, 0, checking_vec, checkKey);
+}
+
+/**
+* A method that uses post-order traversal to carry out a function on each node visited
+*/
+template<typename Key, typename Value>
+bool rotateBST<Key, Value>::rec_inOrderTraversal(
+	Node<Key, Value>* curr_node_ptr, 
+	int& pos_intree,
+	std::vector<Key>& checking_vec,
+	bool(*func)(std::vector<Key>&, Key, int))
+{
+	if(curr_node_ptr != nullptr) 
+	{
+		rec_inOrderTraversal(curr_node_ptr->getLeft(), pos_intree, checking_vec, (*func)); // Recurse on the left subtree
+		pos_intree++;
+		return (*func)(checking_vec, curr_node_ptr->getKey(), pos_intree) ? true : false;
+		rec_inOrderTraversal(curr_node_ptr->getRight(), pos_intree, checking_vec, (*func)); // Recurse on the right subtree
+	} 
+	else 
+	{
+		return true;
+	}
+}
+
+/**
+* A method to add a key into the checking vector
+*/
+template<typename Key, typename Value>
+bool rotateBST<Key, Value>::addKey(std::vector<Key>& checking_vec, Key the_key, int pos)
+{
+	checking_vec.push_back(the_key);
 	return true;
+}
+
+/**
+* A method to check if the key given equals to the same key in the position specified by pos in checking_vec
+*/
+template<typename Key, typename Value>
+bool rotateBST<Key, Value>::checkKey(std::vector<Key>& checking_vec, Key the_key, int pos)
+{
+	return (checking_vec[pos] == the_key) ? true : false;
 }
 
 /**
