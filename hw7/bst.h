@@ -770,6 +770,7 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 				changeChild(curr_node_ptr, nullptr); // Updates the child for the parent of current node
 				it_updateAncestorChainHeights(curr_node_ptr); // Updates all the heights in the ancestor chain
 				delete curr_node_ptr;
+				curr_node_ptr = nullptr;
 			}
 		}
 		else if(curr_node_ptr->getLeft() != nullptr 
@@ -816,56 +817,52 @@ void BinarySearchTree<Key, Value>::removeHelper(const Key& key, Node<Key, Value>
 			Node<Key, Value>* pred_node_ptr = it_findPredecessor(curr_node_ptr); // Get the predecessor of the node
 			if(pred_node_ptr != nullptr) // pred_node_ptr == nullptr IS IMPOSSIBLE, BUT LETS JUST LEAVE IT
 			{
+				// Step 1. Separate predecessor from the rest of the tree
 				changeChild(pred_node_ptr, nullptr); // Update the parent node that the child will be deleted
 				it_updateAncestorChainHeights(pred_node_ptr->getParent()); // Updates all the heights in the ancestor chain
+
+				// Step 2. Update predecessor node to connect to current node's edges
+				if(pred_node_ptr != curr_node_ptr->getLeft()) // If current node's left child is not predecessor
+					// If we didnt have the check we would have made the node point to itself
+				{
+					if(pred_node_ptr->getLeft() == nullptr)
+					{
+						pred_node_ptr->setLeft(curr_node_ptr->getLeft()); // If we didnt have the check we would have made the node point to itself
+					}
+					else
+					{
+						pred_node_ptr->getLeft()->setParent(pred_node_ptr->getParent()); // Connect predecessor's left child with predecessor's parent
+						changeChild(pred_node_ptr->getLeft(), pred_node_ptr->getLeft());
+						pred_node_ptr->setLeft(curr_node_ptr->getLeft());
+					}
+				}
+				if(pred_node_ptr->getRight() == nullptr) // Predecessor can never be right child of current node
+				{
+					pred_node_ptr->setRight(curr_node_ptr->getRight());
+				}
+				else
+				{
+					// THIS IS IMPOSSIBLE, if predecessor had a right child, the right child would have been the actual predecessor of current node
+				}
+				pred_node_ptr->setParent(curr_node_ptr->getParent());
+				
+				// Step 3. Update left child and right child's parent to point to predecessor
+				if(pred_node_ptr->getLeft() != nullptr) 
+				{
+					pred_node_ptr->getLeft()->setParent(pred_node_ptr); // Updates current node's left child's parent to the predecessor
+				}
+				if(pred_node_ptr->getRight() != nullptr) 
+				{
+					pred_node_ptr->getRight()->setParent(pred_node_ptr); // Updates current node's right child's parent to the predecessor
+				}
 				if(curr_node_ptr->getParent() == nullptr) // THIS IS THE ROOT NODE
 				{
 					mRoot = pred_node_ptr; // Make mRoot point to the predecessor which is the current node
-					// UPDATE CURRENT NODE
-					mRoot->setParent(nullptr);
-					mRoot->setLeft(curr_node_ptr->getLeft());
-					mRoot->setRight(curr_node_ptr->getRight());
-					// UPDATE SURROUNDING NODES OF CURRENT NODE
-					if(mRoot->getLeft() != nullptr) 
-					{
-						mRoot->getLeft()->setParent(mRoot); // Updates deleted node's left child's parent to the predecessor
-					}
-					if(mRoot->getRight() != nullptr) 
-					{
-						mRoot->getRight()->setParent(mRoot); // Updates deleted node's right child's parent to the predecessor
-					}
-					it_updateAncestorChainHeights(mRoot); // Updates all the heights in the ancestor chain
-				} 
-				else 
+					it_updateAncestorChainHeights(pred_node_ptr); // Updates all the heights in the ancestor chain
+				}
+				else
 				{
-					// UPDATE CURRENT NODE
-					pred_node_ptr->setParent(curr_node_ptr->getParent());
-					if(pred_node_ptr != curr_node_ptr->getLeft()) 
-					{
-						pred_node_ptr->setLeft(curr_node_ptr->getLeft());
-					}
-					else
-					{
-						curr_node_ptr = nullptr;
-					}
-					if(pred_node_ptr != curr_node_ptr->getRight())
-					{
-						pred_node_ptr->setRight(curr_node_ptr->getRight());
-					}
-					else
-					{
-						curr_node_ptr = nullptr;
-					}
-					// UPDATE SURROUNDING NODES OF CURRENT NODE
-					changeChild(pred_node_ptr, pred_node_ptr); // Update the parent's left or right child to predecessor
-					if(pred_node_ptr->getLeft() != nullptr) 
-					{
-						pred_node_ptr->getLeft()->setParent(pred_node_ptr); // Updates current node's left child's parent to the predecessor
-					}
-					if(pred_node_ptr->getRight() != nullptr) 
-					{
-						pred_node_ptr->getRight()->setParent(pred_node_ptr); // Updates current node's right child's parent to the predecessor
-					}
+					changeChild(pred_node_ptr, pred_node_ptr); // Get predecessor's new parent to point to it
 					it_updateAncestorChainHeights(pred_node_ptr); // Updates all the heights in the ancestor chain
 				}
 				delete curr_node_ptr;
