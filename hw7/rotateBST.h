@@ -21,14 +21,23 @@ class rotateBST: public BinarySearchTree<Key, Value>
 		bool sameKeys(const rotateBST& t2) const; // TODO
 		void transform(rotateBST& t2) const; // TODO
 	private:
-		// Member variables:
-
 		// Member functions:
 		void rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, std::vector<Key>& checking_vec) const;
 		bool rec_inOrderCheckKey(
 			Node<Key, Value>* curr_node_ptr, 
 			int& pos_intree,
 			std::vector<Key>& checking_vec) const;
+		void rec_transformToLL(
+			rotateBST& t2,
+			Node<Key, Value>* curr_node_ptr) const;
+		void rec_transformHelper(
+			rotateBST& t2,
+			Node<Key, Value>* curr_node_ptr, 
+			Node<Key, Value>* model_node_ptr) const;
+		void rec_postOrderUpdateHeights(
+			Node<Key, Value>* curr_node_ptr) const;
+		void updateParentHeight(
+			Node<Key, Value>* curr_node_ptr) const;
 		void changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr);
 };
 
@@ -124,15 +133,17 @@ bool rotateBST<Key, Value>::sameKeys(const rotateBST& t2) const
 	// TODO
 	int pos_intree = 0;
 	std::vector<Key> checking_vec;
-	rec_inOrderAddKey(this->mRoot, checking_vec);
-	return rec_inOrderCheckKey(t2.mRoot, pos_intree, checking_vec);
+	rec_inOrderAddKey(this->mRoot, checking_vec); // O(n)
+	return rec_inOrderCheckKey(t2.mRoot, pos_intree, checking_vec); // O(n)
 }
 
 /**
-* A method that uses in-order traversal to add each key in tree to checking_vec
+* A method that uses recursive in-order traversal to add each key in tree to checking_vec
 */
 template<typename Key, typename Value>
-void rotateBST<Key, Value>::rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, std::vector<Key>& checking_vec) const
+void rotateBST<Key, Value>::rec_inOrderAddKey(
+	Node<Key, Value>* curr_node_ptr, 
+	std::vector<Key>& checking_vec) const
 {
 	if(curr_node_ptr != nullptr) 
 	{
@@ -143,7 +154,7 @@ void rotateBST<Key, Value>::rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, s
 }
 
 /**
-* A method that uses in-order traversal to check each key in tree to checking_vec
+* A method that uses recursive in-order traversal to check each key in tree to checking_vec
 */
 template<typename Key, typename Value>
 bool rotateBST<Key, Value>::rec_inOrderCheckKey(
@@ -177,14 +188,128 @@ template<typename Key, typename Value>
 void rotateBST<Key, Value>::transform(rotateBST& t2) const
 {
 	// TODO
-	
+	if(this->sameKeys(t2) == true)
+	{
+		// 3. This should produce a tree which is effectively a linked list.
+		rec_transformToLL(t2, t2.mRoot);
+		
+		// 6. This should produce the specified tree using only rotations.
+		rec_transformHelper(t2, t2.mRoot, this->mRoot);
+
+		// Update all the height values 
+		rec_postOrderUpdateHeights(t2.mRoot);
+	}
+}
+
+/**
+* A method that recursively transforms a binary tree to a linked list
+*/
+template<typename Key, typename Value>
+void rotateBST<Key, Value>::rec_transformToLL(
+	rotateBST& t2,
+	Node<Key, Value>* curr_node_ptr) const
+{
+	if(curr_node_ptr != nullptr)
+	{
+		// 1. Perform right rotations on the root node of t2 until it has no left child.
+		while(curr_node_ptr->getLeft() != nullptr)
+		{
+			t2.rightRotate(curr_node_ptr);
+		}
+		// 2. Recursively move to the right child and repeat the above operation.
+		rec_transformToLL(t2, curr_node_ptr->getRight());
+	} 
+	else
+	{
+		return;
+	}
+}
+
+/**
+* A method that recursively transforms a linked list to the tree given by model_node_ptr which represents root node
+* of model tree
+*/
+template<typename Key, typename Value>
+void rotateBST<Key, Value>::rec_transformHelper(
+	rotateBST& t2,
+	Node<Key, Value>* curr_node_ptr, 
+	Node<Key, Value>* model_node_ptr) const
+{
+	if(curr_node_ptr != nullptr && model_node_ptr != nullptr)
+	{
+		// 4. Now perform left rotations on the root node of t2, until the root of t2 is the same as the root of this.
+		while(curr_node_ptr->getKey() != model_node_ptr->getKey())
+		{
+			t2.leftRotate(curr_node_ptr);
+		}
+		// 5. Recursively do rotations on the left child and the right child until they match the node at that position of this.
+		rec_transformHelper(t2, curr_node_ptr->getLeft(), model_node_ptr->getLeft());
+		rec_transformHelper(t2, curr_node_ptr->getRight(), model_node_ptr->getRight());
+	}
+}
+
+/**
+* A method that uses recursive post-order traversal to update heights of the tree
+*/
+template<typename Key, typename Value>
+void rotateBST<Key, Value>::rec_postOrderUpdateHeights(
+	Node<Key, Value>* curr_node_ptr) const
+{
+	if(curr_node_ptr != nullptr) 
+	{
+		rec_postOrderUpdateHeights(curr_node_ptr->getLeft()); // Recurse on the left subtree
+		rec_postOrderUpdateHeights(curr_node_ptr->getRight()); // Recurse on the right subtree
+		updateParentHeight(curr_node_ptr);
+	}
+	else
+	{
+		return;
+	}
+}
+
+/**
+* A method to check if the parent's heights need to be adjusted
+*/
+template<typename Key, typename Value>
+void rotateBST<Key, Value>::updateParentHeight(
+	Node<Key, Value>* curr_node_ptr) const
+{
+	if(curr_node_ptr->getLeft() != nullptr 
+		&& curr_node_ptr->getRight() != nullptr) // Case 1: When node has both children sub-trees
+	{
+		if(curr_node_ptr->getLeft()->getHeight() 
+			> curr_node_ptr->getRight()->getHeight()) // Left subtree has greater height
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+		} 
+		else  // Right subtree has greater or equal height
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+		}
+	} 
+	else if(curr_node_ptr->getLeft() == nullptr 
+		&& curr_node_ptr->getRight() != nullptr) // Case 2: When node has right-child sub-tree
+	{
+		curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+	}
+	else if(curr_node_ptr->getLeft() != nullptr 
+		&& curr_node_ptr->getRight() == nullptr) // Case 3: When node has left-child sub-tree
+	{
+		curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+	}
+	else // Case 4: When node is a leaf node or root node with no children
+	{
+		curr_node_ptr->setHeight(1);
+	}
 }
 
 /**
 * A method to change current node's Parent's child to the new child after removal of current node
 */
 template<typename Key, typename Value>
-void rotateBST<Key, Value>::changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr)
+void rotateBST<Key, Value>::changeChild(
+	Node<Key, Value>* curr_node_ptr, 
+	Node<Key, Value>* new_child_ptr)
 {
 	if(curr_node_ptr != nullptr && curr_node_ptr->getParent() != nullptr) // Check first that the node received is not empty 
 		//and ensure parent is not empty as well, or else the node is the root node
