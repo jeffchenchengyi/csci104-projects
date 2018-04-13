@@ -21,13 +21,14 @@ class rotateBST: public BinarySearchTree<Key, Value>
 		bool sameKeys(const rotateBST& t2) const; // TODO
 		void transform(rotateBST& t2) const; // TODO
 	private:
-		bool rec_inOrderTraversal(
+		// Member variables:
+
+		// Member functions:
+		void rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, std::vector<Key>& checking_vec) const;
+		bool rec_inOrderCheckKey(
 			Node<Key, Value>* curr_node_ptr, 
 			int& pos_intree,
-			std::vector<Key>& checking_vec,
-			bool(*func)(std::vector<Key>&, Key, int));
-		bool addKey(std::vector<Key>& checking_vec, Key the_key, int pos);
-		bool checkKey(std::vector<Key>& checking_vec, Key the_key, int pos);
+			std::vector<Key>& checking_vec) const;
 		void changeChild(Node<Key, Value>* curr_node_ptr, Node<Key, Value>* new_child_ptr);
 };
 
@@ -121,51 +122,49 @@ template<typename Key, typename Value>
 bool rotateBST<Key, Value>::sameKeys(const rotateBST& t2) const
 {
 	// TODO
+	int pos_intree = 0;
 	std::vector<Key> checking_vec;
-	rec_inOrderTraversal(this->mRoot, 0, checking_vec, addKey);
-	return rec_inOrderTraversal(t2.mRoot, 0, checking_vec, checkKey);
+	rec_inOrderAddKey(this->mRoot, checking_vec);
+	return rec_inOrderCheckKey(t2.mRoot, pos_intree, checking_vec);
 }
 
 /**
-* A method that uses post-order traversal to carry out a function on each node visited
+* A method that uses in-order traversal to add each key in tree to checking_vec
 */
 template<typename Key, typename Value>
-bool rotateBST<Key, Value>::rec_inOrderTraversal(
-	Node<Key, Value>* curr_node_ptr, 
-	int& pos_intree,
-	std::vector<Key>& checking_vec,
-	bool(*func)(std::vector<Key>&, Key, int))
+void rotateBST<Key, Value>::rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, std::vector<Key>& checking_vec) const
 {
 	if(curr_node_ptr != nullptr) 
 	{
-		rec_inOrderTraversal(curr_node_ptr->getLeft(), pos_intree, checking_vec, (*func)); // Recurse on the left subtree
-		pos_intree++;
-		return (*func)(checking_vec, curr_node_ptr->getKey(), pos_intree) ? true : false;
-		rec_inOrderTraversal(curr_node_ptr->getRight(), pos_intree, checking_vec, (*func)); // Recurse on the right subtree
-	} 
-	else 
-	{
-		return true;
+		rec_inOrderAddKey(curr_node_ptr->getLeft(), checking_vec); // Recurse on the left subtree
+		checking_vec.push_back(curr_node_ptr->getKey());
+		rec_inOrderAddKey(curr_node_ptr->getRight(), checking_vec); // Recurse on the right subtree
 	}
 }
 
 /**
-* A method to add a key into the checking vector
+* A method that uses in-order traversal to check each key in tree to checking_vec
 */
 template<typename Key, typename Value>
-bool rotateBST<Key, Value>::addKey(std::vector<Key>& checking_vec, Key the_key, int pos)
+bool rotateBST<Key, Value>::rec_inOrderCheckKey(
+	Node<Key, Value>* curr_node_ptr, 
+	int& pos_intree,
+	std::vector<Key>& checking_vec) const
 {
-	checking_vec.push_back(the_key);
+	if(curr_node_ptr != nullptr) 
+	{
+		rec_inOrderCheckKey(curr_node_ptr->getLeft(), pos_intree, checking_vec); // Recurse on the left subtree
+		if(checking_vec[pos_intree] != curr_node_ptr->getKey()) 
+		{
+			return false;
+		}
+		else
+		{
+			pos_intree++;
+		}
+		rec_inOrderCheckKey(curr_node_ptr->getRight(), pos_intree, checking_vec); // Recurse on the right subtree
+	}
 	return true;
-}
-
-/**
-* A method to check if the key given equals to the same key in the position specified by pos in checking_vec
-*/
-template<typename Key, typename Value>
-bool rotateBST<Key, Value>::checkKey(std::vector<Key>& checking_vec, Key the_key, int pos)
-{
-	return (checking_vec[pos] == the_key) ? true : false;
 }
 
 /**
