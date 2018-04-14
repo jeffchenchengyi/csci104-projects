@@ -30,7 +30,11 @@ class rotateBST: public BinarySearchTree<Key, Value>
 		void rec_transformToLL(
 			rotateBST& t2,
 			Node<Key, Value>* curr_node_ptr) const;
-		void rec_transformHelper(
+		void rec_transformRoot(
+			rotateBST& t2,
+			Node<Key, Value>* curr_node_ptr, 
+			Node<Key, Value>* model_node_ptr) const;
+		void rec_transformSubTree(
 			rotateBST& t2,
 			Node<Key, Value>* curr_node_ptr, 
 			Node<Key, Value>* model_node_ptr) const;
@@ -58,30 +62,49 @@ void rotateBST<Key, Value>::leftRotate(Node<Key, Value>* r)
 	// TODO
 	Node<Key, Value>* grandparent_ptr = r->getParent();
 	Node<Key, Value>* rightchild_ptr = r->getRight();
-	if(rightchild_ptr != nullptr)
+	if(rightchild_ptr != nullptr 
+		&& grandparent_ptr != nullptr)
 	{
 		// Step 1. Adjust child
 		changeChild(rightchild_ptr, rightchild_ptr->getLeft());
+		if(r->getRight() != nullptr)
+		{
+			r->getRight()->setParent(r);
+		}
 
 		// Step 2. Adjust grandparent
-		if(grandparent_ptr != nullptr) // r is not the root node
-		{
-			changeChild(r, rightchild_ptr);
-			rightchild_ptr->setParent(grandparent_ptr);
+		changeChild(r, rightchild_ptr);
+		rightchild_ptr->setParent(grandparent_ptr);
 
-			// Step 3. Adjust parent / r
-			rightchild_ptr->setLeft(r);
-			r->setParent(rightchild_ptr);
-		}
-		else
+		// Step 3. Adjust parent / r
+		rightchild_ptr->setLeft(r);
+		r->setParent(rightchild_ptr);
+	}
+	else if(rightchild_ptr == nullptr 
+		&& grandparent_ptr != nullptr) // r is not the root node and has no right child
+	{
+		// Do not do anything
+	}
+	else if(rightchild_ptr != nullptr 
+		&& grandparent_ptr == nullptr) // r is the root node and has right child
+	{
+		// Step 1. Adjust child
+		r->setRight(rightchild_ptr->getLeft());
+		if(r->getRight() != nullptr)
 		{
-			this->mRoot = rightchild_ptr;
-			this->mRoot->setParent(nullptr);
-
-			// Step 3. Adjust parent / r
-			this->mRoot->setLeft(r);
-			r->setParent(this->mRoot);
+			r->getRight()->setParent(r);
 		}
+
+		this->mRoot = rightchild_ptr;
+		this->mRoot->setParent(nullptr);
+
+		// Step 3. Adjust parent / r
+		this->mRoot->setLeft(r);
+		this->mRoot->getLeft()->setParent(this->mRoot);
+	}
+	else // r is the root node and has not right child
+	{
+		// Do not do anything
 	}
 }
 
@@ -96,30 +119,49 @@ void rotateBST<Key, Value>::rightRotate(Node<Key, Value>* r) // r is the parent
 	// TODO
 	Node<Key, Value>* grandparent_ptr = r->getParent();
 	Node<Key, Value>* leftchild_ptr = r->getLeft();
-	if(leftchild_ptr != nullptr)
+	if(leftchild_ptr != nullptr 
+		&& grandparent_ptr != nullptr)
 	{
 		// Step 1. Adjust child
 		changeChild(leftchild_ptr, leftchild_ptr->getRight());
+		if(r->getLeft() != nullptr)
+		{
+			r->getLeft()->setParent(r);
+		}
 
 		// Step 2. Adjust grandparent
-		if(grandparent_ptr != nullptr) // r is not the root node
-		{
-			changeChild(r, leftchild_ptr);
-			leftchild_ptr->setParent(grandparent_ptr);
+		changeChild(r, leftchild_ptr);
+		leftchild_ptr->setParent(grandparent_ptr);
 
-			// Step 3. Adjust parent / r
-			leftchild_ptr->setRight(r);
-			r->setParent(leftchild_ptr);
-		}
-		else
+		// Step 3. Adjust parent / r
+		leftchild_ptr->setRight(r);
+		r->setParent(leftchild_ptr);
+	}
+	else if(leftchild_ptr == nullptr 
+		&& grandparent_ptr != nullptr) // r is not the root node and has no left child
+	{
+		// Do not do anything
+	}
+	else if(leftchild_ptr != nullptr 
+		&& grandparent_ptr == nullptr) // r is the root node and has left child
+	{
+		// Step 1. Adjust child
+		r->setLeft(leftchild_ptr->getRight());
+		if(r->getLeft() != nullptr)
 		{
-			this->mRoot = leftchild_ptr;
-			this->mRoot->setParent(nullptr);
-
-			// Step 3. Adjust parent / r
-			this->mRoot->setRight(r);
-			r->setParent(this->mRoot);
+			r->getLeft()->setParent(r);
 		}
+
+		this->mRoot = leftchild_ptr;
+		this->mRoot->setParent(nullptr);
+
+		// Step 3. Adjust parent / r
+		this->mRoot->setRight(r);
+		this->mRoot->getRight()->setParent(this->mRoot);
+	}
+	else // r is the root node and has not left child
+	{
+		// Do not do anything
 	}
 }
 
@@ -164,18 +206,34 @@ bool rotateBST<Key, Value>::rec_inOrderCheckKey(
 {
 	if(curr_node_ptr != nullptr) 
 	{
-		rec_inOrderCheckKey(curr_node_ptr->getLeft(), pos_intree, checking_vec); // Recurse on the left subtree
-		if(checking_vec[pos_intree] != curr_node_ptr->getKey()) 
+		if(rec_inOrderCheckKey(curr_node_ptr->getLeft(), pos_intree, checking_vec)) // Recurse on the left subtree
 		{
-			return false;
+			if(checking_vec[pos_intree] != curr_node_ptr->getKey()) 
+			{
+				return false;
+			}
+			else
+			{
+				pos_intree++;
+				if(rec_inOrderCheckKey(curr_node_ptr->getRight(), pos_intree, checking_vec)) // Recurse on the right subtree
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
 		}
 		else
 		{
-			pos_intree++;
+			return false;
 		}
-		rec_inOrderCheckKey(curr_node_ptr->getRight(), pos_intree, checking_vec); // Recurse on the right subtree
 	}
-	return true;
+	else
+	{
+		return true;
+	}
 }
 
 /**
@@ -191,10 +249,19 @@ void rotateBST<Key, Value>::transform(rotateBST& t2) const
 	if(this->sameKeys(t2) == true)
 	{
 		// 3. This should produce a tree which is effectively a linked list.
-		rec_transformToLL(t2, t2.mRoot);
-		
+		// 1. Perform right rotations on the root node of t2 until it has no left child.
+		while(t2.mRoot->getLeft() != nullptr)
+		{
+			t2.rightRotate(t2.mRoot);
+		}
+		rec_transformToLL(t2, t2.mRoot->getRight());
+
 		// 6. This should produce the specified tree using only rotations.
-		rec_transformHelper(t2, t2.mRoot, this->mRoot);
+		rec_transformRoot(t2, t2.mRoot, this->mRoot);
+
+		// 5. Recursively do rotations on the left child and the right child until they match the node at that position of this.
+		rec_transformSubTree(t2, t2.mRoot->getLeft(), this->mRoot->getLeft());
+		rec_transformSubTree(t2, t2.mRoot->getRight(), this->mRoot->getRight());
 
 		// Update all the height values 
 		rec_postOrderUpdateHeights(t2.mRoot);
@@ -211,13 +278,13 @@ void rotateBST<Key, Value>::rec_transformToLL(
 {
 	if(curr_node_ptr != nullptr)
 	{
-		// 1. Perform right rotations on the root node of t2 until it has no left child.
-		while(curr_node_ptr->getLeft() != nullptr)
+		Node<Key, Value>* parent_ptr = curr_node_ptr->getParent();
+		while(parent_ptr->getRight()->getLeft() != nullptr)
 		{
-			t2.rightRotate(curr_node_ptr);
+			t2.rightRotate(parent_ptr->getRight());
 		}
 		// 2. Recursively move to the right child and repeat the above operation.
-		rec_transformToLL(t2, curr_node_ptr->getRight());
+		rec_transformToLL(t2, parent_ptr->getRight()->getRight());
 	} 
 	else
 	{
@@ -230,7 +297,7 @@ void rotateBST<Key, Value>::rec_transformToLL(
 * of model tree
 */
 template<typename Key, typename Value>
-void rotateBST<Key, Value>::rec_transformHelper(
+void rotateBST<Key, Value>::rec_transformRoot(
 	rotateBST& t2,
 	Node<Key, Value>* curr_node_ptr, 
 	Node<Key, Value>* model_node_ptr) const
@@ -241,10 +308,36 @@ void rotateBST<Key, Value>::rec_transformHelper(
 		while(curr_node_ptr->getKey() != model_node_ptr->getKey())
 		{
 			t2.leftRotate(curr_node_ptr);
+			curr_node_ptr = curr_node_ptr->getParent();
+		}
+	}
+}
+
+template<typename Key, typename Value>
+void rotateBST<Key, Value>::rec_transformSubTree(
+	rotateBST& t2,
+	Node<Key, Value>* curr_node_ptr, 
+	Node<Key, Value>* model_node_ptr) const
+{
+	if(curr_node_ptr != nullptr && model_node_ptr != nullptr)
+	{
+		// 4. Now perform left rotations on the root node of t2, until the root of t2 is the same as the root of this.
+		while(curr_node_ptr->getKey() != model_node_ptr->getKey())
+		{
+			if(curr_node_ptr->getKey() > model_node_ptr->getKey())
+			{
+				t2.rightRotate(curr_node_ptr);
+				curr_node_ptr = curr_node_ptr->getParent();
+			}
+			else
+			{
+				t2.leftRotate(curr_node_ptr);
+				curr_node_ptr = curr_node_ptr->getParent();
+			}
 		}
 		// 5. Recursively do rotations on the left child and the right child until they match the node at that position of this.
-		rec_transformHelper(t2, curr_node_ptr->getLeft(), model_node_ptr->getLeft());
-		rec_transformHelper(t2, curr_node_ptr->getRight(), model_node_ptr->getRight());
+		rec_transformSubTree(t2, curr_node_ptr->getLeft(), model_node_ptr->getLeft());
+		rec_transformSubTree(t2, curr_node_ptr->getRight(), model_node_ptr->getRight());
 	}
 }
 
