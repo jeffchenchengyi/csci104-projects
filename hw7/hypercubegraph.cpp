@@ -151,9 +151,16 @@ void HyperCubeGraph::aStar()
 	{
 		if(map_itr->first != source)
 		{
-			(map_itr->second)->g_val = int(source.size());
-			(map_itr->second)->h_val = int(source.size());
-			visiting_PQ.push(*map_itr);
+			if(map_itr->first != goal)
+			{
+				(map_itr->second)->g_val = int(source.size());
+				visiting_PQ.push(*map_itr);
+			}
+			else
+			{
+				(map_itr->second)->g_val = int(source.size()) * 2;
+				visiting_PQ.push(*map_itr);
+			}
 		}
 	}
 	while(!visiting_PQ.empty())
@@ -164,6 +171,13 @@ void HyperCubeGraph::aStar()
 		// and do not incrementing your expansions.
 		pair<string, Node*> curr_node = visiting_PQ.top();
 		visiting_PQ.pop();
+		if(curr_node.first == goal) // Once we find the goal node, we can explore it one last time and empty queue
+		{
+			while(!visiting_PQ.empty())
+			{
+				visiting_PQ.pop();
+			}
+		}
 		if(explored_set.find(curr_node.first) == explored_set.end())
 		{	
 			expansions++; // Increment expansions only if node is unexplored
@@ -177,8 +191,8 @@ void HyperCubeGraph::aStar()
 					< (neighbour_map_itr->second)->g_val) // If current node's g value + 1 is less than neighbour's g value which denotes distance from source
 				{
 					// Change the neighbour's predecessor to current node
-					(neighbour_map_itr->second)->predecessor_pair 
-						= make_pair(curr_node.first, curr_node.second);
+					(neighbour_map_itr->second)->predecessor_pair.first = curr_node.first;
+					(neighbour_map_itr->second)->predecessor_pair.second = curr_node.second;
 					// Change the neighbour's g value to current node's g value + 1
 					(neighbour_map_itr->second)->g_val
 						= dist_from_source_of_curr_node + 1; 
@@ -196,6 +210,7 @@ void HyperCubeGraph::aStar()
 			explored_set.insert(curr_node.first);
 		}
 	}
+	expansions--; // To remove the goal node we counted above in expansions
 }
 
 /**
@@ -204,16 +219,27 @@ void HyperCubeGraph::aStar()
 void HyperCubeGraph::printPath() const
 {
 	Node* goal_node = (hypercube_map.find(goal))->second;
-	/*if((goal_node->predecessor_pair).second == NULL)
+	Node* curr_node = goal_node;
+	bool pathExist = false;
+	while(curr_node != NULL) 
+	{
+		if(curr_node->node_coordinate == source)
+		{
+			rec_printPredecessor(goal_node);
+			cout << "expansions = " << expansions << endl;
+			pathExist = true;
+			break;
+		}
+		else
+		{
+			curr_node = (curr_node->predecessor_pair).second;
+		}
+	}
+	if(!pathExist)
 	{
 		cout << "No transformation" << endl;
 		cout << "expansions = " << expansions << endl;
 	}
-	else
-	{*/
-		rec_printPredecessor(goal_node);
-		cout << "expansions = " << expansions << endl;
-	//}
 }
 
 /**
@@ -224,8 +250,8 @@ void HyperCubeGraph::rec_printPredecessor(Node* curr_node_ptr) const
 	if(curr_node_ptr != NULL)
 	{
 		rec_printPredecessor((curr_node_ptr->predecessor_pair).second);
+		cout << curr_node_ptr->node_coordinate << endl;
 	}
-	cout << curr_node_ptr->node_coordinate << endl;
 }
 
 /*

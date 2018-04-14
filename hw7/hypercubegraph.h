@@ -33,7 +33,7 @@ class HyperCubeGraph {
 	 		// h is the heuristic approximation of the distance from the current node to the goal node
 	 		int h_val;
 	 		// A* makes the move with smallest f-value: f = g + h
-	 		int f_val() { g_val + h_val; }
+	 		int f_val() { return g_val + h_val; }
 	 		// Predecessor of node
 	 		std::pair<std::string, Node*> predecessor_pair;
 	 		// Constructor for Node struct
@@ -56,22 +56,22 @@ class HyperCubeGraph {
 				// 1. Always make the move with smallest f-value.
 				if((lhs.second)->f_val() < (rhs.second)->f_val())
 				{
-					return true;
+					return false;
 				}
 				else if((lhs.second)->f_val() > (rhs.second)->f_val())
 				{
-					return false;
+					return true;
 				}
 				else
 				{
 					// 2. If multiple words have the smallest f-value, choose the one with the smallest h-value.
 					if((lhs.second)->h_val < (rhs.second)->h_val)
 					{
-						return true;
+						return false;
 					}
 					else if((lhs.second)->h_val > (rhs.second)->h_val)
 					{
-						return false;
+						return true;
 					}
 					else
 					{
@@ -90,7 +90,7 @@ class HyperCubeGraph {
 								rhs_val += int(pow(2, (int(rhs.first.size()) - 1 - i)));
 							}
 						}
-						return lhs_val < rhs_val;
+						return lhs_val > rhs_val;
 					}
 				}
 			}
