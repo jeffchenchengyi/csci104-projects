@@ -511,7 +511,8 @@ bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value>* curr_node_
 			&& curr_node_ptr->getRight() != nullptr) // Case 2: When node has both children sub-trees
 		{
 			if(abs(curr_node_ptr->getLeft()->getHeight() 
-				- curr_node_ptr->getRight()->getHeight()) <= 1) {
+				- curr_node_ptr->getRight()->getHeight()) <= 1) 
+			{
 				return (isBalancedHelper(curr_node_ptr->getLeft()) && isBalancedHelper(curr_node_ptr->getRight()));
 			} else {
 				return false;
@@ -520,7 +521,8 @@ bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value>* curr_node_
 		else if(curr_node_ptr->getLeft() == nullptr 
 			&& curr_node_ptr->getRight() != nullptr) // Case 3: When node has right-child sub-tree
 		{
-			if(curr_node_ptr->getRight()->getHeight() == 1) {
+			if(curr_node_ptr->getRight()->getHeight() == 1) 
+			{
 				return true;
 			} else {
 				return false;
@@ -529,7 +531,8 @@ bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value>* curr_node_
 		else if(curr_node_ptr->getLeft() != nullptr 
 			&& curr_node_ptr->getRight() == nullptr) // Case 4: When node has left-child sub-tree
 		{
-			if(curr_node_ptr->getLeft()->getHeight() == 1) {
+			if(curr_node_ptr->getLeft()->getHeight() == 1) 
+			{
 				return true;
 			} else {
 				return false;
