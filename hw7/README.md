@@ -33,8 +33,7 @@
 - **`Constructor and destructor`**
 	- The destructor calls the clear function. 
 	- The constructor should take constant time.
-
-
+---
 
 ## [Problem 2 (The Power of Rotations 25%): ](rotateBST.h)
 
@@ -56,7 +55,7 @@
 		- Given another BST t2, if t2 contains the same keys as the one for this, 
 		transform the BST t2 into the one for this using only rotations. 
 		- If the BST t2 does not have the same keys as this, this function should do nothing and neither BST should be modified.
-
+---
 
 ## [Problem 3 (Restricted N-Hypercube Exploration, 40%): ](hypercube.cpp)
 ### [Header file for HyperCubeGraph class](hypercubegraph.h)
