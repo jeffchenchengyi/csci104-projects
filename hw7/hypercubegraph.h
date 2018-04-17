@@ -78,19 +78,24 @@ class HyperCubeGraph {
 						// 3. If multiple words have the smallest f and h-value, 
 						// choose the node that has the smallest value in binary, 
 						// (where the first bit is the most significant bit).
-						int lhs_val = 0; int rhs_val = 0;
-						for(int i = int(lhs.first.size()) - 1; i >= 0; i--)
+						for(int i = 0; i < int(lhs.first.size()); i++)
 						{
-							if(lhs.first[i] == '1')
+							if(lhs.first[i] == '1' 
+								&& rhs.first[i] == '0')
 							{
-								lhs_val += int(pow(2, (int(lhs.first.size()) - 1 - i)));
+								return true;
 							}
-							if(rhs.first[i] == '1')
+							else if(lhs.first[i] == '0' 
+								&& rhs.first[i] == '1')
 							{
-								rhs_val += int(pow(2, (int(rhs.first.size()) - 1 - i)));
+								return false;
+							}
+							else
+							{
+								// Current significant bit is the same, we need 
+								// to move to the next significant bit to break ties
 							}
 						}
-						return lhs_val > rhs_val;
 					}
 				}
 			}

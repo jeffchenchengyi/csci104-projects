@@ -180,7 +180,10 @@ void HyperCubeGraph::aStar()
 		}
 		if(explored_set.find(curr_node.first) == explored_set.end())
 		{	
-			expansions++; // Increment expansions only if node is unexplored
+			if(curr_node.first != goal) // To remove the goal node we counted above in expansions
+			{
+				expansions++; // Increment expansions only if node is unexplored
+			}
 			map<string, Node*>::iterator neighbour_map_itr;
 			for(neighbour_map_itr = (curr_node.second)->neighbour_nodes_map.begin();
 				neighbour_map_itr != (curr_node.second)->neighbour_nodes_map.end();
@@ -210,7 +213,6 @@ void HyperCubeGraph::aStar()
 			explored_set.insert(curr_node.first);
 		}
 	}
-	expansions--; // To remove the goal node we counted above in expansions
 }
 
 /**
