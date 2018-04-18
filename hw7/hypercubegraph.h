@@ -33,7 +33,7 @@ class HyperCubeGraph {
 	 		// h is the heuristic approximation of the distance from the current node to the goal node
 	 		int h_val;
 	 		// A* makes the move with smallest f-value: f = g + h
-	 		int f_val() { return g_val + h_val; }
+	 		int f_val() { return (g_val + h_val); }
 	 		// Predecessor of node
 	 		std::pair<std::string, Node*> predecessor_pair;
 	 		// Constructor for Node struct

@@ -22,10 +22,8 @@ class rotateBST: public BinarySearchTree<Key, Value>
 		void transform(rotateBST& t2) const; // TODO
 	private:
 		// Member functions:
-		void rec_inOrderAddKey(Node<Key, Value>* curr_node_ptr, std::vector<Key>& checking_vec) const;
-		bool rec_inOrderCheckKey(
+		void rec_inOrderAddKey(
 			Node<Key, Value>* curr_node_ptr, 
-			int& pos_intree,
 			std::vector<Key>& checking_vec) const;
 		void rec_transformToLL(
 			rotateBST& t2,
@@ -173,10 +171,18 @@ template<typename Key, typename Value>
 bool rotateBST<Key, Value>::sameKeys(const rotateBST& t2) const
 {
 	// TODO
-	int pos_intree = 0;
 	std::vector<Key> checking_vec;
 	rec_inOrderAddKey(this->mRoot, checking_vec); // O(n)
-	return rec_inOrderCheckKey(t2.mRoot, pos_intree, checking_vec); // O(n)
+	std::vector<Key> tobechecked_vec;
+	rec_inOrderAddKey(t2.mRoot, tobechecked_vec); // O(n)
+	if(int(checking_vec.size()) == int(tobechecked_vec.size()))
+	{
+		return checking_vec == tobechecked_vec;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /**
@@ -196,47 +202,6 @@ void rotateBST<Key, Value>::rec_inOrderAddKey(
 }
 
 /**
-* A method that uses recursive in-order traversal to check each key in tree to checking_vec
-*/
-template<typename Key, typename Value>
-bool rotateBST<Key, Value>::rec_inOrderCheckKey(
-	Node<Key, Value>* curr_node_ptr, 
-	int& pos_intree,
-	std::vector<Key>& checking_vec) const
-{
-	if(curr_node_ptr != nullptr) 
-	{
-		if(rec_inOrderCheckKey(curr_node_ptr->getLeft(), pos_intree, checking_vec)) // Recurse on the left subtree
-		{
-			if(checking_vec[pos_intree] != curr_node_ptr->getKey()) 
-			{
-				return false;
-			}
-			else
-			{
-				pos_intree++;
-				if(rec_inOrderCheckKey(curr_node_ptr->getRight(), pos_intree, checking_vec)) // Recurse on the right subtree
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return true;
-	}
-}
-
-/**
 * A method given another BST t2, if t2 contains the same keys as the one for this, 
 * transform the BST t2 into the one for this using only rotations. 
 * If the BST t2 does not have the same keys as this, this function should 
@@ -248,23 +213,26 @@ void rotateBST<Key, Value>::transform(rotateBST& t2) const
 	// TODO
 	if(this->sameKeys(t2) == true)
 	{
-		// 3. This should produce a tree which is effectively a linked list.
-		// 1. Perform right rotations on the root node of t2 until it has no left child.
-		while(t2.mRoot->getLeft() != nullptr)
+		if(this->mRoot != nullptr && t2.mRoot != nullptr)
 		{
-			t2.rightRotate(t2.mRoot);
+			// 3. This should produce a tree which is effectively a linked list.
+			// 1. Perform right rotations on the root node of t2 until it has no left child.
+			while(t2.mRoot->getLeft() != nullptr)
+			{
+				t2.rightRotate(t2.mRoot);
+			}
+			rec_transformToLL(t2, t2.mRoot->getRight());
+
+			// 6. This should produce the specified tree using only rotations.
+			rec_transformRoot(t2, t2.mRoot, this->mRoot);
+
+			// 5. Recursively do rotations on the left child and the right child until they match the node at that position of this.
+			rec_transformSubTree(t2, t2.mRoot->getLeft(), this->mRoot->getLeft());
+			rec_transformSubTree(t2, t2.mRoot->getRight(), this->mRoot->getRight());
+
+			// Update all the height values 
+			rec_postOrderUpdateHeights(t2.mRoot);
 		}
-		rec_transformToLL(t2, t2.mRoot->getRight());
-
-		// 6. This should produce the specified tree using only rotations.
-		rec_transformRoot(t2, t2.mRoot, this->mRoot);
-
-		// 5. Recursively do rotations on the left child and the right child until they match the node at that position of this.
-		rec_transformSubTree(t2, t2.mRoot->getLeft(), this->mRoot->getLeft());
-		rec_transformSubTree(t2, t2.mRoot->getRight(), this->mRoot->getRight());
-
-		// Update all the height values 
-		rec_postOrderUpdateHeights(t2.mRoot);
 	}
 }
 

@@ -24,51 +24,42 @@ HyperCubeGraph::HyperCubeGraph(
 	ifstream& permitted_nodes_file)
 {
 	// Create start and goal node
-	int num_zeros = 0; int num_diff_bits = 0; string goal_node;
+	int num_zeros = 0; string goal_node;
 	for(int j = 0; j < int(start_node.size()); j++)
 	{
 		if(start_node[j] == '0') 
 		{
 			num_zeros++;
-			num_diff_bits++;
 		}
 		goal_node.append(string(1, '1'));
 	}
 
 	// Start node
 	source = start_node;
-	// Node* newNode_ptr = new Node(start_node, num_zeros, 0);
-	Node* newNode_ptr = new Node(start_node, 0, 0);
-	hypercube_map.insert(make_pair(start_node, newNode_ptr));
+	hypercube_map.insert(make_pair(start_node, new Node(start_node, num_zeros, 0)));
 
 	// Goal node
 	goal = goal_node;
-	newNode_ptr = new Node(goal_node, 0, num_diff_bits);
-	hypercube_map.insert(make_pair(goal_node, newNode_ptr));
+	hypercube_map.insert(make_pair(goal_node, new Node(goal_node, 0, 0)));
 
 	// Create rest of the permitted nodes
 	string num_rows;
 	getline(permitted_nodes_file, num_rows); // The first row contains a number r indicating the number of nodes in the file.
 	for(int i = 0; i < atoi(num_rows.c_str()); i++) // The remaining r rows in the file will contain a valid n-hypercube node.
 	{
-		string n_bit_str;
+		string n_bit_str = "";
 		getline(permitted_nodes_file, n_bit_str);
-		if(!n_bit_str.empty())
+		if(!n_bit_str.empty() && hypercube_map.find(n_bit_str) == hypercube_map.end())
 		{
-			num_zeros = 0; num_diff_bits = 0;
-			for(int j = 0; j < int(n_bit_str.size()); j++)
+			num_zeros = 0;
+			for(int k = 0; k < int(n_bit_str.size()); k++)
 			{
-				if(n_bit_str[j] == '0') 
+				if(n_bit_str[k] == '0') 
 				{
 					num_zeros++;
 				}
-				if(n_bit_str[j] != start_node[j])
-				{
-					num_diff_bits++;
-				}
 			}
-			newNode_ptr = new Node(n_bit_str, num_zeros, num_diff_bits);
-			hypercube_map.insert(make_pair(n_bit_str, newNode_ptr));
+			hypercube_map.insert(make_pair(n_bit_str, new Node(n_bit_str, num_zeros, 0)));
 		}
 	}
 
@@ -96,6 +87,7 @@ HyperCubeGraph::~HyperCubeGraph()
 		map_itr++)
 	{
 		delete map_itr->second;
+		map_itr->second = NULL;
 	}
 }
 
@@ -136,7 +128,7 @@ void HyperCubeGraph::findAllNeighbours()
 void HyperCubeGraph::aStar() 
 {
 	// Priority queue used for A*
-	priority_queue<pair<string, Node*>, vector< pair<string, Node*> >, NodeComp> visiting_PQ;
+	priority_queue< pair<string, Node*>, vector< pair<string, Node*> >, NodeComp> visiting_PQ;
 	// Set that includes all the explored nodes
 	set<string> explored_set;
 	// Make start node's predecessor null
@@ -151,39 +143,20 @@ void HyperCubeGraph::aStar()
 	{
 		if(map_itr->first != source)
 		{
-			if(map_itr->first != goal)
-			{
-				(map_itr->second)->g_val = int(source.size());
-				visiting_PQ.push(*map_itr);
-			}
-			else
-			{
-				(map_itr->second)->g_val = int(source.size()) * 2;
-				visiting_PQ.push(*map_itr);
-			}
+			(map_itr->second)->g_val = int(source.size()) * 2;
 		}
 	}
 	while(!visiting_PQ.empty())
-	{
+	{	
 		// Whenever you remove a node from the std::priority_queue, 
 		// check to see if you have already explored the node. 
 		// If you have, discard the node without re-exploring it, 
 		// and do not incrementing your expansions.
 		pair<string, Node*> curr_node = visiting_PQ.top();
 		visiting_PQ.pop();
-		if(curr_node.first == goal) // Once we find the goal node, we can explore it one last time and empty queue
-		{
-			while(!visiting_PQ.empty())
-			{
-				visiting_PQ.pop();
-			}
-		}
 		if(explored_set.find(curr_node.first) == explored_set.end())
-		{	
-			if(curr_node.first != goal) // To remove the goal node we counted above in expansions
-			{
-				expansions++; // Increment expansions only if node is unexplored
-			}
+		{
+			expansions++; // Increment expansions only if node is unexplored
 			map<string, Node*>::iterator neighbour_map_itr;
 			for(neighbour_map_itr = (curr_node.second)->neighbour_nodes_map.begin();
 				neighbour_map_itr != (curr_node.second)->neighbour_nodes_map.end();
@@ -196,6 +169,7 @@ void HyperCubeGraph::aStar()
 					// Change the neighbour's predecessor to current node
 					(neighbour_map_itr->second)->predecessor_pair.first = curr_node.first;
 					(neighbour_map_itr->second)->predecessor_pair.second = curr_node.second;
+
 					// Change the neighbour's g value to current node's g value + 1
 					(neighbour_map_itr->second)->g_val
 						= dist_from_source_of_curr_node + 1; 
@@ -208,9 +182,18 @@ void HyperCubeGraph::aStar()
 					{
 						visiting_PQ.push(*neighbour_map_itr);
 					}
+
+					// If we found the goal node, start popping everything as the algorithm is completed
+					if(neighbour_map_itr->first == goal)
+					{
+						while(!visiting_PQ.empty())
+						{
+							visiting_PQ.pop();
+						}
+					}
 				}
 			}
-			explored_set.insert(curr_node.first);
+			explored_set.insert(curr_node.first); // After exploring all the neighbors, we will mark this node as explored
 		}
 	}
 }
