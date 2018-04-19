@@ -260,6 +260,10 @@ class BinarySearchTree
 	private:
 		// HEIGHT HELPER FUNCTIONS
 		bool isBalancedHelper(Node<Key, Value>* curr_node_ptr) const;
+		void rec_postOrderUpdateHeights(
+			Node<Key, Value>* curr_node_ptr) const;
+		void updateParentHeight(
+			Node<Key, Value>* curr_node_ptr) const;
 		void rec_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
 		void it_updateAncestorChainHeights(Node<Key, Value>* curr_node_ptr);
 
@@ -475,7 +479,6 @@ int BinarySearchTree<Key, Value>::height()
 	// TODO
 	if(mRoot != nullptr) 
 	{
-		isBalancedHelper(mRoot);
 		return mRoot->getHeight();	// Step 1. O(1)
 	} 
 	else 
@@ -483,7 +486,6 @@ int BinarySearchTree<Key, Value>::height()
 		return 0;
 	}
 }
-
 
 /**
 * An method to checks if the BST is balanced. This method returns true if and only if the BST is balanced.
@@ -493,6 +495,61 @@ bool BinarySearchTree<Key, Value>::isBalanced()
 {
 	// TODO
 	return isBalancedHelper(mRoot); // Step 2. O(n), worst case check all the node heights because of recursion
+}
+
+/**
+* A method that uses recursive post-order traversal to update heights of the tree
+*/
+template<typename Key, typename Value>
+void BinarySearchTree<Key, Value>::rec_postOrderUpdateHeights(
+	Node<Key, Value>* curr_node_ptr) const
+{
+	if(curr_node_ptr != nullptr) 
+	{
+		rec_postOrderUpdateHeights(curr_node_ptr->getLeft()); // Recurse on the left subtree
+		rec_postOrderUpdateHeights(curr_node_ptr->getRight()); // Recurse on the right subtree
+		updateParentHeight(curr_node_ptr);
+	}
+	else
+	{
+		return;
+	}
+}
+
+/**
+* A method to check if the parent's heights need to be adjusted
+*/
+template<typename Key, typename Value>
+void BinarySearchTree<Key, Value>::updateParentHeight(
+	Node<Key, Value>* curr_node_ptr) const
+{
+	if(curr_node_ptr->getLeft() != nullptr 
+		&& curr_node_ptr->getRight() != nullptr) // Case 1: When node has both children sub-trees
+	{
+		if(curr_node_ptr->getLeft()->getHeight() 
+			> curr_node_ptr->getRight()->getHeight()) // Left subtree has greater height
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+		} 
+		else  // Right subtree has greater or equal height
+		{
+			curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+		}
+	} 
+	else if(curr_node_ptr->getLeft() == nullptr 
+		&& curr_node_ptr->getRight() != nullptr) // Case 2: When node has right-child sub-tree
+	{
+		curr_node_ptr->setHeight(curr_node_ptr->getRight()->getHeight() + 1);
+	}
+	else if(curr_node_ptr->getLeft() != nullptr 
+		&& curr_node_ptr->getRight() == nullptr) // Case 3: When node has left-child sub-tree
+	{
+		curr_node_ptr->setHeight(curr_node_ptr->getLeft()->getHeight() + 1);
+	}
+	else // Case 4: When node is a leaf node or root node with no children
+	{
+		curr_node_ptr->setHeight(1);
+	}
 }
 
 /**
@@ -739,6 +796,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 	removeHelper(internalFind(key)); // Step 4. O(h), internalFind takes O(h) worst case, 
 		// finding predecessor takes O(h) worst case too, other operations constant time, and 
 		// updating the ancestor heights also O(h)
+	//rec_postOrderUpdateHeights(mRoot);
 }
 
 /**
@@ -833,12 +891,14 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key, Value>* curr_node_ptr)
 					{
 						pred_node_ptr->getLeft()->setParent(pred_node_ptr->getParent()); // Connect predecessor's left child with predecessor's parent
 						changeChild(pred_node_ptr->getLeft(), pred_node_ptr->getLeft());
+						it_updateAncestorChainHeights(pred_node_ptr->getLeft()); // Updates all the heights in the ancestor chain
 						pred_node_ptr->setLeft(curr_node_ptr->getLeft());
 					}
 				}
 				if(pred_node_ptr->getRight() == nullptr) // Predecessor can never be right child of current node
 				{
 					pred_node_ptr->setRight(curr_node_ptr->getRight());
+					it_updateAncestorChainHeights(pred_node_ptr->getRight()); // Updates all the heights in the ancestor chain
 				}
 				else
 				{
