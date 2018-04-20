@@ -1,4 +1,4 @@
-# Instructions on how to execute hw7 programs:
+# Instructions on how to execute hw8 programs:
 
 ## [Problem 1 (Splay Tree, 40%): ](splayTree.h)
 
