@@ -61,6 +61,7 @@ The class has the following **`protected`** functions:
 		- **`hᵢ(x)`** is independent of **`hⱼ(y)`** for all **`i`**, **`j`** ∈ {1, 2, 3} and **`x`**, **`y`** when **`i`** does not equal **`j`** and **`x`** does not equal **`y`**
 <br/>
 Answer the following and explain your answer: If you search for 27 items, none of which are inside the Bloom Filter, how many false positives will you get on average?
+
 ---
 
 ## [Problem 3 (LRU Cache Implementation, 35%): ](cacheLRU.h)
