@@ -28,7 +28,7 @@ The class has the following **`public`** functions:
 	- This function deletes the leaf with minimum key value, exactly as if you had called the remove function.
 - **`void deleteMaxLeaf()`**
 	- This function deletes the leaf with maximum key value, exactly as if you had called the remove function.
-<br/>
+
 The class has the following **`protected`** functions:
 - **`void splay(Node<Key, Value> *r)`**
 	- This function splays a given node to the root of the splayTree.
@@ -54,12 +54,12 @@ The class has the following **`protected`** functions:
 - For the same sequence of operations, use double-hashing (instead of quadratic probing). Let the second hash function be the following: **`h₂(k) = 3 - (k % 3)`**
 
 #### Part c
-	- You are given a Bloom Filter with three hash functions **`h₁`**, **`h₂`**, **`h₃`** and **`m`** indices.
+- You are given a Bloom Filter with three hash functions **`h₁`**, **`h₂`**, **`h₃`** and **`m`** indices.
 	- Currently, exactly **`2m/3`** indices are set to **`true`**, while the remaining **`m/3`** are set to **`false`**.(You may assume that **`m`** is divisible by 3.)
 	- Assume that the three hash functions are universal and independent, that is:
 		- the probability that **`hᵢ(x) = p`** is exactly **`1/m`** for all indices **`p`** (and **`i = 1, 2, 3`**)
 		- **`hᵢ(x)`** is independent of **`hⱼ(y)`** for all **`i`**, **`j`** ∈ {1, 2, 3} and **`x`**, **`y`** when **`i`** does not equal **`j`** and **`x`** does not equal **`y`**
-<br/>
+
 Answer the following and explain your answer: If you search for 27 items, none of which are inside the Bloom Filter, how many false positives will you get on average?
 
 ---
