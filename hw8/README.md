@@ -28,7 +28,7 @@ The class has the following **`public`** functions:
 	- This function deletes the leaf with minimum key value, exactly as if you had called the remove function.
 - **`void deleteMaxLeaf()`**
 	- This function deletes the leaf with maximum key value, exactly as if you had called the remove function.
-</br>
+<br/>
 The class has the following **`protected`** functions:
 - **`void splay(Node<Key, Value> *r)`**
 	- This function splays a given node to the root of the splayTree.
