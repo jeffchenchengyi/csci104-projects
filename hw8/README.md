@@ -54,7 +54,8 @@ The class has the following **`protected`** functions:
 - For the same sequence of operations, use double-hashing (instead of quadratic probing). Let the second hash function be the following: **`h₂(k) = 3 - (k % 3)`**
 
 #### Part c
-- You are given a Bloom Filter with three hash functions **`h₁`**, **`h₂`**, **`h₃`** and **`m`** indices.
+-
+	- You are given a Bloom Filter with three hash functions **`h₁`**, **`h₂`**, **`h₃`** and **`m`** indices.
 	- Currently, exactly **`2m/3`** indices are set to **`true`**, while the remaining **`m/3`** are set to **`false`**.(You may assume that **`m`** is divisible by 3.)
 	- Assume that the three hash functions are universal and independent, that is:
 		- the probability that **`hᵢ(x) = p`** is exactly **`1/m`** for all indices **`p`** (and **`i = 1, 2, 3`**)
@@ -70,18 +71,18 @@ Answer the following and explain your answer: If you search for 27 items, none o
 
 The class has the following **`public`** functions:
 
-**`cacheLRU(int capacity)`**
+- **`cacheLRU(int capacity)`**
 	- A constructor that takes as an argument the capacity of the cache. 
 	- You may assume that the capacity given is always an integer greater than or equal to 1.
-**`~cacheLRU()`**
+- **`~cacheLRU()`**
 	- A destructor.
-**`void put(const std::pair<const Key, Value>& keyValuePair)`** 
+- **`void put(const std::pair<const Key, Value>& keyValuePair)`** 
 	- This function will insert the keyValuePair into the cache. 
 	- If the cache has reached its capacity, then one of the least recently used elements (LRU) should be removed from the cache. 
 	- For a splay tree implementation, this would normally be any leaf node. 
 	- However, we are asking that you remove the leaf with the minimum value key. 
 	- This operation should work in amortized O(log n) time where n is the number of elements in the cache.
-**`std::pair<const Key, Value> get(const Key& key)`**
+- **`std::pair<const Key, Value> get(const Key& key)`**
 	- This function will first find a node with the specified key in the tree and return the key/value pair. 
 	- If the key is not found, throw a logic_error exception. 
 	- This operation should work in amortized O(log n) time where n is the number of elements in the cache. 
