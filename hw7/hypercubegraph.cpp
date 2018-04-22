@@ -143,7 +143,7 @@ void HyperCubeGraph::aStar()
 	{
 		if(map_itr->first != source)
 		{
-			(map_itr->second)->g_val = int(source.size()) * 2;
+			(map_itr->second)->g_val = int(source.size()) * 3;
 		}
 	}
 	while(!visiting_PQ.empty())
