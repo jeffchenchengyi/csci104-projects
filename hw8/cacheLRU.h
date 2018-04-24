@@ -65,15 +65,18 @@ template<typename Key, typename Value>
 void cacheLRU<Key, Value>::put(const std::pair<const Key, Value>& keyValuePair)
 {
 	// TODO
-	if(mCurr_used < mMax_cap) // Case 1: The splay tree is still not at max capacity
+	if(this->find(keyValuePair.first) == this->end()) // Check if item already exists in the cache
 	{
-		this->insert(keyValuePair);
-		mCurr_used++;
-	}
-	else // Case 2: The splay tree is at full capacity, remove min leaf
-	{
-		this->deleteMinLeaf();
-		this->insert(keyValuePair);
+		if(mCurr_used < mMax_cap) // Case 1: The splay tree is still not at max capacity
+		{
+			this->insert(keyValuePair);
+			mCurr_used++;
+		}
+		else // Case 2: The splay tree is at full capacity, remove min leaf
+		{
+			this->deleteMinLeaf();
+			this->insert(keyValuePair);
+		}
 	}
 }
 

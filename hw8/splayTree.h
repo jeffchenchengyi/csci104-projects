@@ -28,6 +28,9 @@ class SplayTree: public rotateBST<Key, Value>
 		void splay(Node<Key, Value> *r); // TODO
 	private:
 		// Member functions:
+		Node<Key, Value>* it_findPredecessor(Node<Key, Value>* curr_node_ptr);
+		Node<Key, Value>* it_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const;
+		Node<Key, Value>* it_firstLeftAncestor(Node<Key, Value>* curr_node_ptr);
 		std::pair< Node<Key, Value>*, bool > findHelper(const Key& key);
 		bool isRightChild(Node<Key, Value>* curr_node_ptr);
 };
@@ -63,20 +66,58 @@ void SplayTree<Key, Value>::insert(const std::pair<const Key, Value>& keyValuePa
 	}
 	else // Case 2: Key was not found
 	{
-		BinarySearchTree<Key, Value>::insert(keyValuePair);
-		if(result.first->getRight() != nullptr
-			&& result.first->getRight()->getKey() == keyValuePair.first) // When key is last visited node's right child
+		if(result.first != nullptr) // Case 2a: We are inserting a normal node into the splay tree
 		{
-			splay(result.first->getRight());
-		}
-		else if(result.first->getLeft() != nullptr
-			&& result.first->getLeft()->getKey() == keyValuePair.first) // When key is last visited node's right child
-		{
-			splay(result.first->getLeft());
-		}
-		else // THIS IS IMPOSSIBLE
-		{
+			this->BinarySearchTree<Key, Value>::insert(keyValuePair);
+			if(result.first->getRight() != nullptr
+				&& result.first->getLeft() != nullptr) // Last visited node has two children
+			{
 
+				if(result.first->getRight()->getKey() == keyValuePair.first) // When key is last visited node's right child
+				{
+					splay(result.first->getRight());
+				}
+				else if(result.first->getLeft()->getKey() == keyValuePair.first) // When key is last visited node's left child
+				{
+					splay(result.first->getLeft());
+				}
+				else
+				{
+
+				}
+			}
+			else if(result.first->getRight() != nullptr
+				&& result.first->getLeft() == nullptr) // Last visited node has right child only
+			{
+				if(result.first->getRight()->getKey() == keyValuePair.first) // When key is last visited node's right child
+				{
+					splay(result.first->getRight());
+				}
+				else
+				{
+
+				}
+			}
+			else if(result.first->getRight() == nullptr
+				&& result.first->getLeft() != nullptr) // Last visited node has left child only
+			{
+				if(result.first->getLeft()->getKey() == keyValuePair.first) // When key is last visited node's left child
+				{
+					splay(result.first->getLeft());
+				}
+				else
+				{
+
+				}
+			}
+			else // THIS IS IMPOSSIBLE
+			{
+
+			}
+		}
+		else // Case 2b: We are inserting the root node
+		{
+			this->BinarySearchTree<Key, Value>::insert(keyValuePair);
 		}
 	}
 }
@@ -94,14 +135,170 @@ void SplayTree<Key, Value>::remove(const Key& key)
 	std::pair< Node<Key, Value>*, bool > result = findHelper(key);
 	if(result.second) // Case 1: Key was found
 	{
-		Node<Key, Value>* parent_ptr = result.first->getParent();
-		BinarySearchTree<Key, Value>::remove(key);
-		splay(parent_ptr);
+		if(result.first->getLeft() != nullptr
+			&& result.first->getRight() != nullptr) // Case 1a: Special case when we need to splay parent of predecessor after removal
+		{
+			Node<Key, Value>* pred_node_ptr = it_findPredecessor(result.first); // Get the predecessor
+			Node<Key, Value>* parent_of_pred_parent_node_ptr = nullptr;
+			if(pred_node_ptr != nullptr) // Get the predecessor's parent, because thats the node you gonna splay after deletion
+			{
+				if(pred_node_ptr->getParent() != nullptr) 
+				{
+					parent_of_pred_parent_node_ptr = pred_node_ptr->getParent()->getParent();
+					if(parent_of_pred_parent_node_ptr != nullptr)
+					{
+						if(isRightChild(pred_node_ptr->getParent()))
+						{
+							if(parent_of_pred_parent_node_ptr != result.first)
+							{
+								this->BinarySearchTree<Key, Value>::remove(key);
+								if(parent_of_pred_parent_node_ptr->getRight() != nullptr)
+								{
+									splay(parent_of_pred_parent_node_ptr->getRight()); // Splay parent of deleted node which was predecessor's new parent
+								}
+							}
+							else
+							// *THIS CASE IS IMPOSSIBLE I THINK*
+							{
+								std::cerr << "wtf i didnt know this case was even possible" << std::endl;
+								this->BinarySearchTree<Key, Value>::remove(key);
+								splay(pred_node_ptr->getRight());
+							}
+						}
+						else
+						{
+							if(parent_of_pred_parent_node_ptr != result.first)
+							{
+								this->BinarySearchTree<Key, Value>::remove(key);
+								if(parent_of_pred_parent_node_ptr->getLeft() != nullptr)
+								{
+									splay(parent_of_pred_parent_node_ptr->getLeft()); // Splay parent of deleted node which was predecessor's new parent
+								}
+							}
+							else
+							/** 
+							* *CAUTION* VERY VERY SPECIAL CASE: Remove 7
+							*			  :
+							*			  :
+							*			[07]	 [07] is both the parent of parent of node to be deleted and the node to be deleted
+							*			/	\
+							*		[03]	[09] [03] is the pred_node_ptr->getRight() after the removal
+							*		/	\	
+							*	[01]	[05]	 [05] is the position to delete 07 as it is the predecessor, [07]'s position will be overidded by [05]
+							*			/
+							*		[04]
+							*/
+							{
+								this->BinarySearchTree<Key, Value>::remove(key);
+								splay(pred_node_ptr->getLeft());
+							}
+						}
+					}
+					else // THIS WOULD MEAN PREDECESSOR'S PARENT IS ALREADY THE ROOT NODE, NO NEED FOR SPLAYING AFTER DELETION
+					{
+						this->BinarySearchTree<Key, Value>::remove(key);
+					}
+				}
+				else // THIS WOULD MEAN THAT PREDECESSOR IS THE ROOT, WHICH IS IMPOSSIBLE IF NODE TO BE REMOVED HAS TWO CHILDREN, AS PREDECESSOR WOULD BE IN LEFT SUBTREE
+				{
+
+				}
+			}
+			else // THIS IS IMPOSSIBLE, IF A NODE HAS BOTH CHILDREN, IT MUST HAVE A PREDECESSOR
+			{
+
+			}
+		}
+		else // Case 1b: When only one child or no child exists for the node to be deleted
+		{
+			Node<Key, Value>* parent_ptr = result.first->getParent();
+			this->BinarySearchTree<Key, Value>::remove(key);
+			if(parent_ptr != nullptr) // Case 1ba: The tree is not empty
+			{
+				splay(parent_ptr);
+			}
+			else // Case 1bb: The tree is empty, no splaying
+			{
+
+			}
+		}
 	}
 	else // Case 2: Key was not found
 	{
-		splay(result.first);
+		if(result.first != nullptr) // Case 2a: The tree is not empty
+		{
+			splay(result.first);
+		}
+		else // Case 2b: The tree is empty, no splaying
+		{
+
+		}
 	}
+}
+
+/**
+* An iterative method to find the predecessor of the given node
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* SplayTree<Key, Value>::it_findPredecessor(Node<Key, Value>* curr_node_ptr)
+{
+	if(curr_node_ptr != nullptr) // Check first that the node received is not empty
+	{
+		if(curr_node_ptr->getLeft() != nullptr) // Case 1: If left subtree exists, find the largest element in left subtree
+		{
+			return it_getSubTreeMax(curr_node_ptr->getLeft());
+		}
+		else // Case 2: Left subtree does not exist, recursively find the first left ancestor
+		{
+			return it_firstLeftAncestor(curr_node_ptr);
+		}
+	}
+	else 
+	{
+		return nullptr;
+	}
+}
+
+/**
+* An iterative method to find largest element in subtree
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* SplayTree<Key, Value>::it_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const
+{
+	while(curr_node_ptr != nullptr) // Check first that the node received is not empty
+	{
+		if(curr_node_ptr->getRight() != nullptr) // Case 1: We have not reached the right-most node
+		{
+			curr_node_ptr = curr_node_ptr->getRight();
+		}
+		else // Case 2: We have reached the right-most node, hence max is found
+		{
+			return curr_node_ptr;
+		}
+	}
+	return nullptr;
+}
+
+/**
+* An iterative method to find the predecessor that is the first left ancestor 
+*/
+template<typename Key, typename Value>
+Node<Key, Value>* SplayTree<Key, Value>::it_firstLeftAncestor(Node<Key, Value>* curr_node_ptr)
+{
+	while(curr_node_ptr != nullptr && curr_node_ptr->getParent() != nullptr) // Check first that the node received is not empty 
+		//and ensure parent is not empty as well, or else the node is the root node, with no predecessor
+	{
+		if(curr_node_ptr->getKey() < curr_node_ptr->getParent()->getKey()) // Case 1: When current node is the left child of parent, 
+			//we have to recurse upwards until we have a current node that is the right child of a parent which will be case 2
+		{
+			curr_node_ptr = curr_node_ptr->getParent();
+		}
+		else // if(curr_node_ptr->getKey() > curr_node_ptr->getParent()->getKey()) // Case 2: When current node is the right child of parent
+		{
+			return curr_node_ptr->getParent();
+		}
+	}
+	return nullptr;
 }
 
 /**
@@ -121,7 +318,14 @@ typename SplayTree<Key, Value>::iterator SplayTree<Key, Value>::find(const Key& 
 	}
 	else // Case 2: Key not found, pointer to last visited item received
 	{
-		splay(result.first);
+		if(result.first != nullptr) // Case 2a: The tree is not empty
+		{
+			splay(result.first);
+		}
+		else // Case 2b: The tree is empty, no splaying
+		{
+
+		}
 		return this->end();
 	}
 }
@@ -171,10 +375,22 @@ typename SplayTree<Key, Value>::iterator SplayTree<Key, Value>::findMin()
 		{
 			curr_node_ptr = curr_node_ptr->getLeft();
 		}
+		else
+		{
+			break;
+		}
 	}
 	// Case 2: We have reached the left-most node, hence min is found
-	typename SplayTree<Key, Value>::iterator it(last_visited_node_ptr);
-	return it;
+	if(this->mRoot != nullptr) // Case 2a: Tree is not empty
+	{
+		splay(last_visited_node_ptr);
+		typename SplayTree<Key, Value>::iterator it(this->mRoot);
+		return it;
+	}
+	else // Case 2b: Tree is empty
+	{
+		return this->end();
+	}
 }
 
 /**
@@ -194,10 +410,22 @@ typename SplayTree<Key, Value>::iterator SplayTree<Key, Value>::findMax()
 		{
 			curr_node_ptr = curr_node_ptr->getRight();
 		}
+		else
+		{
+			break;
+		}
 	}
 	// Case 2: We have reached the right-most node, hence max is found
-	typename SplayTree<Key, Value>::iterator it(last_visited_node_ptr);
-	return it;
+	if(this->mRoot != nullptr) // Case 2a: Tree is not empty
+	{
+		splay(last_visited_node_ptr);
+		typename SplayTree<Key, Value>::iterator it(this->mRoot);
+		return it;
+	}
+	else // Case 2b: Tree is empty
+	{
+		return this->end();
+	}
 }
 
 /**
@@ -215,6 +443,17 @@ void SplayTree<Key, Value>::deleteMinLeaf()
 		if(curr_node_ptr->getLeft() != nullptr) // Case 1: We have not reached the left-most node
 		{
 			curr_node_ptr = curr_node_ptr->getLeft();
+		}
+		else // Case 2: We have reached the left-most node, does it have children?
+		{
+			if(curr_node_ptr->getRight() != nullptr) // Case 2a: The current node has a right child, let's check if the right-child has children
+			{
+				curr_node_ptr = curr_node_ptr->getRight();
+			}
+			else // Case 2b: The current node has no children, therefore is the min leaf node
+			{
+
+			}
 		}
 	}
 	if(to_be_removed_node_ptr != nullptr)
@@ -244,6 +483,17 @@ void SplayTree<Key, Value>::deleteMaxLeaf()
 		if(curr_node_ptr->getRight() != nullptr) // Case 1: We have not reached the right-most node
 		{
 			curr_node_ptr = curr_node_ptr->getRight();
+		}
+		else // Case 2: We have reached the right-most node, does it have children?
+		{
+			if(curr_node_ptr->getLeft() != nullptr) // Case 2a: The current node has a left child, let's check if the left-child has children
+			{
+				curr_node_ptr = curr_node_ptr->getLeft();
+			}
+			else // Case 2b: The current node has no children, therefore is the max leaf node
+			{
+
+			}
 		}
 	}
 	if(to_be_removed_node_ptr != nullptr)
@@ -286,7 +536,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*				\
 				*				[02] parent_ptr
 				*					\
-				*					[03] curr_node_ptr
+				*					[03] r
 				*/
 				{		
 					this->leftRotate(grandparent_ptr);
@@ -299,7 +549,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*				\
 				*				[03] parent_ptr
 				*				/
-				*			[02] curr_node_ptr
+				*			[02] r
 				*/
 				{
 					this->rightRotate(parent_ptr);
@@ -315,7 +565,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*			/
 				*		[01] parent_ptr
 				*			\
-				*			[02] curr_node_ptr
+				*			[02] r
 				*/
 				{
 					this->leftRotate(parent_ptr);
@@ -328,7 +578,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*			/
 				*		[02] parent_ptr
 				*		/
-				*	[01] curr_node_ptr
+				*	[01] r
 				*/
 				{
 					this->rightRotate(grandparent_ptr);
@@ -348,7 +598,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 			*		  v	
 			*		[01] parent_ptr
 			*			\
-			*			[02] curr_node_ptr
+			*			[02] r
 			*/
 			{
 				this->leftRotate(parent_ptr);
@@ -361,7 +611,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 			*		  v	
 			*		[02] parent_ptr
 			*		/
-			*	[01] curr_node_ptr
+			*	[01] r
 			*/
 			{
 				this->rightRotate(parent_ptr);
