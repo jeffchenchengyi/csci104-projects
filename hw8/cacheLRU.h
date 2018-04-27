@@ -21,11 +21,13 @@ class cacheLRU : private SplayTree<Key, Value>
 		~cacheLRU(); //TODO
 		void put(const std::pair<const Key, Value>& keyValuePair); // TODO
 		std::pair<const Key, Value> get(const Key& key); // TODO
+		int getLeftRotates();
+		int getRightRotates();
+		int getCacheMiss();
 	private:
 		// Member variables:
-		int mMax_cap, mCurr_used;
+		int mMax_cap, mCurr_used, cache_miss;
 		// Member functions:
-
 };
 
 /*
@@ -40,7 +42,7 @@ class cacheLRU : private SplayTree<Key, Value>
 */
 template<typename Key, typename Value>
 cacheLRU<Key, Value>::cacheLRU(int capacity)
-	: mMax_cap(capacity), mCurr_used(0)
+	: mMax_cap(capacity), mCurr_used(0), cache_miss(0)
 {
 	// TODO
 }
@@ -65,17 +67,17 @@ template<typename Key, typename Value>
 void cacheLRU<Key, Value>::put(const std::pair<const Key, Value>& keyValuePair)
 {
 	// TODO
-	if(this->find(keyValuePair.first) == this->end()) // Check if item already exists in the cache
+	if(this->SplayTree<Key, Value>::find(keyValuePair.first) == this->end()) // Check if item already exists in the cache
 	{
 		if(mCurr_used < mMax_cap) // Case 1: The splay tree is still not at max capacity
 		{
-			this->insert(keyValuePair);
+			this->SplayTree<Key, Value>::insert(keyValuePair);
 			mCurr_used++;
 		}
 		else // Case 2: The splay tree is at full capacity, remove min leaf
 		{
-			this->deleteMinLeaf();
-			this->insert(keyValuePair);
+			this->SplayTree<Key, Value>::deleteMinLeaf(); cache_miss++;
+			this->SplayTree<Key, Value>::insert(keyValuePair);
 		}
 	}
 }
@@ -90,13 +92,45 @@ template<typename Key, typename Value>
 std::pair<const Key, Value> cacheLRU<Key, Value>::get(const Key& key)
 {
 	// TODO
-	typename cacheLRU<Key, Value>::iterator itr = this->find(key);
-	if(itr != this->end()) // Case 1: Key is found
+	typename cacheLRU<Key, Value>::iterator itr = this->SplayTree<Key, Value>::find(key);
+	if(itr != this->SplayTree<Key, Value>::end()) // Case 1: Key is found
 	{
 		return *itr;
 	}
-	// Case 2: Key not found
-	throw std::logic_error("Key: " + key + " was not found in cacheLRU.");
+	else // Case 2: Key not found
+	{
+		throw std::logic_error("Key: " + key + " was not found in cacheLRU.");
+	}
+}
+
+/**
+* Returns number of left rotations done
+*/
+template<typename Key, typename Value>
+int cacheLRU<Key, Value>::getLeftRotates()
+{
+	// TODO
+	return this->getNumLeftRotations();
+}
+
+/**
+* Returns number of left rotations done
+*/
+template<typename Key, typename Value>
+int cacheLRU<Key, Value>::getRightRotates()
+{
+	// TODO
+	return this->getNumRightRotations();
+}
+
+/**
+* Returns number of cache misses
+*/
+template<typename Key, typename Value>
+int cacheLRU<Key, Value>::getCacheMiss()
+{
+	// TODO
+	return cache_miss;
 }
 
 /*

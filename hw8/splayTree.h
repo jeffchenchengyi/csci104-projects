@@ -24,9 +24,13 @@ class SplayTree: public rotateBST<Key, Value>
 		typename SplayTree<Key, Value>::iterator findMax(); // TODO
 		void deleteMinLeaf(); // TODO
 		void deleteMaxLeaf(); // TODO
+		int getNumLeftRotations();
+		int getNumRightRotations();
 	protected:
 		void splay(Node<Key, Value> *r); // TODO
 	private:
+		// Member variables:
+		int numRightRotates, numLeftRotates;
 		// Member functions:
 		Node<Key, Value>* it_findPredecessor(Node<Key, Value>* curr_node_ptr);
 		Node<Key, Value>* it_getSubTreeMax(Node<Key, Value>* curr_node_ptr) const;
@@ -48,6 +52,8 @@ template<typename Key, typename Value>
 SplayTree<Key, Value>::SplayTree()
 {
 	// TODO
+	numLeftRotates = 0;
+	numRightRotates = 0;
 }
 
 /**
@@ -436,10 +442,8 @@ void SplayTree<Key, Value>::deleteMinLeaf()
 {
 	// TODO
 	Node<Key, Value>* curr_node_ptr = this->mRoot;
-	Node<Key, Value>* to_be_removed_node_ptr = nullptr;
 	while(curr_node_ptr != nullptr) // Check first that the node received is not empty
 	{
-		to_be_removed_node_ptr = curr_node_ptr;
 		if(curr_node_ptr->getLeft() != nullptr) // Case 1: We have not reached the left-most node
 		{
 			curr_node_ptr = curr_node_ptr->getLeft();
@@ -452,19 +456,10 @@ void SplayTree<Key, Value>::deleteMinLeaf()
 			}
 			else // Case 2b: The current node has no children, therefore is the min leaf node
 			{
-
+				SplayTree<Key, Value>::remove(curr_node_ptr->getKey());
+				break;
 			}
 		}
-	}
-	if(to_be_removed_node_ptr != nullptr)
-	{
-		Node<Key, Value>* to_be_removed_parent_node_ptr = to_be_removed_node_ptr->getParent(); // Remember the parent of node to be removed
-		BinarySearchTree<Key, Value>::remove(to_be_removed_node_ptr->getKey());
-		splay(to_be_removed_parent_node_ptr); // Splay the parent of the removed node
-	}
-	else // THIS IS IMPOSSIBLE
-	{
-
 	}
 }
 
@@ -476,10 +471,8 @@ void SplayTree<Key, Value>::deleteMaxLeaf()
 {
 	// TODO
 	Node<Key, Value>* curr_node_ptr = this->mRoot;
-	Node<Key, Value>* to_be_removed_node_ptr = nullptr;
 	while(curr_node_ptr != nullptr) // Check first that the node received is not empty
 	{
-		to_be_removed_node_ptr = curr_node_ptr;
 		if(curr_node_ptr->getRight() != nullptr) // Case 1: We have not reached the right-most node
 		{
 			curr_node_ptr = curr_node_ptr->getRight();
@@ -492,19 +485,10 @@ void SplayTree<Key, Value>::deleteMaxLeaf()
 			}
 			else // Case 2b: The current node has no children, therefore is the max leaf node
 			{
-
+				SplayTree<Key, Value>::remove(curr_node_ptr->getKey());
+				break;
 			}
 		}
-	}
-	if(to_be_removed_node_ptr != nullptr)
-	{
-		Node<Key, Value>* to_be_removed_parent_node_ptr = to_be_removed_node_ptr->getParent(); // Remember the parent of node to be removed
-		BinarySearchTree<Key, Value>::remove(to_be_removed_node_ptr->getKey());
-		splay(to_be_removed_parent_node_ptr); // Splay the parent of the removed node
-	}
-	else // THIS IS IMPOSSIBLE
-	{
-
 	}
 }
 
@@ -515,7 +499,7 @@ template<typename Key, typename Value>
 void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 {
 	// TODO
-	if(r != nullptr) // Safety check that r is not a nullptr
+	if(r != nullptr && r != this->mRoot) // Safety check that r is not a nullptr
 	{
 		Node<Key, Value>* parent_ptr = nullptr;
 		Node<Key, Value>* grandparent_ptr = nullptr;
@@ -539,8 +523,8 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*					[03] r
 				*/
 				{		
-					this->leftRotate(grandparent_ptr);
-					this->leftRotate(parent_ptr);
+					this->leftRotate(grandparent_ptr); numLeftRotates++;
+					this->leftRotate(parent_ptr); numLeftRotates++;
 				}
 				else
 				/** 
@@ -552,8 +536,8 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*			[02] r
 				*/
 				{
-					this->rightRotate(parent_ptr);
-					this->leftRotate(grandparent_ptr);
+					this->rightRotate(parent_ptr); numRightRotates++;
+					this->leftRotate(grandparent_ptr); numLeftRotates++;
 				}
 			}
 			else
@@ -568,8 +552,8 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*			[02] r
 				*/
 				{
-					this->leftRotate(parent_ptr);
-					this->rightRotate(grandparent_ptr);
+					this->leftRotate(parent_ptr); numLeftRotates++;
+					this->rightRotate(grandparent_ptr); numRightRotates++;
 				}
 				else
 				/**
@@ -581,8 +565,8 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 				*	[01] r
 				*/
 				{
-					this->rightRotate(grandparent_ptr);
-					this->rightRotate(parent_ptr);
+					this->rightRotate(grandparent_ptr); numRightRotates++;
+					this->rightRotate(parent_ptr); numRightRotates++;
 				}
 			}
 			splay(r); // Recursively splay on the new ancestor chain
@@ -601,7 +585,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 			*			[02] r
 			*/
 			{
-				this->leftRotate(parent_ptr);
+				this->leftRotate(parent_ptr); numLeftRotates++;
 			}
 			else
 			/** 
@@ -614,7 +598,7 @@ void SplayTree<Key, Value>::splay(Node<Key, Value> *r)
 			*	[01] r
 			*/
 			{
-				this->rightRotate(parent_ptr);
+				this->rightRotate(parent_ptr); numRightRotates++;
 			}
 		}
 		else // Case 3: Current node is already the root node, do nothing
@@ -639,6 +623,24 @@ bool SplayTree<Key, Value>::isRightChild(Node<Key, Value>* curr_node_ptr)
 		}
 	}
 	return false; // Default return bool, before calling this, we should ensure that curr_nod_ptr is not nullptr
+}
+
+/**
+* Just a function that returns the total number of left rotations done
+*/
+template<typename Key, typename Value>
+int SplayTree<Key, Value>::getNumLeftRotations()
+{
+	return numLeftRotates;
+}
+
+/**
+* Just a function that returns the total number of right rotations done
+*/
+template<typename Key, typename Value>
+int SplayTree<Key, Value>::getNumRightRotations()
+{
+	return numRightRotates;
 }
 
 /*

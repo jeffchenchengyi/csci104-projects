@@ -1,2 +1,7 @@
 # The following lines are ignoring all the unrequired files
 hw8-check/
+cache_test.cpp
+veryBigTest.txt
+hamlet.txt
+modRandTest.txt
+modTest.txt
