@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 #include "bst.h"
 #include "rotateBST.h"
 #include "splayTree.h"
